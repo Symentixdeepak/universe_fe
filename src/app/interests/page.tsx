@@ -1,9 +1,7 @@
-import InterestStepper from "@/features/Register/components/IntersetStepper";
-import { Metadata } from "next";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Universe Club - Interests",
-};
+import InterestStepper from "@/features/IntersetStepper";
+
 
 export default function InterestsPage() {
   return <InterestStepper />;

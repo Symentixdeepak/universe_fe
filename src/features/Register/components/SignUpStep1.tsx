@@ -26,6 +26,7 @@ const SignUpStep1: React.FC<SignUpStep1Props> = ({ onNext, onBack }) => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const { formData, updateStep1 } = useSignUpContext();
   const { login, isLoading } = useAuth();
+  const linkedInLoginMutation = useLinkedInLoginUrl();
 
   const [email, setEmail] = useState(formData.step1.email);
   const [password, setPassword] = useState("");

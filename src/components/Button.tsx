@@ -322,7 +322,7 @@ const Button: React.FC<CustomButtonProps> = ({
           <CircularProgress
             size={20}
             thickness={4}
-            sx={{ color: buttonStyles.color || themeColors.text.primary }}
+            sx={{ color: themeColors.text.primary }}
           />
           {loadingText && <span>{loadingText}</span>}
         </Box>
