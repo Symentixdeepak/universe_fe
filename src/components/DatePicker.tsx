@@ -13,7 +13,7 @@ import dayjs, { Dayjs } from "dayjs";
 type DatePickerVariant = "outlined" | "filled" | "standard";
 type DatePickerTheme = "auto" | "light" | "dark";
 
-// Extend MUI DatePicker props
+// Extend MUI DatePicker props, ensuring 'value' and 'onChange' are correctly typed for Dayjs
 interface CustomDatePickerProps
   extends Omit<MuiDatePickerProps<Dayjs>, "slots"> {
   variant?: DatePickerVariant;
