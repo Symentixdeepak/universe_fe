@@ -77,11 +77,7 @@ const Header: React.FC<HeaderProps> = ({
           />
         </Box>
 
-        <ClientOnly
-          fallback={
-            <Box sx={{ minWidth: 120, minHeight: 40 }} />
-          }
-        >
+        <ClientOnly fallback={<Box sx={{ minWidth: 120, minHeight: 40 }} />}>
           {/* Desktop nav, hide on mobile */}
           {!isMobile && (
             <Box
@@ -101,7 +97,7 @@ const Header: React.FC<HeaderProps> = ({
           {/* Call to action button */}
           {!isMobile && (
             <Button sx={{ typography: "bodyLight" }} variant="contained">
-              Enter the UniVerse
+              {btnName}
             </Button>
           )}
 
@@ -144,7 +140,9 @@ const Header: React.FC<HeaderProps> = ({
               </IconButton>
             </Box>
 
-            <Box sx={{ mt: 4, display: "flex", flexDirection: "column", gap: 2 }}>
+            <Box
+              sx={{ mt: 4, display: "flex", flexDirection: "column", gap: 2 }}
+            >
               {menuLinks}
 
               <Button

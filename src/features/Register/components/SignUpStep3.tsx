@@ -24,9 +24,9 @@ interface SignUpStep3Props {
 
 interface Step3FormData {
   fullName: string;
-  dateOfBirth: Dayjs | null;
+  dateOfBirth?: Dayjs | null;
   location: string;
-  occupation: string;
+  occupation?: string;
 }
 
 const validationSchema = yup.object({
@@ -38,10 +38,10 @@ const validationSchema = yup.object({
   dateOfBirth: yup
     .mixed()
     .nullable()
-    .required("Date of birth is required")
+    .optional()
     .test("age", "You must be at least 18 years old", function(value) {
-      if (!value) return false;
-      const age = dayjs().diff(dayjs(value), 'year');
+      if (!value) return true; // Allow empty date
+      const age = dayjs().diff(dayjs(value as any), 'year');
       return age >= 18;
     }),
   location: yup
@@ -52,7 +52,7 @@ const validationSchema = yup.object({
   occupation: yup
     .string()
     .trim()
-    .min(0, "Occupation is optional"),
+    .optional(),
 });
 
 const SignUpStep3: React.FC<SignUpStep3Props> = ({ onNext, onBack, isLoading = false }) => {
@@ -64,7 +64,8 @@ const SignUpStep3: React.FC<SignUpStep3Props> = ({ onNext, onBack, isLoading = f
   const {
     control,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors },
+    watch,
   } = useForm<Step3FormData>({
     resolver: yupResolver(validationSchema),
     mode: "onChange",
@@ -76,12 +77,17 @@ const SignUpStep3: React.FC<SignUpStep3Props> = ({ onNext, onBack, isLoading = f
     },
   });
 
+  // Watch required fields to enable/disable button
+  const fullName = watch("fullName");
+  const location = watch("location");
+  const isFormValid = Boolean(fullName?.trim() && location?.trim());
+
   const onSubmit = (data: Step3FormData) => {
     const formattedData = {
       fullName: data.fullName.trim(),
       dateOfBirth: data.dateOfBirth ? data.dateOfBirth.format('YYYY-MM-DD') : '',
       location: data.location.trim(),
-      occupation: data.occupation.trim(),
+      occupation: data.occupation?.trim() || '',
     };
 
     updateStep3(formattedData);
@@ -169,9 +175,7 @@ const SignUpStep3: React.FC<SignUpStep3Props> = ({ onNext, onBack, isLoading = f
                 fullWidth
                 placeholder="Date of birth (DD/MM/YYYY)"
                 variant="outlined"
-                error={!!errors.dateOfBirth}
                 helperText={errors.dateOfBirth?.message}
-                maxDate={dayjs().subtract(18, 'year')}
               />
             )}
           />
@@ -214,7 +218,7 @@ const SignUpStep3: React.FC<SignUpStep3Props> = ({ onNext, onBack, isLoading = f
             fullWidth
             variant="contained"
             type="submit"
-            disabled={!isValid || isLoading}
+            disabled={!isFormValid || isLoading}
             loading={isLoading}
             loadingText="Creating Account..."
           >
