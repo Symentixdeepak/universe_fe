@@ -1,21 +1,21 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  reactStrictMode: false, // Helps reduce hydration warnings in development
-  swcMinify: true,
-  experimental: {
-    // Add any experimental features here
-  },
   eslint: {
-    ignoreDuringBuilds: true, // Ignore ESLint errors during production builds
-  },
-  compiler: {
-    emotion: true, // Enable emotion compiler optimization
+    ignoreDuringBuilds: true,
   },
   typescript: {
-    // !! WARNING: This will ignore all TS errors !!
     ignoreBuildErrors: true,
+  },
+  // Simplified configuration for Netlify compatibility
+  images: {
+    unoptimized: true,
+  },
+  // Ensure proper static generation
+  trailingSlash: false,
+  // Disable problematic features for edge functions
+  experimental: {
+    serverComponentsExternalPackages: ['sharp'],
   },
 };
 
