@@ -1,5 +1,7 @@
 // Auth API service for external signup endpoint
-const API_BASE_URL = 'https://sbvx0z24-3005.inc1.devtunnels.ms/api/v1';
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_SERVER_URL ||
+  "https://sbvx0z24-3005.inc1.devtunnels.ms/api/v1";
 
 export interface SignupRequest {
   email: string;
@@ -68,12 +70,14 @@ export interface ApiError {
 }
 
 // Login API call
-export async function loginUser(data: LoginRequest): Promise<LoginResponse | ApiError> {
+export async function loginUser(
+  data: LoginRequest
+): Promise<LoginResponse | ApiError> {
   try {
     const response = await fetch(`${API_BASE_URL}/auth/login`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
     });
@@ -91,24 +95,26 @@ export async function loginUser(data: LoginRequest): Promise<LoginResponse | Api
     return {
       success: true,
       data: responseData.data,
-      message: responseData.message || 'Login successful',
+      message: responseData.message || "Login successful",
     };
   } catch (error) {
-    console.error('Login API error:', error);
+    console.error("Login API error:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Network error occurred',
+      error: error instanceof Error ? error.message : "Network error occurred",
     };
   }
 }
 
 // Signup API call
-export async function signupUser(data: SignupRequest): Promise<SignupResponse | ApiError> {
+export async function signupUser(
+  data: SignupRequest
+): Promise<SignupResponse | ApiError> {
   try {
     const response = await fetch(`${API_BASE_URL}/auth/signup`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
     });
@@ -126,24 +132,26 @@ export async function signupUser(data: SignupRequest): Promise<SignupResponse | 
     return {
       success: true,
       data: responseData.data,
-      message: responseData.message || 'Signup successful',
+      message: responseData.message || "Signup successful",
     };
   } catch (error) {
-    console.error('Signup API error:', error);
+    console.error("Signup API error:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Network error occurred',
+      error: error instanceof Error ? error.message : "Network error occurred",
     };
   }
 }
 
 // Refresh token API call
-export async function refreshUserToken(refreshToken: string): Promise<RefreshTokenResponse | ApiError> {
+export async function refreshUserToken(
+  refreshToken: string
+): Promise<RefreshTokenResponse | ApiError> {
   try {
     const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         refresh_token: refreshToken,
@@ -163,24 +171,27 @@ export async function refreshUserToken(refreshToken: string): Promise<RefreshTok
     return {
       success: true,
       data: responseData.data,
-      message: responseData.message || 'Token refreshed successfully',
+      message: responseData.message || "Token refreshed successfully",
     };
   } catch (error) {
-    console.error('Refresh token API error:', error);
+    console.error("Refresh token API error:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Network error occurred',
+      error: error instanceof Error ? error.message : "Network error occurred",
     };
   }
 }
 
 // Helper function to check if token needs refresh (4 hours before expiry)
-export function shouldRefreshToken(expiresIn: number, issuedAt: number): boolean {
+export function shouldRefreshToken(
+  expiresIn: number,
+  issuedAt: number
+): boolean {
   const now = Date.now();
-  const expiryTime = issuedAt + (expiresIn * 1000);
+  const expiryTime = issuedAt + expiresIn * 1000;
   const fourHoursInMs = 4 * 60 * 60 * 1000; // 4 hours in milliseconds
-  
-  return (expiryTime - now) <= fourHoursInMs;
+
+  return expiryTime - now <= fourHoursInMs;
 }
 
 // Calculate when the token was issued (approximation)
