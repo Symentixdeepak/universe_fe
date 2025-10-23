@@ -19,28 +19,34 @@ export default function AuthRedirect({ children, redirectTo = '/dashboard' }: Au
     // Check authentication status
     const storedTokens = localStorage.getItem('auth-tokens');
     const legacyToken = localStorage.getItem('authToken'); // For backward compatibility
-    const cookieToken = document.cookie
-      .split('; ')
-      .find(row => row.startsWith('auth-token='))
-      ?.split('=')[1];
+    const storedUser = localStorage.getItem('auth-user');
     
-    const authenticated = !!(storedTokens || legacyToken || cookieToken);
+    console.log('AuthRedirect: storedTokens:', !!storedTokens); // Debug log
+    console.log('AuthRedirect: legacyToken:', !!legacyToken); // Debug log
+    console.log('AuthRedirect: storedUser:', !!storedUser); // Debug log
+    
+    // User is authenticated only if they have both tokens AND user data
+    const authenticated = !!(storedTokens || legacyToken) && !!storedUser;
+    console.log('AuthRedirect: authenticated:', authenticated); // Debug log
+    
     setIsAuthenticated(authenticated);
     
     if (authenticated) {
       // Check if user profile is completed to determine redirect
-      const storedUser = localStorage.getItem('auth-user');
-      if (storedUser) {
-        try {
-          const user = JSON.parse(storedUser);
-          const finalRedirectTo = user.profileCompleted ? '/dashboard' : '/interests';
-          router.replace(finalRedirectTo);
-        } catch (error) {
-          console.error('Error parsing stored user:', error);
-          router.replace(redirectTo);
-        }
-      } else {
-        router.replace(redirectTo);
+      try {
+        const user = JSON.parse(storedUser!);
+        console.log('AuthRedirect: user data:', user); // Debug log
+        console.log('AuthRedirect: profileCompleted:', user.profileCompleted); // Debug log
+        const finalRedirectTo = user.profileCompleted ? '/dashboard' : '/interests';
+        console.log('AuthRedirect: redirecting to:', finalRedirectTo); // Debug log
+        router.replace(finalRedirectTo);
+      } catch (error) {
+        console.error('Error parsing stored user:', error);
+        // Clear invalid user data
+        localStorage.removeItem('auth-user');
+        localStorage.removeItem('auth-tokens');
+        localStorage.removeItem('authToken');
+        setIsAuthenticated(false);
       }
     }
   }, [router, redirectTo]);

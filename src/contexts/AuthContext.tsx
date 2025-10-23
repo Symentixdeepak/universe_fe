@@ -212,6 +212,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       const response = await loginUser({ email, password });
 
+      console.log("Login API response:", response); // Debug log
+
       if (response.success && "data" in response) {
         console.log("Login successful, saving tokens..."); // Debug log
 
@@ -232,10 +234,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           date_of_birth: response.data.user.date_of_birth || "",
           location: response.data.user.location || "",
           occupation: response.data.user.occupation || "",
-          profileCompleted: response.data.user.profileCompleted || false,
+          profileCompleted: response.data.user.profile_completed || false,
         };
 
         console.log("User data to save:", userData); // Debug log
+        console.log("profileCompleted from API:", response.data.user.profile_completed); // Debug log
+        console.log("profileCompleted in userData:", userData.profileCompleted); // Debug log
 
         // Save tokens and user data
         saveTokens(tokenData);
@@ -310,7 +314,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           date_of_birth: response.data.user.date_of_birth || "",
           location: response.data.user.location || "",
           occupation: response.data.user.occupation || "",
-          profileCompleted: response.data.user.profileCompleted || false,
+          profileCompleted: response.data.user.profile_completed || false,
         };
 
         // Save tokens and user data
