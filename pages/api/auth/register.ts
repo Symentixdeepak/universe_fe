@@ -1,16 +1,22 @@
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextApiRequest, NextApiResponse } from 'next';
 
-export async function POST(request: NextRequest) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ message: 'Method not allowed' });
+  }
+
   try {
-    const userData = await request.json();
+    const userData = req.body;
     const { email, password, fullName, dateOfBirth, location, occupation } = userData;
 
     // Validate required fields
     if (!email || !password || !fullName) {
-      return NextResponse.json(
-        { message: 'Email, password, and full name are required' },
-        { status: 400 }
-      );
+      return res.status(400).json({ 
+        message: 'Email, password, and full name are required' 
+      });
     }
 
     // TODO: Replace with your actual registration logic
@@ -18,10 +24,9 @@ export async function POST(request: NextRequest) {
     
     // Mock: Check if user already exists
     if (email === 'existing@example.com') {
-      return NextResponse.json(
-        { message: 'User already exists with this email' },
-        { status: 409 }
-      );
+      return res.status(409).json({ 
+        message: 'User already exists with this email' 
+      });
     }
 
     // Mock: Create user
@@ -36,7 +41,7 @@ export async function POST(request: NextRequest) {
 
     const token = 'mock-jwt-token-' + Date.now();
 
-    return NextResponse.json({
+    return res.status(200).json({
       success: true,
       token: token,
       user: user,
@@ -44,9 +49,6 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Registration error:', error);
-    return NextResponse.json(
-      { message: 'Internal server error' },
-      { status: 500 }
-    );
+    return res.status(500).json({ message: 'Internal server error' });
   }
 }

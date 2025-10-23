@@ -32,6 +32,7 @@ const Step: React.FC<StepProps> = ({ stepNumber, onNext, onBack }) => {
     updateAnswer,
     getCompletionPercentage,
     canProceedToNext,
+    loading,
     getStepValidationMessage,
   } = useInterestStepperContext();
 
@@ -171,7 +172,7 @@ const Step: React.FC<StepProps> = ({ stepNumber, onNext, onBack }) => {
             flexDirection: isMobile ? "column" : "row",
           }}
         >
-          <Button fullWidth variant="contained" onClick={handleContinue} >
+          <Button loading={loading} fullWidth variant="contained" onClick={handleContinue} >
             {"Continue"}
           </Button>
     

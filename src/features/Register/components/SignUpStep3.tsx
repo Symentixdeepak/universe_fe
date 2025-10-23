@@ -17,14 +17,14 @@ import { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
 
 interface SignUpStep3Props {
-  onNext: () => void;
+  onNext: (step3Data?: any) => void;
   onBack: () => void;
   isLoading?: boolean;
 }
 
 interface Step3FormData {
   fullName: string;
-  dateOfBirth?: Dayjs | null;
+  dateOfBirth?: any;
   location: string;
   occupation?: string;
 }
@@ -38,12 +38,7 @@ const validationSchema = yup.object({
   dateOfBirth: yup
     .mixed()
     .nullable()
-    .optional()
-    .test("age", "You must be at least 18 years old", function(value) {
-      if (!value) return true; // Allow empty date
-      const age = dayjs().diff(dayjs(value as any), 'year');
-      return age >= 18;
-    }),
+    .optional(),
   location: yup
     .string()
     .trim()
@@ -64,8 +59,10 @@ const SignUpStep3: React.FC<SignUpStep3Props> = ({ onNext, onBack, isLoading = f
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
     watch,
+    trigger,
+    getValues,
   } = useForm<Step3FormData>({
     resolver: yupResolver(validationSchema),
     mode: "onChange",
@@ -78,20 +75,39 @@ const SignUpStep3: React.FC<SignUpStep3Props> = ({ onNext, onBack, isLoading = f
   });
 
   // Watch required fields to enable/disable button
-  const fullName = watch("fullName");
-  const location = watch("location");
-  const isFormValid = Boolean(fullName?.trim() && location?.trim());
+  const watchedValues = watch();
+  const isFormValid = Boolean(watchedValues.fullName?.trim() && watchedValues.location?.trim());
 
-  const onSubmit = (data: Step3FormData) => {
+  const handleNextClick = async () => {
+    console.log('Next button clicked'); // Debug log
+    
+    // Trigger validation first
+    const isValid = await trigger();
+    console.log('Validation result:', isValid); // Debug log
+    
+    if (!isValid) {
+      console.log('Form validation failed'); // Debug log
+      return;
+    }
+
+    // Get current form values directly
+    const currentValues = getValues();
+    console.log('Current form values:', currentValues); // Debug log
+    
     const formattedData = {
-      fullName: data.fullName.trim(),
-      dateOfBirth: data.dateOfBirth ? data.dateOfBirth.format('YYYY-MM-DD') : '',
-      location: data.location.trim(),
-      occupation: data.occupation?.trim() || '',
+      fullName: currentValues.fullName?.trim() || '',
+      dateOfBirth: currentValues.dateOfBirth ? currentValues.dateOfBirth.format('YYYY-MM-DD') : '',
+      location: currentValues.location?.trim() || '',
+      occupation: currentValues.occupation?.trim() || '',
     };
 
+    console.log('Formatted data for API:', formattedData); // Debug log
+    
+    // Update context with form data (for UI state consistency)
     updateStep3(formattedData);
-    onNext(); // This will trigger the signup API call
+    
+    // Pass the formatted data directly to onNext to avoid timing issues
+    onNext(formattedData);
   };
 
   return (
@@ -136,7 +152,6 @@ const SignUpStep3: React.FC<SignUpStep3Props> = ({ onNext, onBack, isLoading = f
         {/* Sign Up Box */}
         <Box
           component="form"
-          onSubmit={handleSubmit(onSubmit)}
           sx={{
             width: 309,
             border: `1px solid ${themeColors.border.primary}`,
@@ -175,7 +190,6 @@ const SignUpStep3: React.FC<SignUpStep3Props> = ({ onNext, onBack, isLoading = f
                 fullWidth
                 placeholder="Date of birth (DD/MM/YYYY)"
                 variant="outlined"
-                helperText={errors.dateOfBirth?.message}
               />
             )}
           />
@@ -217,7 +231,7 @@ const SignUpStep3: React.FC<SignUpStep3Props> = ({ onNext, onBack, isLoading = f
             sx={{ typography: "bodyBold" }}
             fullWidth
             variant="contained"
-            type="submit"
+            onClick={handleNextClick}
             disabled={!isFormValid || isLoading}
             loading={isLoading}
             loadingText="Creating Account..."

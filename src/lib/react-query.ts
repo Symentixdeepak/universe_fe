@@ -40,10 +40,10 @@ export const queryClient = new QueryClient({
       // Don't refetch on reconnect by default
       refetchOnReconnect: true,
     },
-    mutations: {
-      // Retry failed mutations
-      retry: 1,
-    },
+    // mutations: {
+    //   // Retry failed mutations
+    //   retry: 1,
+    // },
   },
 });
 

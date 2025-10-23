@@ -1,14 +1,12 @@
-"use client";
-
+import Head from 'next/head';
+import { useRouter } from 'next/router';
 import { Box } from "@mui/material";
-import SignUpStep1 from "@/features/Register/components/SignUpStep1";
-import { SignUpProvider } from "@/features/Register/context/SignUpContext";
-import Header from "@/features/Register/components/Header";
-import { AuthRedirect } from "@/components";
-import { useRouter } from "next/navigation";
-import Head from "next/head";
+import SignUpStep1 from '@/features/Register/components/SignUpStep1';
+import { SignUpProvider } from '@/features/Register/context/SignUpContext';
+import Header from '@/features/Register/components/Header';
+import { AuthRedirect } from '@/components';
 
-export default function LoginPage() {
+export default function Login() {
   const router = useRouter();
 
   const handleNext = () => {
@@ -17,12 +15,14 @@ export default function LoginPage() {
 
   const handleBack = () => {
     // Could redirect to home or previous page
-    window.location.href = "/";
+    router.push("/");
   };
 
   return (
     <>
- 
+      <Head>
+        <title>Login - Universe Club</title>
+      </Head>
       <AuthRedirect>
         <SignUpProvider>
           <Box

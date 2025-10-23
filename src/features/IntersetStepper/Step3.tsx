@@ -53,7 +53,7 @@ const Step3: React.FC<Step3Props> = ({ onNext, onBack }) => {
   });
 
   // Count how many sliders are moved from default (0)
-  const selectedCount = Object.values(categoryValues).filter(value => value > 0).length;
+  const selectedCount = Object.values(categoryValues).filter(value => value > 1).length;
   const isSelectionLimitReached = selectedCount >= 3;
 
   const handleSliderChange = (categoryId: string) => (value: number) => {
@@ -162,11 +162,11 @@ const Step3: React.FC<Step3Props> = ({ onNext, onBack }) => {
                 <Box sx={{ width: "100%",maxWidth:351, mt:1,mx:"auto"}}>
                   <CustomSlider
                     steps={5}
-                    value={categoryValues[category.id] || 0}
+                    value={categoryValues[category.id] || 1}
                     onChange={handleSliderChange(category.id)}
                     labelLeft="Not very Important"
                     labelRight="Very Important"
-                    disabled={isSelectionLimitReached && (categoryValues[category.id] || 0) === 0}
+                    disabled={isSelectionLimitReached && (categoryValues[category.id] || 1) <= 1}
                   />
                 </Box>
               </Box>

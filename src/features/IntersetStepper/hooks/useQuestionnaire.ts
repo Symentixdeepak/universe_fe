@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import appService from '@/lib/appService';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/router';
 
 // Questionnaire data interface
 export interface QuestionnaireData {
@@ -45,7 +45,7 @@ export const useSubmitQuestionnaire = () => {
         headerCred: {
           authorization: `Bearer ${tokens.accessToken}`,
         },
-        showSuccessMsg: true,
+        showSuccessMsg: false, // Disable appService success message to avoid double toast
         showErrorMsg: true,
         showFieldsError: true,
       });
