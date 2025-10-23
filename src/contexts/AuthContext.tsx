@@ -268,7 +268,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       if (response.success && "data" in response) {
         // Redirect to LinkedIn login URL
-        window.location.href = response.data.url;
+        window.location.href = response.data.data?.authUrl;
         return { success: true };
       } else {
         const error =
