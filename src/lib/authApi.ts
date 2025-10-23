@@ -281,7 +281,7 @@ export async function handleLinkedInCallback(
 
     return {
       success: true,
-      data: responseData,
+      data: responseData?.data,
       message: responseData.message || "LinkedIn login successful",
     };
   } catch (error) {
