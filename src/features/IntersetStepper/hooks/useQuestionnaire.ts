@@ -29,7 +29,7 @@ export interface QuestionnaireData {
 
 // Submit questionnaire hook
 export const useSubmitQuestionnaire = () => {
-  const { tokens } = useAuth();
+  const { tokens, setUser, user } = useAuth();
   const router = useRouter();
 
   return useMutation({
@@ -53,6 +53,17 @@ export const useSubmitQuestionnaire = () => {
       // Clear session storage on successful submission
       sessionStorage.removeItem('questionnaire-data');
       console.log('Questionnaire submitted successfully:', data);
+      
+      // Update user's profileCompleted status to true
+      if (user) {
+        const updatedUser = {
+          ...user,
+          profileCompleted: true
+        };
+        setUser(updatedUser);
+        console.log('Updated user profileCompleted to true:', updatedUser);
+      }
+      
       // Redirect to dashboard
       router.push('/dashboard');
     },

@@ -22,15 +22,25 @@ export default async function handler(
       const user = {
         id: '1',
         email: email,
-        name: 'Demo User',
+        full_name: 'Demo User',
+        date_of_birth: '',
+        location: '',
+        occupation: '',
+        profileCompleted: false, // Set to false to test interests redirect
       };
 
-      const token = 'mock-jwt-token-' + Date.now();
+      const tokens = {
+        accessToken: 'mock-jwt-token-' + Date.now(),
+        refreshToken: 'mock-refresh-token-' + Date.now(),
+        expiresIn: 3600, // 1 hour
+      };
 
       return res.status(200).json({
         success: true,
-        token: token,
-        user: user,
+        data: {
+          tokens: tokens,
+          user: user,
+        },
       });
     } else {
       return res.status(401).json({ message: 'Invalid email or password' });
