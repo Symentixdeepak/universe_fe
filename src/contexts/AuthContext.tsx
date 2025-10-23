@@ -314,7 +314,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           date_of_birth: response.data.user.date_of_birth || "",
           location: response.data.user.location || "",
           occupation: response.data.user.occupation || "",
-          profileCompleted: response.data.user.profile_completed || false,
+          profileCompleted: response.data.user.profileCompleted || false,
         };
 
         // Save tokens and user data
