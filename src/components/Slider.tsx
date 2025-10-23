@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import "../styles/slider.css";
 import { useThemeColors } from "@/hooks";
 
 interface CustomSliderProps {
@@ -19,13 +18,17 @@ export default function CustomSlider({
   labelRight = "Very High",
   disabled = false,
 }: CustomSliderProps) {
-  const [internalValue, setInternalValue] = useState(2);
+  const [internalValue, setInternalValue] = useState(0); // 0-based index for slider position
   const theme = useThemeColors()
-  const displayValue = typeof value === "number" ? value : internalValue;
+  
+  // Convert 1-5 value to 0-4 index for display
+  const displayValue = typeof value === "number" ? value - 1 : internalValue;
 
   const handleClick = (idx: number) => {
     if (disabled) return; // Don't allow clicks when disabled
-    if (onChange) onChange(idx);
+    // Convert 0-4 index to 1-5 value
+    const actualValue = idx + 1;
+    if (onChange) onChange(actualValue);
     if (value === undefined) setInternalValue(idx);
   };
 

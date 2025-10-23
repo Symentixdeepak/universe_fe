@@ -1,7 +1,13 @@
-'use client';
+"use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { refreshUserToken, shouldRefreshToken, loginUser } from '@/lib/authApi';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
+import { refreshUserToken, shouldRefreshToken, loginUser } from "@/lib/authApi";
 
 interface User {
   id: string;
@@ -24,7 +30,10 @@ interface AuthContextType {
   tokens: TokenData | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  login: (
+    email: string,
+    password: string
+  ) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   setUser: (user: User | null) => void;
   setTokens: (tokens: TokenData | null) => void;
@@ -36,7 +45,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
@@ -56,24 +65,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     const initAuth = () => {
       try {
-        const storedTokens = localStorage.getItem('auth-tokens');
-        const storedUser = localStorage.getItem('auth-user');
-        
+        const storedTokens = localStorage.getItem("auth-tokens");
+        const storedUser = localStorage.getItem("auth-user");
+
         if (storedTokens && storedUser) {
           const parsedTokens = JSON.parse(storedTokens);
           setTokens(parsedTokens);
           setUser(JSON.parse(storedUser));
-          
+
           // Set cookie for middleware
-          document.cookie = `auth-token=${parsedTokens.accessToken}; path=/; max-age=${7 * 24 * 60 * 60}`;
+          document.cookie = `auth-token=${
+            parsedTokens.accessToken
+          }; path=/; max-age=${7 * 24 * 60 * 60}`;
         }
       } catch (error) {
-        console.error('Error initializing auth:', error);
+        console.error("Error initializing auth:", error);
         // Clear invalid data
-        localStorage.removeItem('auth-tokens');
-        localStorage.removeItem('auth-user');
-        localStorage.removeItem('authToken'); // Legacy token key
-        document.cookie = 'auth-token=; path=/; max-age=0';
+        localStorage.removeItem("auth-tokens");
+        localStorage.removeItem("auth-user");
+        localStorage.removeItem("authToken"); // Legacy token key
+        document.cookie = "auth-token=; path=/; max-age=0";
       } finally {
         setIsLoading(false);
       }
@@ -84,26 +95,40 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Save tokens to localStorage and cookies
   const saveTokens = useCallback((newTokens: TokenData | null) => {
+    console.log("saveTokens called with:", newTokens); // Debug log
     setTokens(newTokens);
     if (newTokens) {
-      localStorage.setItem('auth-tokens', JSON.stringify(newTokens));
-      localStorage.setItem('authToken', newTokens.accessToken); // For legacy compatibility
+      localStorage.setItem("auth-tokens", JSON.stringify(newTokens));
+      localStorage.setItem("authToken", newTokens.accessToken); // For legacy compatibility
       // Also set as cookie for middleware
-      document.cookie = `auth-token=${newTokens.accessToken}; path=/; max-age=${7 * 24 * 60 * 60}`; // 7 days
+      document.cookie = `auth-token=${newTokens.accessToken}; path=/; max-age=${
+        7 * 24 * 60 * 60
+      }`; // 7 days
+      console.log(
+        "Tokens saved to localStorage:",
+        localStorage.getItem("auth-tokens")
+      ); // Debug log
     } else {
-      localStorage.removeItem('auth-tokens');
-      localStorage.removeItem('authToken');
-      document.cookie = 'auth-token=; path=/; max-age=0';
+      localStorage.removeItem("auth-tokens");
+      localStorage.removeItem("authToken");
+      document.cookie = "auth-token=; path=/; max-age=0";
+      console.log("Tokens removed from localStorage"); // Debug log
     }
   }, []);
 
   // Save user to localStorage
   const saveUser = useCallback((newUser: User | null) => {
+    console.log("saveUser called with:", newUser); // Debug log
     setUser(newUser);
     if (newUser) {
-      localStorage.setItem('auth-user', JSON.stringify(newUser));
+      localStorage.setItem("auth-user", JSON.stringify(newUser));
+      console.log(
+        "User saved to localStorage:",
+        localStorage.getItem("auth-user")
+      ); // Debug log
     } else {
-      localStorage.removeItem('auth-user');
+      localStorage.removeItem("auth-user");
+      console.log("User removed from localStorage"); // Debug log
     }
   }, []);
 
@@ -115,23 +140,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     try {
       const result = await refreshUserToken(tokens.refreshToken);
-      
-      if (result.success && 'data' in result) {
+
+      if (result.success && "data" in result) {
         const newTokenData: TokenData = {
           ...result.data.tokens,
           issuedAt: Date.now(),
         };
-        
+
         saveTokens(newTokenData);
         return true;
       } else {
-        console.error('Token refresh failed:', result);
+        console.error("Token refresh failed:", result);
         // If refresh fails, logout user
         logout();
         return false;
       }
     } catch (error) {
-      console.error('Token refresh error:', error);
+      console.error("Token refresh error:", error);
       logout();
       return false;
     }
@@ -142,43 +167,81 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     if (!tokens) return;
 
     const checkAndRefreshToken = () => {
+      console.log("Checking token refresh..."); // Debug log
+      console.log("Token expires in:", tokens.expiresIn, "seconds"); // Debug log
+      console.log("Token issued at:", new Date(tokens.issuedAt)); // Debug log
+
       if (shouldRefreshToken(tokens.expiresIn, tokens.issuedAt)) {
+        console.log("Token needs refresh, refreshing..."); // Debug log
         refreshTokens();
+      } else {
+        const now = Date.now();
+        const expiryTime = tokens.issuedAt + tokens.expiresIn * 1000;
+        const timeLeft = Math.floor((expiryTime - now) / 1000);
+        console.log("Token still valid, expires in:", timeLeft, "seconds"); // Debug log
       }
     };
 
-    // Check immediately
-    checkAndRefreshToken();
+    // Don't check immediately, wait a bit to avoid immediate refresh
+    const initialDelay = setTimeout(checkAndRefreshToken, 5000); // Check after 5 seconds
 
-    // Check every hour
-    const interval = setInterval(checkAndRefreshToken, 60 * 60 * 1000);
-    
-    return () => clearInterval(interval);
-  }, [tokens, refreshTokens]);
+    // Check every 30 seconds instead of every hour for shorter tokens
+    const interval = setInterval(checkAndRefreshToken, 30 * 1000);
+
+    return () => {
+      clearTimeout(initialDelay);
+      clearInterval(interval);
+    };
+  }, [tokens, refreshTokens, shouldRefreshToken]);
 
   const login = async (email: string, password: string) => {
     try {
       setIsLoading(true);
-      
+
       const response = await loginUser({ email, password });
-      
-      if (response.token && response.refreshToken) {
+
+      if (response.success && "data" in response) {
+        console.log("Login successful, saving tokens..."); // Debug log
+
         const tokenData: TokenData = {
-          accessToken: response.token,
-          refreshToken: response.refreshToken,
-          expiresIn: 7 * 24 * 60 * 60, // 7 days in seconds
+          accessToken: response.data.tokens.accessToken,
+          refreshToken: response.data.tokens.refreshToken,
+          expiresIn: response.data.tokens.expiresIn,
           issuedAt: Date.now(),
         };
-        
+
+        console.log("Token data to save:", tokenData); // Debug log
+
+        // Create user object with available fields
+        const userData: User = {
+          id: response.data.user.id,
+          email: response.data.user.email,
+          full_name: "", // Will be updated when profile is completed
+          date_of_birth: "",
+          location: "",
+          occupation: "",
+        };
+
+        console.log("User data to save:", userData); // Debug log
+
+        // Save tokens and user data
         saveTokens(tokenData);
-        saveUser(response.user);
+        saveUser(userData);
+
+        console.log("Tokens and user saved to localStorage"); // Debug log
+
         return { success: true };
       } else {
-        return { success: false, error: 'Invalid credentials' };
+        const error =
+          "error" in response ? response.error : "Invalid credentials";
+        return { success: false, error };
       }
     } catch (error) {
-      console.error('Login error:', error);
-      return { success: false, error: 'Login failed. Please check your credentials.' };
+      console.error("Login error:", error);
+      return {
+        success: false,
+        error: "Login failed. Please check your credentials.",
+      };
     } finally {
       setIsLoading(false);
     }
@@ -187,8 +250,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = () => {
     saveTokens(null);
     saveUser(null);
+    sessionStorage.removeItem("questionnaire-data");
+
     // Redirect to login page
-    window.location.href = '/auth/login';
+    window.location.href = "/auth/login";
   };
 
   const value: AuthContextType = {
@@ -203,9 +268,5 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     refreshTokens,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

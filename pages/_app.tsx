@@ -1,6 +1,9 @@
-import type { Metadata } from "next";
+import type { AppProps } from 'next/app';
+import Head from 'next/head';
 import { Noto_Serif_Display } from "next/font/google";
-import "./globals.css";
+import "@/styles/global.css";
+import "@/styles/slider.css";
+
 import { Providers } from "@/components/providers";
 
 const notoSerifDisplay = Noto_Serif_Display({
@@ -9,30 +12,23 @@ const notoSerifDisplay = Noto_Serif_Display({
   weight: ["300", "400", "500", "600", "700", "800"],
 });
 
-export const metadata: Metadata = {
-  title: "Universe Club",
-  description: "",
-};
-
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function App({ Component, pageProps }: AppProps) {
   return (
-    <html lang="en">
-      <head>
+    <>
+      <Head>
         <meta name="emotion-insertion-point" content="" />
         <link
           href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600;700;800&display=swap"
           rel="stylesheet"
         />
-      </head>
-      <body className={notoSerifDisplay.variable}>
+        <title>Universe Club</title>
+        <meta name="description" content="" />
+      </Head>
+      <div className={notoSerifDisplay.variable}>
         <Providers>
-          {children}
+          <Component {...pageProps} />
         </Providers>
-      </body>
-    </html>
+      </div>
+    </>
   );
 }

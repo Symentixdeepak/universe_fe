@@ -24,23 +24,24 @@ const Step11: React.FC<Step11Props> = ({ onNext, onBack }) => {
     data,
     updateAnswer,
     getCompletionPercentage,
+    loading, // Add loading state from context
   } = useInterestStepperContext();
 
   const stepNumber = 11;
 
   // Define the options for Step 11
   const options = [
-    { key: "artCreativity", label: "Art & Creativity" },
-    { key: "sportsMovement", label: "Sports & Movement" },
-    { key: "travelCultures", label: "Travel & Cultures" },
-    { key: "foodCulinary", label: "Food & Culinary Experiences" },
-    { key: "natureOutdoors", label: "Nature & Outdoors" },
-    { key: "legacyImpact", label: "Legacy & Impact" },
-    { key: "musicPerformance", label: "Music & Performance" },
-    { key: "spiritualityPractices", label: "Spirituality & Inner Practices" },
-    { key: "technologyInnovation", label: "Technology & Innovation" },
-    { key: "businessEntrepreneurship", label: "Business & Entrepreneurship" },
-    { key: "learningIdeas", label: "Learning & Ideas" },
+    { key: "art_creativity", label: "Art & Creativity" },
+    { key: "sports_movement", label: "Sports & Movement" },
+    { key: "travel_cultures", label: "Travel & Cultures" },
+    { key: "food_culinary", label: "Food & Culinary Experiences" },
+    { key: "nature_outdoors", label: "Nature & Outdoors" },
+    { key: "legacy_impact", label: "Legacy & Impact" },
+    { key: "music_performance", label: "Music & Performance" },
+    { key: "spirituality_practices", label: "Spirituality & Inner Practices" },
+    { key: "technology_innovation", label: "Technology & Innovation" },
+    { key: "business_entrepreneurship", label: "Business & Entrepreneurship" },
+    { key: "learning_ideas", label: "Learning & Ideas" },
   ];
 
   // Initialize state with existing data or default values
@@ -197,9 +198,11 @@ const Step11: React.FC<Step11Props> = ({ onNext, onBack }) => {
             fullWidth
             variant="contained"
             onClick={handleContinue}
-            disabled={selectedOptions.length === 0}
+            disabled={selectedOptions.length === 0 || loading}
+            loading={loading}
+            loadingText="Submitting..."
           >
-            Continue
+            {loading ? "Submitting..." : "Complete"}
           </Button>
         </Box>
       </Box>

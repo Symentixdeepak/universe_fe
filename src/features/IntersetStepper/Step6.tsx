@@ -54,8 +54,8 @@ const Step6: React.FC<Step6Props> = ({ onNext, onBack }) => {
     }
   );
 
-  // Count how many sliders are moved from default (0)
-  const selectedCount = Object.values(categoryValues).filter(value => value > 0).length;
+  // Count how many sliders are moved from default (1)
+  const selectedCount = Object.values(categoryValues).filter(value => value > 1).length;
   const isSelectionLimitReached = selectedCount >= 3;
 
   // Update context whenever categoryValues changes
@@ -163,11 +163,11 @@ const Step6: React.FC<Step6Props> = ({ onNext, onBack }) => {
                 <Box sx={{ width: "100%", maxWidth: 351, mt: 1, mx: "auto" }}>
                   <CustomSlider
                     steps={5}
-                    value={categoryValues[category.key] || 0}
+                    value={categoryValues[category.key] || 1}
                     onChange={handleSliderChange(category.key)}
                     labelLeft="Not very Important"
                     labelRight="Very Important"
-                    disabled={isSelectionLimitReached && (categoryValues[category.key] || 0) === 0}
+                    disabled={isSelectionLimitReached && (categoryValues[category.key] || 1) <= 1}
                   />
                 </Box>
               </Box>

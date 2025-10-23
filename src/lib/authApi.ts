@@ -182,16 +182,17 @@ export async function refreshUserToken(
   }
 }
 
-// Helper function to check if token needs refresh (4 hours before expiry)
+// Helper function to check if token needs refresh (50 seconds before expiry)
 export function shouldRefreshToken(
   expiresIn: number,
   issuedAt: number
 ): boolean {
   const now = Date.now();
-  const expiryTime = issuedAt + expiresIn * 1000;
-  const fourHoursInMs = 4 * 60 * 60 * 1000; // 4 hours in milliseconds
+  const expiryTime = issuedAt + expiresIn * 1000; // Convert seconds to milliseconds
+  const fiftySecondsInMs = 50 * 1000; // 50 seconds in milliseconds
 
-  return expiryTime - now <= fourHoursInMs;
+  // Refresh if token expires in 50 seconds or less
+  return expiryTime - now <= fiftySecondsInMs;
 }
 
 // Calculate when the token was issued (approximation)

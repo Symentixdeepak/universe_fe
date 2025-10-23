@@ -185,6 +185,8 @@ const SignUpStep1: React.FC<SignUpStep1Props> = ({ onNext, onBack }) => {
               variant="outlined"
               theme="auto"
               onClick={showLoginForm ? handleLogin : handleContinueWithEmail}
+              loading={showLoginForm && isLoading}
+              disabled={showLoginForm && isLoading}
               sx={{
                 borderRadius: "25px",
                 py: 1.5,

@@ -1,7 +1,6 @@
-﻿'use client';
-
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/router';
+import Head from 'next/head';
 
 export default function Home() {
   const router = useRouter();
@@ -32,5 +31,12 @@ export default function Home() {
     return null;
   }
 
-  return null; // Will redirect before this renders
+  return (
+    <>
+      <Head>
+        <title>Universe Club</title>
+      </Head>
+      {null} {/* Will redirect before this renders */}
+    </>
+  );
 }

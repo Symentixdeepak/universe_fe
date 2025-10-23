@@ -40,6 +40,7 @@ interface InterestStepperContextType {
   getAllAnswers: () => Record<number, any>;
   submitQuestionnaire: () => void;
   isSubmitting: boolean;
+  loading: boolean;
 }
 
 // Interest questions data
@@ -49,14 +50,14 @@ export const INTEREST_QUESTIONS: InterestQuestion[] = [
     question: "How important is meaning and purpose in your life?",
     labelLeft: "Not very important",
     labelRight: "Very important",
-    value: 2,
+    value: 1,
   },
   {
     id: 2,
     question: "How important are tangible results and achievements?",
     labelLeft: "Not very Important",
     labelRight: "Very Important",
-    value: 2,
+    value: 1,
   },
   // Step 3 is handled by custom component (multi-category)
   {
@@ -64,21 +65,21 @@ export const INTEREST_QUESTIONS: InterestQuestion[] = [
     question: "Which areas are central to your life? (choose up to 3)",
     labelLeft: "",
     labelRight: "",
-    value: 2,
+    value: 1,
   },
   {
     id: 4,
     question: "How important is freedom and independence?",
     labelLeft: "Not very Important",
     labelRight: "Very Important",
-    value: 2,
+    value: 1,
   },
   {
     id: 5,
     question: "How important is security and stability?",
     labelLeft: "Not very Important",
     labelRight: "Very Important",
-    value: 2,
+    value: 1,
   },
   // Step 6 is handled by custom component (multi-category)
   {
@@ -86,7 +87,7 @@ export const INTEREST_QUESTIONS: InterestQuestion[] = [
     question: "Which core drivers guide you most in life? (choose up to 3)",
     labelLeft: "",
     labelRight: "",
-    value: 2,
+    value: 1,
   },
   // Step 7 is handled by custom component (radio buttons)
   {
@@ -94,7 +95,7 @@ export const INTEREST_QUESTIONS: InterestQuestion[] = [
     question: "When collaborating with others, how do you see yourself?",
     labelLeft: "",
     labelRight: "",
-    value: 2,
+    value: 1,
   },
   {
     id: 8,
@@ -102,7 +103,7 @@ export const INTEREST_QUESTIONS: InterestQuestion[] = [
       "Do you prefer small, intimate gatherings or large, lively groups?",
     labelLeft: "Small, intimate gatherings",
     labelRight: "Large, lively groups",
-    value: 2,
+    value: 1,
   },
   {
     id: 9,
@@ -110,14 +111,14 @@ export const INTEREST_QUESTIONS: InterestQuestion[] = [
       "Do you prefer routine and familiarity or novelty and constant new experiences?",
     labelLeft: "Routine is best",
     labelRight: "Constant new experiences",
-    value: 2,
+    value: 1,
   },
   {
     id: 10,
     question: "How interested are you in building new meaningful connections?",
     labelLeft: "Not very Important",
     labelRight: "Very Important",
-    value: 2,
+    value: 1,
   },
   // Step 11 is handled by custom component (checkboxes)
   {
@@ -126,7 +127,7 @@ export const INTEREST_QUESTIONS: InterestQuestion[] = [
       "Which of these areas do you enjoy exploring in your life? (choose up to 4)",
     labelLeft: "",
     labelRight: "",
-    value: 2,
+    value: 1,
   },
 ];
 
@@ -295,25 +296,46 @@ export const InterestStepperProvider: React.FC<InterestStepperProviderProps> = (
   const submitQuestionnaire = () => {
     const questionnaireData = convertStepperToQuestionnaire(data.answers);
     
-    // Validate all required fields are filled
-    const requiredFields = [
-      'meaningPurposeImportance', 'connectionBuildingInterest', 'businessCareerImportance',
-      'personalDevelopmentImportance', 'familyRelationshipsImportance', 'spiritualityGrowthImportance',
-      'healthWellbeingImportance', 'adventureLifestyleImportance', 'freedomIndependenceImportance',
-      'securityStabilityImportance', 'growthLearningImportance', 'contributionServiceImportance',
-      'creativityExpressionImportance', 'connectionBelongingImportance', 'legacyImpactImportance',
-      'collaborationRole', 'tangibleResultsImportance', 'routineNoveltyPreference', 'socialPreference',
-      'interests'
-    ];
-
-    const missingFields = requiredFields.filter(field => questionnaireData[field as keyof QuestionnaireData] === undefined);
+    // Ensure all slider fields have default value of 1 if not set
+    const fieldsWithDefaults = {
+      meaningPurposeImportance: questionnaireData.meaningPurposeImportance ?? 1,
+      connectionBuildingInterest: questionnaireData.connectionBuildingInterest ?? 1,
+      businessCareerImportance: questionnaireData.businessCareerImportance ?? 1,
+      personalDevelopmentImportance: questionnaireData.personalDevelopmentImportance ?? 1,
+      familyRelationshipsImportance: questionnaireData.familyRelationshipsImportance ?? 1,
+      spiritualityGrowthImportance: questionnaireData.spiritualityGrowthImportance ?? 1,
+      healthWellbeingImportance: questionnaireData.healthWellbeingImportance ?? 1,
+      adventureLifestyleImportance: questionnaireData.adventureLifestyleImportance ?? 1,
+      freedomIndependenceImportance: questionnaireData.freedomIndependenceImportance ?? 1,
+      securityStabilityImportance: questionnaireData.securityStabilityImportance ?? 1,
+      growthLearningImportance: questionnaireData.growthLearningImportance ?? 1,
+      contributionServiceImportance: questionnaireData.contributionServiceImportance ?? 1,
+      creativityExpressionImportance: questionnaireData.creativityExpressionImportance ?? 1,
+      connectionBelongingImportance: questionnaireData.connectionBelongingImportance ?? 1,
+      legacyImpactImportance: questionnaireData.legacyImpactImportance ?? 1,
+      tangibleResultsImportance: questionnaireData.tangibleResultsImportance ?? 1,
+      routineNoveltyPreference: questionnaireData.routineNoveltyPreference ?? 1,
+      socialPreference: questionnaireData.socialPreference ?? 1,
+      // These fields are required and don't have defaults
+      collaborationRole: questionnaireData.collaborationRole,
+      interests: questionnaireData.interests,
+    };
+    
+    // Validate required non-slider fields
+    const requiredNonSliderFields = ['collaborationRole', 'interests'];
+    const missingFields = requiredNonSliderFields.filter(field => 
+      fieldsWithDefaults[field as keyof typeof fieldsWithDefaults] === undefined
+    );
+    
+    console.log('Missing fields:', missingFields); // Debug log
+    console.log('Questionnaire data being submitted:', fieldsWithDefaults); // Debug log
     
     if (missingFields.length > 0) {
       toastService.error('Please complete all steps before submitting.');
       return;
     }
 
-    submitQuestionnaireMutation.mutate(questionnaireData as QuestionnaireData, {
+    submitQuestionnaireMutation.mutate(fieldsWithDefaults as QuestionnaireData, {
       onSuccess: () => {
         toastService.success('Questionnaire submitted successfully!');
         clearSession();
@@ -468,6 +490,7 @@ export const InterestStepperProvider: React.FC<InterestStepperProviderProps> = (
     getStepValidationMessage,
     getAllAnswers,
     submitQuestionnaire,
+    loading: submitQuestionnaireMutation.isPending, // Use isPending instead of isLoading
     isSubmitting: submitQuestionnaireMutation.isPending,
   };
 
