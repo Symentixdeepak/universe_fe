@@ -23,21 +23,20 @@ export default async function handler(
     // In production, verify that the state matches what was stored during authorization
 
     // TODO: Exchange code for access token with LinkedIn
-    // This is a mock implementation
+    // This is a mock implementation - matching the real API response structure
     const mockUser = {
       id: 'linkedin-' + Date.now(),
       email: 'linkedin.user@example.com',
-      full_name: 'LinkedIn User',
-      date_of_birth: '',
-      location: '',
-      occupation: '',
+      fullName: 'LinkedIn User',
+      emailVerified: true,
+      profileCompleted: Math.random() > 0.5, // Random for demo
+      oauthProvider: 'linkedin'
     };
 
     const tokens = {
       accessToken: 'mock-linkedin-access-token-' + Date.now(),
       refreshToken: 'mock-linkedin-refresh-token-' + Date.now(),
-      expiresIn: 3600, // 1 hour
-      issuedAt: Date.now(),
+      expiresIn: 900, // 15 minutes
     };
 
     // Mock: Determine if user is new or existing
@@ -46,10 +45,12 @@ export default async function handler(
 
     return res.status(200).json({
       success: true,
-      user: mockUser,
-      tokens: tokens,
-      isNewUser: isNewUser,
-      message: 'LinkedIn login successful',
+      data: {
+        user: mockUser,
+        tokens: tokens,
+        isNewUser: isNewUser,
+      },
+      message: 'Logged in successfully via LinkedIn',
     });
   } catch (error) {
     console.error('LinkedIn callback error:', error);
