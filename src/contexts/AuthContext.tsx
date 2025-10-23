@@ -22,6 +22,7 @@ interface User {
   date_of_birth: string;
   location: string;
   occupation: string;
+  profileCompleted: boolean;
 }
 
 interface TokenData {
@@ -227,10 +228,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const userData: User = {
           id: response.data.user.id,
           email: response.data.user.email,
-          full_name: "", // Will be updated when profile is completed
-          date_of_birth: "",
-          location: "",
-          occupation: "",
+          full_name: response.data.user.full_name || "", // Will be updated when profile is completed
+          date_of_birth: response.data.user.date_of_birth || "",
+          location: response.data.user.location || "",
+          occupation: response.data.user.occupation || "",
+          profileCompleted: response.data.user.profileCompleted || false,
         };
 
         console.log("User data to save:", userData); // Debug log
@@ -266,7 +268,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       if (response.success && "data" in response) {
         // Redirect to LinkedIn login URL
-        window.location.href = response.data.data?.authUrl;
+        window.location.href = response.data.url;
         return { success: true };
       } else {
         const error =
@@ -292,6 +294,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       if (response.success && "data" in response) {
         console.log("LinkedIn login successful, saving tokens..."); // Debug log
+        console.log("LinkedIn response data:", response.data); // Debug log
 
         const tokenData: TokenData = {
           accessToken: response.data.tokens.accessToken,
@@ -303,10 +306,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const userData: User = {
           id: response.data.user.id,
           email: response.data.user.email,
-          full_name: response.data.user.full_name,
-          date_of_birth: response.data.user.date_of_birth,
-          location: response.data.user.location,
-          occupation: response.data.user.occupation,
+          full_name: response.data.user.fullName || response.data.user.full_name || "",
+          date_of_birth: response.data.user.date_of_birth || "",
+          location: response.data.user.location || "",
+          occupation: response.data.user.occupation || "",
+          profileCompleted: response.data.user.profileCompleted || false,
         };
 
         // Save tokens and user data

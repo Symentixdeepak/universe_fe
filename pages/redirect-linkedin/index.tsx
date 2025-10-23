@@ -60,11 +60,27 @@ export default function LinkedInRedirect() {
           setStatus('Login successful! Redirecting...');
           toastService.success('LinkedIn login successful!');
           
-          // Redirect based on whether user is new or existing
-          if (result.isNewUser) {
-            router.replace('/interests');
+          // Check user profile completion to determine redirect
+          const storedUser = localStorage.getItem('auth-user');
+          if (storedUser) {
+            try {
+              const user = JSON.parse(storedUser);
+              if (user.profileCompleted) {
+                router.replace('/dashboard');
+              } else {
+                router.replace('/interests');
+              }
+            } catch (error) {
+              console.error('Error parsing user data:', error);
+              router.replace('/interests'); // Default to interests if error
+            }
           } else {
-            router.replace('/dashboard');
+            // If no stored user, redirect based on isNewUser (fallback)
+            if (result.isNewUser) {
+              router.replace('/interests');
+            } else {
+              router.replace('/dashboard');
+            }
           }
         } else {
           setStatus('Login failed');
@@ -147,11 +163,10 @@ export default function LinkedInRedirect() {
 
           {/* Status Text */}
           <Typography
-            variant="h2Bold"
+            variant="h3Bold"
             sx={{
               color: themeColors.text.primary,
               mb: 2,
-              fontSize: { xs: '1.5rem', sm: '2rem' },
             }}
           >
             {isProcessing ? 'Logging you in...' : 'Processing Complete'}

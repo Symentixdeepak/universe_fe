@@ -28,7 +28,20 @@ export default function AuthRedirect({ children, redirectTo = '/dashboard' }: Au
     setIsAuthenticated(authenticated);
     
     if (authenticated) {
-      router.replace(redirectTo);
+      // Check if user profile is completed to determine redirect
+      const storedUser = localStorage.getItem('auth-user');
+      if (storedUser) {
+        try {
+          const user = JSON.parse(storedUser);
+          const finalRedirectTo = user.profileCompleted ? '/dashboard' : '/interests';
+          router.replace(finalRedirectTo);
+        } catch (error) {
+          console.error('Error parsing stored user:', error);
+          router.replace(redirectTo);
+        }
+      } else {
+        router.replace(redirectTo);
+      }
     }
   }, [router, redirectTo]);
 
