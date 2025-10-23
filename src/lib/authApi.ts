@@ -63,6 +63,29 @@ export interface RefreshTokenResponse {
   message: string;
 }
 
+export interface LinkedInUrlResponse {
+  success: boolean;
+  data: {
+    url: string;
+  };
+  message: string;
+}
+
+export interface LinkedInCallbackRequest {
+  code: string;
+  state: string;
+}
+
+export interface LinkedInCallbackResponse {
+  success: boolean;
+  data: {
+    tokens: TokenData;
+    user: User;
+    isNewUser: boolean;
+  };
+  message: string;
+}
+
 export interface ApiError {
   success: false;
   error: string;
@@ -198,4 +221,74 @@ export function shouldRefreshToken(
 // Calculate when the token was issued (approximation)
 export function getTokenIssuedAt(): number {
   return Date.now();
+}
+
+// Get LinkedIn login URL
+export async function getLinkedInLoginUrl(): Promise<LinkedInUrlResponse | ApiError> {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/linkedin`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const responseData = await response.json();
+
+    if (!response.ok) {
+      return {
+        success: false,
+        error: responseData.message || `HTTP error! status: ${response.status}`,
+        details: responseData,
+      };
+    }
+
+    return {
+      success: true,
+      data: responseData,
+      message: responseData.message || "LinkedIn URL retrieved successfully",
+    };
+  } catch (error) {
+    console.error("LinkedIn URL API error:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Network error occurred",
+    };
+  }
+}
+
+// Handle LinkedIn callback
+export async function handleLinkedInCallback(
+  data: LinkedInCallbackRequest
+): Promise<LinkedInCallbackResponse | ApiError> {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/linkedin/callback?code=${encodeURIComponent(data.code)}&state=${encodeURIComponent(data.state)}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const responseData = await response.json();
+
+    if (!response.ok) {
+      return {
+        success: false,
+        error: responseData.message || `HTTP error! status: ${response.status}`,
+        details: responseData,
+      };
+    }
+
+    return {
+      success: true,
+      data: responseData,
+      message: responseData.message || "LinkedIn login successful",
+    };
+  } catch (error) {
+    console.error("LinkedIn callback API error:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Network error occurred",
+    };
+  }
 }
