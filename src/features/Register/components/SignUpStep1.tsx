@@ -14,6 +14,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toastService } from "@/lib/toast";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
+import { useRouter } from "next/router";
 
 interface SignUpStep1Props {
   onNext: () => void;
@@ -22,10 +23,11 @@ interface SignUpStep1Props {
 
 const SignUpStep1: React.FC<SignUpStep1Props> = ({ onNext, onBack }) => {
   const theme = useTheme();
+  const router = useRouter()
   const themeColors = useThemeColors();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const { formData, updateStep1 } = useSignUpContext();
-  const { login, isLoading } = useAuth();
+  const { login, loginWithLinkedIn, isLoading } = useAuth();
   // const linkedInLoginMutation = useLinkedInLoginUrl();
 
   const [email, setEmail] = useState(formData.step1.email);
@@ -58,15 +60,19 @@ const SignUpStep1: React.FC<SignUpStep1Props> = ({ onNext, onBack }) => {
     if (result.success) {
       toastService.success("Login successful!");
       // Redirect to dashboard after successful login
-      window.location.href = "/dashboard";
+      router.push("/dashboard");
     } else {
       toastService.error(result.error || "Login failed");
     }
   };
 
-  const handleContinueWithLinkedIn = () => {
-    // LinkedIn OAuth integration would go here
-    toastService.info("LinkedIn login not implemented yet");
+  const handleContinueWithLinkedIn = async () => {
+    const result = await loginWithLinkedIn();
+    
+    if (!result.success) {
+      toastService.error(result.error || "LinkedIn login failed");
+    }
+    // If successful, user will be redirected to LinkedIn
   };
 
   const handleSignUp = () => {
@@ -216,6 +222,8 @@ const SignUpStep1: React.FC<SignUpStep1Props> = ({ onNext, onBack }) => {
                 fullWidth
                 variant="outlined"
                 onClick={handleContinueWithLinkedIn}
+                loading={isLoading}
+                disabled={isLoading}
                 sx={{
                   borderRadius: "25px",
                   color: "#E0E0E0",

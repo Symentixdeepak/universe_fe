@@ -7,7 +7,13 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
-import { refreshUserToken, shouldRefreshToken, loginUser } from "@/lib/authApi";
+import { 
+  refreshUserToken, 
+  shouldRefreshToken, 
+  loginUser,
+  getLinkedInLoginUrl,
+  handleLinkedInCallback
+} from "@/lib/authApi";
 
 interface User {
   id: string;
@@ -34,6 +40,11 @@ interface AuthContextType {
     email: string,
     password: string
   ) => Promise<{ success: boolean; error?: string }>;
+  loginWithLinkedIn: () => Promise<{ success: boolean; error?: string }>;
+  handleLinkedInLoginCallback: (
+    code: string,
+    state: string
+  ) => Promise<{ success: boolean; error?: string; isNewUser?: boolean }>;
   logout: () => void;
   setUser: (user: User | null) => void;
   setTokens: (tokens: TokenData | null) => void;
@@ -247,6 +258,83 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const loginWithLinkedIn = async () => {
+    try {
+      setIsLoading(true);
+
+      const response = await getLinkedInLoginUrl();
+
+      if (response.success && "data" in response) {
+        // Redirect to LinkedIn login URL
+        window.location.href = response.data.data?.authUrl;
+        return { success: true };
+      } else {
+        const error =
+          "error" in response ? response.error : "Failed to get LinkedIn login URL";
+        return { success: false, error };
+      }
+    } catch (error) {
+      console.error("LinkedIn login error:", error);
+      return {
+        success: false,
+        error: "LinkedIn login failed. Please try again.",
+      };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleLinkedInLoginCallback = async (code: string, state: string) => {
+    try {
+      setIsLoading(true);
+
+      const response = await handleLinkedInCallback({ code, state });
+
+      if (response.success && "data" in response) {
+        console.log("LinkedIn login successful, saving tokens..."); // Debug log
+
+        const tokenData: TokenData = {
+          accessToken: response.data.tokens.accessToken,
+          refreshToken: response.data.tokens.refreshToken,
+          expiresIn: response.data.tokens.expiresIn,
+          issuedAt: Date.now(),
+        };
+
+        const userData: User = {
+          id: response.data.user.id,
+          email: response.data.user.email,
+          full_name: response.data.user.full_name,
+          date_of_birth: response.data.user.date_of_birth,
+          location: response.data.user.location,
+          occupation: response.data.user.occupation,
+        };
+
+        // Save tokens and user data
+        saveTokens(tokenData);
+        saveUser(userData);
+
+        console.log("LinkedIn tokens and user saved to localStorage"); // Debug log
+
+        return { 
+          success: true, 
+          isNewUser: response.data.isNewUser 
+        };
+      } else {
+        const error =
+          "error" in response ? response.error : "LinkedIn login failed";
+        return { success: false, error };
+      }
+    } catch (error) {
+      console.error("LinkedIn callback error:", error);
+      return {
+        success: false,
+        error: "LinkedIn login failed. Please try again.",
+      };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const logout = () => {
     saveTokens(null);
     saveUser(null);
@@ -262,6 +350,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     isLoading,
     isAuthenticated,
     login,
+    loginWithLinkedIn,
+    handleLinkedInLoginCallback,
     logout,
     setUser: saveUser,
     setTokens: saveTokens,

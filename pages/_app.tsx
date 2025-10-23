@@ -5,6 +5,7 @@ import "@/styles/global.css";
 import "@/styles/slider.css";
 
 import { Providers } from "@/components/providers";
+import { ProgressBar } from "@/components";
 
 const notoSerifDisplay = Noto_Serif_Display({
   variable: "--font-noto-serif-display",
@@ -26,6 +27,7 @@ export default function App({ Component, pageProps }: AppProps) {
       </Head>
       <div className={notoSerifDisplay.variable}>
         <Providers>
+          <ProgressBar />
           <Component {...pageProps} />
         </Providers>
       </div>

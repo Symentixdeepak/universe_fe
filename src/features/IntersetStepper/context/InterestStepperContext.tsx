@@ -5,7 +5,11 @@ import React, {
   useEffect,
   ReactNode,
 } from "react";
-import { useSubmitQuestionnaire, useQuestionnaireStorage, QuestionnaireData } from "../hooks/useQuestionnaire";
+import {
+  useSubmitQuestionnaire,
+  useQuestionnaireStorage,
+  QuestionnaireData,
+} from "../hooks/useQuestionnaire";
 import { toastService } from "@/lib/toast";
 
 // Define the interest questions data structure
@@ -162,7 +166,11 @@ export const InterestStepperProvider: React.FC<InterestStepperProviderProps> = (
 }) => {
   const [data, setData] = useState<InterestStepperData>(initialData);
   const [isInitialized, setIsInitialized] = useState(false);
-  const { saveToSession, getFromSession, clearSession } = useQuestionnaireStorage();
+  const {
+    saveToSession,
+    getFromSession,
+    clearSession,
+  } = useQuestionnaireStorage();
   const submitQuestionnaireMutation = useSubmitQuestionnaire();
 
   // Load data from sessionStorage on mount
@@ -187,95 +195,155 @@ export const InterestStepperProvider: React.FC<InterestStepperProviderProps> = (
   }, [data, isInitialized]);
 
   // Helper function to convert stepper answers to questionnaire format
-  const convertStepperToQuestionnaire = (answers: Record<number, any>): Partial<QuestionnaireData> => {
+  const convertStepperToQuestionnaire = (
+    answers: Record<number, any>
+  ): Partial<QuestionnaireData> => {
     const questionnaire: Partial<QuestionnaireData> = {};
 
     // Step 1: meaningPurposeImportance
-    if (answers[1] !== undefined) questionnaire.meaningPurposeImportance = answers[1];
-    
-    // Step 2: connectionBuildingInterest  
-    if (answers[2] !== undefined) questionnaire.connectionBuildingInterest = answers[2];
-    
+    if (answers[1] !== undefined)
+      questionnaire.meaningPurposeImportance = answers[1];
+
+    // Step 2: connectionBuildingInterest
+    if (answers[2] !== undefined)
+      questionnaire.connectionBuildingInterest = answers[2];
+
     // Step 3: Multiple fields (businessCareerImportance, personalDevelopmentImportance, etc.)
-    if (answers[3] && typeof answers[3] === 'object') {
+    if (answers[3] && typeof answers[3] === "object") {
       const step3Data = answers[3] as Record<string, number>;
-      if (step3Data.businessCareerImportance !== undefined) questionnaire.businessCareerImportance = step3Data.businessCareerImportance;
-      if (step3Data.personalDevelopmentImportance !== undefined) questionnaire.personalDevelopmentImportance = step3Data.personalDevelopmentImportance;
-      if (step3Data.familyRelationshipsImportance !== undefined) questionnaire.familyRelationshipsImportance = step3Data.familyRelationshipsImportance;
-      if (step3Data.spiritualityGrowthImportance !== undefined) questionnaire.spiritualityGrowthImportance = step3Data.spiritualityGrowthImportance;
-      if (step3Data.healthWellbeingImportance !== undefined) questionnaire.healthWellbeingImportance = step3Data.healthWellbeingImportance;
-      if (step3Data.adventureLifestyleImportance !== undefined) questionnaire.adventureLifestyleImportance = step3Data.adventureLifestyleImportance;
+      if (step3Data.businessCareerImportance !== undefined)
+        questionnaire.businessCareerImportance =
+          step3Data.businessCareerImportance;
+      if (step3Data.personalDevelopmentImportance !== undefined)
+        questionnaire.personalDevelopmentImportance =
+          step3Data.personalDevelopmentImportance;
+      if (step3Data.familyRelationshipsImportance !== undefined)
+        questionnaire.familyRelationshipsImportance =
+          step3Data.familyRelationshipsImportance;
+      if (step3Data.spiritualityGrowthImportance !== undefined)
+        questionnaire.spiritualityGrowthImportance =
+          step3Data.spiritualityGrowthImportance;
+      if (step3Data.healthWellbeingImportance !== undefined)
+        questionnaire.healthWellbeingImportance =
+          step3Data.healthWellbeingImportance;
+      if (step3Data.adventureLifestyleImportance !== undefined)
+        questionnaire.adventureLifestyleImportance =
+          step3Data.adventureLifestyleImportance;
     }
-    
+
     // Step 4: freedomIndependenceImportance
-    if (answers[4] !== undefined) questionnaire.freedomIndependenceImportance = answers[4];
-    
+    if (answers[4] !== undefined)
+      questionnaire.freedomIndependenceImportance = answers[4];
+
     // Step 5: securityStabilityImportance
-    if (answers[5] !== undefined) questionnaire.securityStabilityImportance = answers[5];
-    
+    if (answers[5] !== undefined)
+      questionnaire.securityStabilityImportance = answers[5];
+
     // Step 6: Multiple fields (growthLearningImportance, contributionServiceImportance, etc.)
-    if (answers[6] && typeof answers[6] === 'object') {
+    if (answers[6] && typeof answers[6] === "object") {
       const step6Data = answers[6] as Record<string, number>;
-      if (step6Data.growthLearningImportance !== undefined) questionnaire.growthLearningImportance = step6Data.growthLearningImportance;
-      if (step6Data.contributionServiceImportance !== undefined) questionnaire.contributionServiceImportance = step6Data.contributionServiceImportance;
-      if (step6Data.creativityExpressionImportance !== undefined) questionnaire.creativityExpressionImportance = step6Data.creativityExpressionImportance;
-      if (step6Data.connectionBelongingImportance !== undefined) questionnaire.connectionBelongingImportance = step6Data.connectionBelongingImportance;
-      if (step6Data.legacyImpactImportance !== undefined) questionnaire.legacyImpactImportance = step6Data.legacyImpactImportance;
+      if (step6Data.growthLearningImportance !== undefined)
+        questionnaire.growthLearningImportance =
+          step6Data.growthLearningImportance;
+      if (step6Data.contributionServiceImportance !== undefined)
+        questionnaire.contributionServiceImportance =
+          step6Data.contributionServiceImportance;
+      if (step6Data.creativityExpressionImportance !== undefined)
+        questionnaire.creativityExpressionImportance =
+          step6Data.creativityExpressionImportance;
+      if (step6Data.connectionBelongingImportance !== undefined)
+        questionnaire.connectionBelongingImportance =
+          step6Data.connectionBelongingImportance;
+      if (step6Data.legacyImpactImportance !== undefined)
+        questionnaire.legacyImpactImportance = step6Data.legacyImpactImportance;
     }
-    
+
     // Step 7: collaborationRole
-    if (answers[7] !== undefined) questionnaire.collaborationRole = answers[7] as string;
-    
+    if (answers[7] !== undefined)
+      questionnaire.collaborationRole = answers[7] as string;
+
     // Step 8: tangibleResultsImportance
-    if (answers[8] !== undefined) questionnaire.tangibleResultsImportance = answers[8];
-    
+    if (answers[8] !== undefined)
+      questionnaire.tangibleResultsImportance = answers[8];
+
     // Step 9: routineNoveltyPreference
-    if (answers[9] !== undefined) questionnaire.routineNoveltyPreference = answers[9];
-    
+    if (answers[9] !== undefined)
+      questionnaire.routineNoveltyPreference = answers[9];
+
     // Step 10: socialPreference
     if (answers[10] !== undefined) questionnaire.socialPreference = answers[10];
-    
+
     // Step 11: interests
-    if (answers[11] !== undefined) questionnaire.interests = answers[11] as string[];
+    if (answers[11] !== undefined)
+      questionnaire.interests = answers[11] as string[];
 
     return questionnaire;
   };
 
   // Helper function to convert questionnaire data back to stepper format
-  const convertQuestionnaireToStepper = (questionnaire: Partial<QuestionnaireData>): InterestStepperData => {
+  const convertQuestionnaireToStepper = (
+    questionnaire: Partial<QuestionnaireData>
+  ): InterestStepperData => {
     const answers: Record<number, any> = {};
 
     // Convert back to stepper format
-    if (questionnaire.meaningPurposeImportance !== undefined) answers[1] = questionnaire.meaningPurposeImportance;
-    if (questionnaire.connectionBuildingInterest !== undefined) answers[2] = questionnaire.connectionBuildingInterest;
-    
+    if (questionnaire.meaningPurposeImportance !== undefined)
+      answers[1] = questionnaire.meaningPurposeImportance;
+    if (questionnaire.connectionBuildingInterest !== undefined)
+      answers[2] = questionnaire.connectionBuildingInterest;
+
     // Step 3 object
     const step3: Record<string, number> = {};
-    if (questionnaire.businessCareerImportance !== undefined) step3.businessCareerImportance = questionnaire.businessCareerImportance;
-    if (questionnaire.personalDevelopmentImportance !== undefined) step3.personalDevelopmentImportance = questionnaire.personalDevelopmentImportance;
-    if (questionnaire.familyRelationshipsImportance !== undefined) step3.familyRelationshipsImportance = questionnaire.familyRelationshipsImportance;
-    if (questionnaire.spiritualityGrowthImportance !== undefined) step3.spiritualityGrowthImportance = questionnaire.spiritualityGrowthImportance;
-    if (questionnaire.healthWellbeingImportance !== undefined) step3.healthWellbeingImportance = questionnaire.healthWellbeingImportance;
-    if (questionnaire.adventureLifestyleImportance !== undefined) step3.adventureLifestyleImportance = questionnaire.adventureLifestyleImportance;
+    if (questionnaire.businessCareerImportance !== undefined)
+      step3.businessCareerImportance = questionnaire.businessCareerImportance;
+    if (questionnaire.personalDevelopmentImportance !== undefined)
+      step3.personalDevelopmentImportance =
+        questionnaire.personalDevelopmentImportance;
+    if (questionnaire.familyRelationshipsImportance !== undefined)
+      step3.familyRelationshipsImportance =
+        questionnaire.familyRelationshipsImportance;
+    if (questionnaire.spiritualityGrowthImportance !== undefined)
+      step3.spiritualityGrowthImportance =
+        questionnaire.spiritualityGrowthImportance;
+    if (questionnaire.healthWellbeingImportance !== undefined)
+      step3.healthWellbeingImportance = questionnaire.healthWellbeingImportance;
+    if (questionnaire.adventureLifestyleImportance !== undefined)
+      step3.adventureLifestyleImportance =
+        questionnaire.adventureLifestyleImportance;
     if (Object.keys(step3).length > 0) answers[3] = step3;
-    
-    if (questionnaire.freedomIndependenceImportance !== undefined) answers[4] = questionnaire.freedomIndependenceImportance;
-    if (questionnaire.securityStabilityImportance !== undefined) answers[5] = questionnaire.securityStabilityImportance;
-    
+
+    if (questionnaire.freedomIndependenceImportance !== undefined)
+      answers[4] = questionnaire.freedomIndependenceImportance;
+    if (questionnaire.securityStabilityImportance !== undefined)
+      answers[5] = questionnaire.securityStabilityImportance;
+
     // Step 6 object
     const step6: Record<string, number> = {};
-    if (questionnaire.growthLearningImportance !== undefined) step6.growthLearningImportance = questionnaire.growthLearningImportance;
-    if (questionnaire.contributionServiceImportance !== undefined) step6.contributionServiceImportance = questionnaire.contributionServiceImportance;
-    if (questionnaire.creativityExpressionImportance !== undefined) step6.creativityExpressionImportance = questionnaire.creativityExpressionImportance;
-    if (questionnaire.connectionBelongingImportance !== undefined) step6.connectionBelongingImportance = questionnaire.connectionBelongingImportance;
-    if (questionnaire.legacyImpactImportance !== undefined) step6.legacyImpactImportance = questionnaire.legacyImpactImportance;
+    if (questionnaire.growthLearningImportance !== undefined)
+      step6.growthLearningImportance = questionnaire.growthLearningImportance;
+    if (questionnaire.contributionServiceImportance !== undefined)
+      step6.contributionServiceImportance =
+        questionnaire.contributionServiceImportance;
+    if (questionnaire.creativityExpressionImportance !== undefined)
+      step6.creativityExpressionImportance =
+        questionnaire.creativityExpressionImportance;
+    if (questionnaire.connectionBelongingImportance !== undefined)
+      step6.connectionBelongingImportance =
+        questionnaire.connectionBelongingImportance;
+    if (questionnaire.legacyImpactImportance !== undefined)
+      step6.legacyImpactImportance = questionnaire.legacyImpactImportance;
     if (Object.keys(step6).length > 0) answers[6] = step6;
-    
-    if (questionnaire.collaborationRole !== undefined) answers[7] = questionnaire.collaborationRole;
-    if (questionnaire.tangibleResultsImportance !== undefined) answers[8] = questionnaire.tangibleResultsImportance;
-    if (questionnaire.routineNoveltyPreference !== undefined) answers[9] = questionnaire.routineNoveltyPreference;
-    if (questionnaire.socialPreference !== undefined) answers[10] = questionnaire.socialPreference;
-    if (questionnaire.interests !== undefined) answers[11] = questionnaire.interests;
+
+    if (questionnaire.collaborationRole !== undefined)
+      answers[7] = questionnaire.collaborationRole;
+    if (questionnaire.tangibleResultsImportance !== undefined)
+      answers[8] = questionnaire.tangibleResultsImportance;
+    if (questionnaire.routineNoveltyPreference !== undefined)
+      answers[9] = questionnaire.routineNoveltyPreference;
+    if (questionnaire.socialPreference !== undefined)
+      answers[10] = questionnaire.socialPreference;
+    if (questionnaire.interests !== undefined)
+      answers[11] = questionnaire.interests;
 
     // Determine current step based on completed answers
     let currentStep = 1;
@@ -295,56 +363,69 @@ export const InterestStepperProvider: React.FC<InterestStepperProviderProps> = (
   // Submit questionnaire function
   const submitQuestionnaire = () => {
     const questionnaireData = convertStepperToQuestionnaire(data.answers);
-    
+
     // Ensure all slider fields have default value of 1 if not set
     const fieldsWithDefaults = {
       meaningPurposeImportance: questionnaireData.meaningPurposeImportance ?? 1,
-      connectionBuildingInterest: questionnaireData.connectionBuildingInterest ?? 1,
+      connectionBuildingInterest:
+        questionnaireData.connectionBuildingInterest ?? 1,
       businessCareerImportance: questionnaireData.businessCareerImportance ?? 1,
-      personalDevelopmentImportance: questionnaireData.personalDevelopmentImportance ?? 1,
-      familyRelationshipsImportance: questionnaireData.familyRelationshipsImportance ?? 1,
-      spiritualityGrowthImportance: questionnaireData.spiritualityGrowthImportance ?? 1,
-      healthWellbeingImportance: questionnaireData.healthWellbeingImportance ?? 1,
-      adventureLifestyleImportance: questionnaireData.adventureLifestyleImportance ?? 1,
-      freedomIndependenceImportance: questionnaireData.freedomIndependenceImportance ?? 1,
-      securityStabilityImportance: questionnaireData.securityStabilityImportance ?? 1,
+      personalDevelopmentImportance:
+        questionnaireData.personalDevelopmentImportance ?? 1,
+      familyRelationshipsImportance:
+        questionnaireData.familyRelationshipsImportance ?? 1,
+      spiritualityGrowthImportance:
+        questionnaireData.spiritualityGrowthImportance ?? 1,
+      healthWellbeingImportance:
+        questionnaireData.healthWellbeingImportance ?? 1,
+      adventureLifestyleImportance:
+        questionnaireData.adventureLifestyleImportance ?? 1,
+      freedomIndependenceImportance:
+        questionnaireData.freedomIndependenceImportance ?? 1,
+      securityStabilityImportance:
+        questionnaireData.securityStabilityImportance ?? 1,
       growthLearningImportance: questionnaireData.growthLearningImportance ?? 1,
-      contributionServiceImportance: questionnaireData.contributionServiceImportance ?? 1,
-      creativityExpressionImportance: questionnaireData.creativityExpressionImportance ?? 1,
-      connectionBelongingImportance: questionnaireData.connectionBelongingImportance ?? 1,
+      contributionServiceImportance:
+        questionnaireData.contributionServiceImportance ?? 1,
+      creativityExpressionImportance:
+        questionnaireData.creativityExpressionImportance ?? 1,
+      connectionBelongingImportance:
+        questionnaireData.connectionBelongingImportance ?? 1,
       legacyImpactImportance: questionnaireData.legacyImpactImportance ?? 1,
-      tangibleResultsImportance: questionnaireData.tangibleResultsImportance ?? 1,
+      tangibleResultsImportance:
+        questionnaireData.tangibleResultsImportance ?? 1,
       routineNoveltyPreference: questionnaireData.routineNoveltyPreference ?? 1,
       socialPreference: questionnaireData.socialPreference ?? 1,
       // These fields are required and don't have defaults
       collaborationRole: questionnaireData.collaborationRole,
       interests: questionnaireData.interests,
     };
-    
+
     // Validate required non-slider fields
-    const requiredNonSliderFields = ['collaborationRole', 'interests'];
-    const missingFields = requiredNonSliderFields.filter(field => 
-      fieldsWithDefaults[field as keyof typeof fieldsWithDefaults] === undefined
+    const requiredNonSliderFields = ["collaborationRole", "interests"];
+    const missingFields = requiredNonSliderFields.filter(
+      (field) =>
+        fieldsWithDefaults[field as keyof typeof fieldsWithDefaults] ===
+        undefined
     );
-    
-    console.log('Missing fields:', missingFields); // Debug log
-    console.log('Questionnaire data being submitted:', fieldsWithDefaults); // Debug log
-    
+
+    console.log("Missing fields:", missingFields); // Debug log
+    console.log("Questionnaire data being submitted:", fieldsWithDefaults); // Debug log
+
     if (missingFields.length > 0) {
-      toastService.error('Please complete all steps before submitting.');
+      toastService.error("Please complete all steps before submitting.");
       return;
     }
 
-    submitQuestionnaireMutation.mutate(fieldsWithDefaults as QuestionnaireData, {
-      onSuccess: () => {
-        toastService.success('Questionnaire submitted successfully!');
-        clearSession();
-        resetData();
-      },
-      onError: (error: any) => {
-        toastService.error(`Failed to submit questionnaire: ${error.message}`);
-      },
-    });
+    submitQuestionnaireMutation.mutate(
+      fieldsWithDefaults as QuestionnaireData,
+      {
+        onSuccess: () => {
+          clearSession();
+          resetData();
+        },
+      }
+    );
   };
 
   const updateAnswer = (
@@ -441,7 +522,9 @@ export const InterestStepperProvider: React.FC<InterestStepperProviderProps> = (
           Object.keys(answer).length > 0
         );
       case 7: // Radio button step
-        return Boolean(answer && typeof answer === "string" && answer.length > 0);
+        return Boolean(
+          answer && typeof answer === "string" && answer.length > 0
+        );
       case 11: // Checkbox step
         return Boolean(answer && Array.isArray(answer) && answer.length > 0);
       default:

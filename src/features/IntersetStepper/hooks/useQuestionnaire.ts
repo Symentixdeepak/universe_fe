@@ -45,9 +45,8 @@ export const useSubmitQuestionnaire = () => {
         headerCred: {
           authorization: `Bearer ${tokens.accessToken}`,
         },
-        showSuccessMsg: false, // Disable appService success message to avoid double toast
-        showErrorMsg: true,
-        showFieldsError: true,
+        showSuccessMsg: true, // Disable appService success message to avoid double toast
+   
       });
     },
     onSuccess: (data) => {

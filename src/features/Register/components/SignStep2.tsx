@@ -14,8 +14,9 @@ import { Button, TextField, Link } from "@/components";
 import { useThemeColors } from "@/hooks";
 import { colorProfiles } from "@/styles/theme";
 import { useSignUpContext } from "../context/SignUpContext";
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined';
+import { useAuth } from "@/contexts/AuthContext";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
 
 interface SignUpStep2Props {
   onNext: () => void;
@@ -52,6 +53,7 @@ const SignUpStep2: React.FC<SignUpStep2Props> = ({ onNext, onBack }) => {
   const themeColors = useThemeColors();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const { formData, updateStep2 } = useSignUpContext();
+  const { loginWithLinkedIn, isLoading } = useAuth();
 
   const {
     control,
@@ -81,9 +83,14 @@ const SignUpStep2: React.FC<SignUpStep2Props> = ({ onNext, onBack }) => {
     onNext();
   };
 
-  const handleContinueWithLinkedIn = () => {
-    updateStep2({ signupMethod: "linkedin" });
-    onNext();
+  const handleContinueWithLinkedIn = async () => {
+    const result = await loginWithLinkedIn();
+
+    if (!result.success) {
+      // Error is already handled by the AuthContext (toast notification)
+      console.error("LinkedIn login failed:", result.error);
+    }
+    // If successful, user will be redirected to LinkedIn
   };
 
   return (
@@ -175,16 +182,20 @@ const SignUpStep2: React.FC<SignUpStep2Props> = ({ onNext, onBack }) => {
                       <Box
                         onClick={() => setShowPassword(!showPassword)}
                         sx={{
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
                           color: themeColors.text.secondary,
-                          '&:hover': {
+                          "&:hover": {
                             color: themeColors.text.primary,
-                          }
+                          },
                         }}
                       >
-                        {showPassword ? <LockOpenOutlinedIcon /> : <LockOutlinedIcon />}
+                        {showPassword ? (
+                          <LockOpenOutlinedIcon />
+                        ) : (
+                          <LockOutlinedIcon />
+                        )}
                       </Box>
                     </InputAdornment>
                   ),
@@ -210,18 +221,24 @@ const SignUpStep2: React.FC<SignUpStep2Props> = ({ onNext, onBack }) => {
                   endAdornment: (
                     <InputAdornment position="end">
                       <Box
-                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        onClick={() =>
+                          setShowConfirmPassword(!showConfirmPassword)
+                        }
                         sx={{
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
                           color: themeColors.text.secondary,
-                          '&:hover': {
+                          "&:hover": {
                             color: themeColors.text.primary,
-                          }
+                          },
                         }}
                       >
-                        {showConfirmPassword ? <LockOpenOutlinedIcon /> : <LockOutlinedIcon />}
+                        {showConfirmPassword ? (
+                          <LockOpenOutlinedIcon />
+                        ) : (
+                          <LockOutlinedIcon />
+                        )}
                       </Box>
                     </InputAdornment>
                   ),
@@ -258,6 +275,8 @@ const SignUpStep2: React.FC<SignUpStep2Props> = ({ onNext, onBack }) => {
           <Button
             fullWidth
             variant="outlined"
+            loading={isLoading}
+            disabled={isLoading}
             onClick={handleContinueWithLinkedIn}
             sx={{
               backgroundColor: "#0E76A8",
