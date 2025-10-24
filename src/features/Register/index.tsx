@@ -3,13 +3,13 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { Box } from "@mui/material";
-import toast from 'react-hot-toast';
 import Header from "@/features/Register/components/Header";
 import SignUpStep2 from "@/features/Register/components/SignStep2";
 import SignUpStep3 from "@/features/Register/components/SignUpStep3";
 import { SignUpProvider, useSignUpContext } from "@/features/Register/context/SignUpContext";
 import { signupUser } from "@/lib/authApi";
 import { useAuth } from "@/contexts/AuthContext";
+import { toastService } from "@/lib/toast";
 
 function RegisterPageContent() {
   const router = useRouter();
@@ -108,18 +108,18 @@ function RegisterPageContent() {
           // Clear form data after successful signup
           clearFormData();
 
-          toast.success('Registration successful! Welcome to Universe Club!');
+          toastService.success(result.message || 'Registration successful! Welcome to Universe Club!');
           
           // Redirect to interests page
           router.push("/interests");
         } else {
           const error = 'error' in result ? result.error : 'Registration failed';
-          toast.error(error);
+          toastService.error(error);
           console.error('Signup failed:', result);
         }
       } catch (error) {
         console.error('Signup error:', error);
-        toast.error('An unexpected error occurred. Please try again.');
+        toastService.error('An unexpected error occurred. Please try again.');
       } finally {
         setIsLoading(false);
       }
