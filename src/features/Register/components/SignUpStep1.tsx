@@ -66,6 +66,21 @@ const SignUpStep1: React.FC<SignUpStep1Props> = ({ onNext, onBack }) => {
     }
   };
 
+  // Handle Enter key: either continue with email (to show login form)
+  // or attempt login when already in login mode.
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (showLoginForm) {
+        void handleLogin();
+      } else {
+        handleContinueWithEmail();
+      }
+    }
+  };
+
   const handleContinueWithLinkedIn = async () => {
     const result = await loginWithLinkedIn();
     
@@ -149,6 +164,7 @@ const SignUpStep1: React.FC<SignUpStep1Props> = ({ onNext, onBack }) => {
               placeholder="Enter your email"
               value={email}
               onChange={handleEmailChange}
+              onKeyDown={handleKeyDown}
               variant="outlined"
             />
 
@@ -160,6 +176,7 @@ const SignUpStep1: React.FC<SignUpStep1Props> = ({ onNext, onBack }) => {
                 placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                onKeyDown={handleKeyDown}
                 variant="outlined"
                 InputProps={{
                   endAdornment: (
