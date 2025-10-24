@@ -108,7 +108,7 @@ const Header: React.FC<HeaderProps> = ({
               aria-label="Open menu"
               sx={{ ml: 2 }}
             >
-              <MenuIcon fontSize="large" />
+              <MenuIcon style={{height:24,width:24}} fontSize="large" />
             </IconButton>
           )}
         </ClientOnly>
