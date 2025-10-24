@@ -104,6 +104,8 @@ const SignUpStep2: React.FC<SignUpStep2Props> = ({ onNext, onBack }) => {
           minHeight: "100vh",
           textAlign: "center",
           px: 2,
+          mt: { xs: -2, md: 0 }
+
         }}
       >
         {/* Main Title */}

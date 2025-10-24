@@ -80,11 +80,11 @@ const SignUpStep3: React.FC<SignUpStep3Props> = ({ onNext, onBack, isLoading = f
 
   const handleNextClick = async () => {
     console.log('Next button clicked'); // Debug log
-    
+
     // Trigger validation first
     const isValid = await trigger();
     console.log('Validation result:', isValid); // Debug log
-    
+
     if (!isValid) {
       console.log('Form validation failed'); // Debug log
       return;
@@ -93,7 +93,7 @@ const SignUpStep3: React.FC<SignUpStep3Props> = ({ onNext, onBack, isLoading = f
     // Get current form values directly
     const currentValues = getValues();
     console.log('Current form values:', currentValues); // Debug log
-    
+
     const formattedData = {
       fullName: currentValues.fullName?.trim() || '',
       dateOfBirth: currentValues.dateOfBirth ? currentValues.dateOfBirth.format('YYYY-MM-DD') : '',
@@ -102,10 +102,10 @@ const SignUpStep3: React.FC<SignUpStep3Props> = ({ onNext, onBack, isLoading = f
     };
 
     console.log('Formatted data for API:', formattedData); // Debug log
-    
+
     // Update context with form data (for UI state consistency)
     updateStep3(formattedData);
-    
+
     // Pass the formatted data directly to onNext to avoid timing issues
     onNext(formattedData);
   };
@@ -121,6 +121,8 @@ const SignUpStep3: React.FC<SignUpStep3Props> = ({ onNext, onBack, isLoading = f
           minHeight: "100vh",
           textAlign: "center",
           px: 2,
+          mt: { xs: -2, md: 0 }
+
         }}
       >
         {/* Main Title */}
@@ -143,7 +145,7 @@ const SignUpStep3: React.FC<SignUpStep3Props> = ({ onNext, onBack, isLoading = f
             color: themeColors.text.primary,
             mb: 4,
             maxWidth: 400,
-            lineHeight:1.2
+            lineHeight: 1.2
           }}
         >
           Nice to meet you! <br /> Stay a while.
@@ -236,7 +238,7 @@ const SignUpStep3: React.FC<SignUpStep3Props> = ({ onNext, onBack, isLoading = f
             loading={isLoading}
             loadingText="Creating Account..."
           >
-           Next
+            Next
           </Button>
 
           {/* Privacy Policy */}

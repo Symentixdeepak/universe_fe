@@ -90,6 +90,7 @@ const SignUpStep1: React.FC<SignUpStep1Props> = ({ onNext, onBack }) => {
           px: 2,
           ml: { xs: 0, md: 25 },
           gap: { xs: 0, md: 12 },
+          mt: { xs: -2, md: 0 }
         }}
       >
         {/* Left Side - Sign Up Content */}
