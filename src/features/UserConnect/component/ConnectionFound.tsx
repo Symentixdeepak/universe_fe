@@ -76,7 +76,7 @@ export const ConnectionFound: React.FC<ConnectionFoundProps> = ({
           ))}
         </Box>
 
-        {/* First Profile */}
+        {/* First Profile Lig*/}
         <Box sx={{ textAlign: 'center' }}>
           <Box
             sx={{
