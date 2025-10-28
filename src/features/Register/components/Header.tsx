@@ -50,10 +50,19 @@ const Header: React.FC<HeaderProps> = ({
     <Box
       sx={{
         width: "100%",
-        py: { xs: 1, sm: 1.25 },
-        px: { xs: 2, sm: 5 },
-        position: "relative",
+        height: { xs: "56px", sm: "auto" },
+        px:{xs:4,md:5},
+        py: { xs: 0, sm: 1.25 },
+        position:{xs:"fixed", md:"relative"},
+        top: 0,
+        left: 0,
+        right: 0,
         zIndex: 1300,
+        backgroundColor: { xs: themeColors.white.dark, md: themeColors.background.primary },
+        display: "flex",
+        alignItems: "center",
+
+        // boxShadow: 1
       }}
     >
       <Box
@@ -61,6 +70,7 @@ const Header: React.FC<HeaderProps> = ({
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
+          width: "100%",
         }}
       >
         {/* Logo */}
@@ -68,8 +78,8 @@ const Header: React.FC<HeaderProps> = ({
           <Image
             src="/assets/images/logos/universal_logo.png"
             alt="UniVerse Club Logo"
-            width={40}
-            height={40}
+            width={isMobile ? 25 : 40}
+            height={isMobile ? 25 : 40}
             style={{
               borderRadius: "50%",
               filter: themeColors?.isDark ? "invert(1)" : "inherit",
@@ -106,9 +116,14 @@ const Header: React.FC<HeaderProps> = ({
             <IconButton
               onClick={() => setMenuOpen(true)}
               aria-label="Open menu"
-              sx={{ ml: 2 }}
+              sx={{
+                p: 0,
+                "&:hover": {
+                  backgroundColor: "transparent"
+                }
+              }}
             >
-              <MenuIcon style={{height:24,width:24}} fontSize="large" />
+              <MenuIcon sx={{ fontSize: 28 }} />
             </IconButton>
           )}
         </ClientOnly>
@@ -136,7 +151,7 @@ const Header: React.FC<HeaderProps> = ({
                 onClick={() => setMenuOpen(false)}
                 aria-label="Close menu"
               >
-                <CloseIcon fontSize="large" />
+                <CloseIcon sx={{ fontSize: 28 }} />
               </IconButton>
             </Box>
 

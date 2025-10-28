@@ -11,6 +11,7 @@ import { Button, ArrowBack } from "@/components";
 import CustomSlider from "@/components/Slider";
 import { useThemeColors } from "@/hooks";
 import { useInterestStepperContext } from "./context/InterestStepperContext";
+import { getImportanceLabel } from '@/utils/sliderLabel';
 
 interface Step3Props {
   onNext: () => void;
@@ -58,7 +59,7 @@ const Step3: React.FC<Step3Props> = ({ onNext, onBack }) => {
 
   const handleSliderChange = (categoryId: string) => (value: number) => {
     setCategoryValues(prev => ({
-      ...prev, 
+      ...prev,
       [categoryId]: value
     }));
   };
@@ -143,7 +144,7 @@ const Step3: React.FC<Step3Props> = ({ onNext, onBack }) => {
           </Typography>
 
           {/* Categories with Sliders */}
-          <Box sx={{ width: "100%", maxWidth: 600, mx: "auto" ,mt:5}}>
+          <Box sx={{ width: "100%", maxWidth: 600, mx: "auto", mt: 5 }}>
             {categories.map((category, index) => (
               <Box key={category.id} sx={{ mb: 4 }}>
                 {/* Category Name */}
@@ -159,13 +160,13 @@ const Step3: React.FC<Step3Props> = ({ onNext, onBack }) => {
                 </Typography>
 
                 {/* Slider */}
-                <Box sx={{ width: "100%",maxWidth:351, mt:1,mx:"auto"}}>
+                <Box sx={{ width: "100%", maxWidth: 351, mt: 1, mx: "auto" }}>
                   <CustomSlider
                     steps={5}
                     value={categoryValues[category.id] || 1}
                     onChange={handleSliderChange(category.id)}
-                    labelLeft="Not very Important"
-                    labelRight="Very Important"
+                    labelLeft={categoryValues[category.id] === 4 || categoryValues[category.id] === 5 ? "Not very important" : getImportanceLabel(categoryValues[category.id])}
+                    labelRight={categoryValues[category.id] === 4 || categoryValues[category.id] === 5 ? getImportanceLabel(categoryValues[category.id]) : "Very important"}
                     disabled={isSelectionLimitReached && (categoryValues[category.id] || 1) <= 1}
                   />
                 </Box>
@@ -180,7 +181,7 @@ const Step3: React.FC<Step3Props> = ({ onNext, onBack }) => {
             display: "flex",
             gap: 2,
             width: "100%",
-            mt:-3,
+            mt: -3,
             maxWidth: 263,
             flexDirection: isMobile ? "column" : "row",
           }}

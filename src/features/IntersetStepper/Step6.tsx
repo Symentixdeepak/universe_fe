@@ -11,6 +11,7 @@ import { Button, ArrowBack } from "@/components";
 import CustomSlider from "@/components/Slider";
 import { useThemeColors } from "@/hooks";
 import { useInterestStepperContext } from "./context/InterestStepperContext";
+import { getImportanceLabel } from "@/utils/sliderLabel";
 
 interface Step6Props {
   onNext: () => void;
@@ -165,8 +166,8 @@ const Step6: React.FC<Step6Props> = ({ onNext, onBack }) => {
                     steps={5}
                     value={categoryValues[category.key] || 1}
                     onChange={handleSliderChange(category.key)}
-                    labelLeft="Not very Important"
-                    labelRight="Very Important"
+                    labelLeft={categoryValues[category.key] === 4 || categoryValues[category.key] === 5 ? "Not very important" : getImportanceLabel(categoryValues[category.key])}
+                    labelRight={categoryValues[category.key] === 4 || categoryValues[category.key] === 5 ? getImportanceLabel(categoryValues[category.key]) : "Very important"}
                     disabled={isSelectionLimitReached && (categoryValues[category.key] || 1) <= 1}
                   />
                 </Box>

@@ -101,11 +101,10 @@ const SignUpStep2: React.FC<SignUpStep2Props> = ({ onNext, onBack }) => {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          minHeight: "100vh",
+          minHeight: { xs: "calc(100vh - 56px)", md: "100vh" },
           textAlign: "center",
           px: 2,
-          mt: { xs: -2, md: 0 }
-
+          mt: { xs: "56px", md: 0 }
         }}
       >
         {/* Main Title */}

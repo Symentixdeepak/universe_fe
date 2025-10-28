@@ -14,6 +14,7 @@ import Step8 from './Step8';
 import Step9 from './Step9';
 import Step10 from './Step10';
 import Step11 from './Step11';
+import Header from '../Register/components/Header';
 
 // Internal component that uses the context
 const InterestStepperContent: React.FC = () => {
@@ -75,8 +76,16 @@ const InterestStepperContent: React.FC = () => {
         position: "relative",
         overflow: "hidden",
       }}
-    >
-      {renderCurrentStep()}
+    >     
+      <Header />
+      <Box
+        sx={{
+          minHeight: { xs: "calc(100vh - 56px)", md: "100vh" },
+          mt: { xs: "56px", md: 0 },
+        }}
+      >
+        {renderCurrentStep()}
+      </Box>
     </Box>
   );
 };
