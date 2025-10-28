@@ -21,7 +21,7 @@ interface SignUpStep1Props {
   onBack: () => void;
 }
 
-const SignUpStep1: React.FC<SignUpStep1Props> = ({ onNext, onBack }) => {
+const  SignUpStep1: React.FC<SignUpStep1Props> = ({ onNext, onBack }) => {
   const theme = useTheme();
   const router = useRouter()
   const themeColors = useThemeColors();
@@ -101,11 +101,11 @@ const SignUpStep1: React.FC<SignUpStep1Props> = ({ onNext, onBack }) => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          minHeight: "100vh",
+          minHeight: { xs: "calc(100vh - 56px)", md: "100vh" },
           px: 2,
           ml: { xs: 0, md: 25 },
           gap: { xs: 0, md: 12 },
-          mt: { xs: -2, md: 0 }
+          mt: { xs: "56px", md: 0 }
         }}
       >
         {/* Left Side - Sign Up Content */}
@@ -266,7 +266,7 @@ const SignUpStep1: React.FC<SignUpStep1Props> = ({ onNext, onBack }) => {
                 textAlign: "center",
               }}
             >
-              {showLoginForm ? (
+            
                 <>
                   Don't have an account?{" "}
                   <Link
@@ -277,22 +277,7 @@ const SignUpStep1: React.FC<SignUpStep1Props> = ({ onNext, onBack }) => {
                     Sign up
                   </Link>
                 </>
-              ) : (
-                <>
-                  Already have an account?{" "}
-                  <Link
-                    href="#"
-                    variant="captionLight"
-                    theme="auto"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setShowLoginForm(true);
-                    }}
-                  >
-                    Login
-                  </Link>
-                </>
-              )}
+        
             </Typography>
 
             {/* Sign Up Button - Only shown when not in login mode */}
@@ -339,7 +324,7 @@ const SignUpStep1: React.FC<SignUpStep1Props> = ({ onNext, onBack }) => {
         >
           <Box
             component="img"
-            src="/charactor.jpg"
+            src="/charactor.png"
             alt="Character"
             sx={{
               width: 500,

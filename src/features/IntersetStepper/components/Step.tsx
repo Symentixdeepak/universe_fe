@@ -16,6 +16,8 @@ import {
   useInterestStepperContext,
   INTEREST_QUESTIONS,
 } from "../context/InterestStepperContext";
+import Header from "@/features/Register/components/Header";
+import { getImportanceLabel } from "@/utils/sliderLabel";
 
 interface StepProps {
   stepNumber: number;
@@ -37,7 +39,7 @@ const Step: React.FC<StepProps> = ({ stepNumber, onNext, onBack }) => {
   } = useInterestStepperContext();
 
   const question = INTEREST_QUESTIONS[stepNumber - 1];
-  
+
   // Safety check - if question doesn't exist, return null
   if (!question) {
     return null;
@@ -56,9 +58,11 @@ const Step: React.FC<StepProps> = ({ stepNumber, onNext, onBack }) => {
     const timer = setTimeout(() => {
       setIsVisible(true);
     }, 50);
-    
+
     return () => clearTimeout(timer);
   }, [stepNumber]);
+
+
 
   const handleSliderChange = (value: number) => {
     setCurrentValue(value);
@@ -75,6 +79,7 @@ const Step: React.FC<StepProps> = ({ stepNumber, onNext, onBack }) => {
 
   return (
     <Container maxWidth="md">
+
       <Fade in={isVisible} timeout={600}>
         <Box
           sx={{
@@ -90,93 +95,93 @@ const Step: React.FC<StepProps> = ({ stepNumber, onNext, onBack }) => {
           }}
         >
 
-    
- 
-    
-        {/* Progress Section */}
-        {stepNumber > 1 && (
-       
-        <Box sx={{ width: "100%", maxWidth: 847, mb: 4 }}>
-          {/* Back Button */}
+
+
+
+          {/* Progress Section */}
           {stepNumber > 1 && (
-            <Box mb={2}>
-              <ArrowBack onClick={onBack} iconSize={32} buttonSize="large" />
+
+            <Box sx={{ width: "100%", maxWidth: 847, mb: 4 }}>
+              {/* Back Button */}
+              {stepNumber > 1 && (
+                <Box mb={2}>
+                  <ArrowBack onClick={onBack} iconSize={32} buttonSize="large" />
+                </Box>
+              )}
+
+              {/* Getting to know you text */}
+              <Typography
+                variant="bodyRegular"
+                sx={{
+                  color: themeColors.text.primary,
+                  mb: 3,
+                }}
+              >
+                Getting to know you.
+              </Typography>
+
+              {/* Progress Bar */}
+              <Box sx={{ width: "100%", mb: 1, mt: { xs: 3.5, md: 2 } }}>
+                <LinearProgress
+                  variant="determinate"
+                  value={completionPercentage}
+                  sx={{
+                    height: 13,
+                    borderRadius: 4,
+                    backgroundColor: themeColors.background.secondary,
+                    transition: 'all 0.6s ease-out',
+                    "& .MuiLinearProgress-bar": {
+                      backgroundColor: themeColors.pantone.light,
+                      borderRadius: 4,
+                      transition: 'transform 0.6s ease-out',
+                    },
+                  }}
+                />
+              </Box>
             </Box>
           )}
 
-          {/* Getting to know you text */}
-          <Typography
-            variant="bodyRegular"
-            sx={{
-              color: themeColors.text.primary,
-              mb: 3,
-            }}
-          >
-            Getting to know you.
-          </Typography>
-
-          {/* Progress Bar */}
-          <Box sx={{ width: "100%", mb: 1, mt: 2 }}>
-            <LinearProgress
-              variant="determinate"
-              value={completionPercentage}
+          {/* Question Section */}
+          <Box sx={{ width: { xs: "auto", md: 945 }, mb: 6, mt: { xs: 0, md: -3 } }}>
+            {/* Main Question */}
+            <Typography
+              variant={isMobile ? "h3Bold" : "h2Bold"}
               sx={{
-                height: 13,
-                borderRadius: 4,
-                backgroundColor: themeColors.background.secondary,
-                transition: 'all 0.6s ease-out',
-                "& .MuiLinearProgress-bar": {
-                  backgroundColor: themeColors.pantone.light,
-                  borderRadius: 4,
-                  transition: 'transform 0.6s ease-out',
-                },
+                color: themeColors.text.primary,
+                mb: 4,
+                lineHeight: 1.2,
               }}
-            />
-          </Box>
-        </Box>
-        )}
+            >
+              {question.question}
+            </Typography>
 
-        {/* Question Section */}
-        <Box sx={{  width: {xs:"auto",md:945}, mb: 6, mt: -3 }}>
-          {/* Main Question */}
-          <Typography
-            variant={isMobile ? "h3Bold" : "h2Bold"}
+            {/* Slider */}
+            <Box sx={{ width: "100%", maxWidth: 351, mx: "auto", mb: 1, mt: 5 }}>
+              <CustomSlider
+                steps={5}
+                value={currentValue}
+                onChange={handleSliderChange}
+                labelLeft={currentValue === 4 || currentValue === 5 ? question.labelLeft : getImportanceLabel(currentValue,stepNumber)}
+                labelRight={currentValue === 4 || currentValue === 5 ? getImportanceLabel(currentValue,stepNumber) : question.labelRight}
+              />
+            </Box>
+          </Box>
+
+          {/* Navigation Buttons */}
+          <Box
             sx={{
-              color: themeColors.text.primary,
-              mb: 4,
-              lineHeight: 1.2,
+              display: "flex",
+              gap: 2,
+              width: "100%",
+              maxWidth: { xs: 133, md: 263 },
+              flexDirection: isMobile ? "column" : "row",
             }}
           >
-            {question.question}
-          </Typography>
+            <Button loading={loading} fullWidth variant="contained" onClick={handleContinue} >
+              {"Continue"}
+            </Button>
 
-          {/* Slider */}
-          <Box sx={{ width: "100%", maxWidth: 351, mx: "auto", mb: 1, mt: 5 }}>
-            <CustomSlider
-              steps={5}
-              value={currentValue}
-              onChange={handleSliderChange}
-              labelLeft={question.labelLeft}
-              labelRight={question.labelRight}
-            />
           </Box>
-        </Box>
-
-        {/* Navigation Buttons */}
-        <Box
-          sx={{
-            display: "flex",
-            gap: 2,
-            width: "100%",
-            maxWidth: 263,
-            flexDirection: isMobile ? "column" : "row",
-          }}
-        >
-          <Button loading={loading} fullWidth variant="contained" onClick={handleContinue} >
-            {"Continue"}
-          </Button>
-    
-        </Box>
         </Box>
       </Fade>
     </Container>
