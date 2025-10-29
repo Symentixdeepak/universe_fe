@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 // Define protected routes that require authentication
-const protectedRoutes = ['/dashboard', '/profile', '/interests'];
+const protectedRoutes = ['/user/dashboard', '/profile', '/interests'];
 
 // Define auth routes that authenticated users shouldn't access
 const authRoutes = ['/auth/login', '/auth/register'];
@@ -33,7 +33,7 @@ export function middleware(request: NextRequest) {
 
   // Redirect authenticated users away from auth routes
   if (isAuthRoute && isAuthenticated) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+    return NextResponse.redirect(new URL('/user/dashboard', request.url));
   }
 
   return NextResponse.next();

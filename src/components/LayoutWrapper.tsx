@@ -10,8 +10,8 @@ interface LayoutWrapperProps {
   showNavbar?: boolean;
 }
 
-const SIDEBAR_WIDTH_EXPANDED = 240;
-const SIDEBAR_WIDTH_COLLAPSED = 72;
+const SIDEBAR_WIDTH_EXPANDED = 185;
+const SIDEBAR_WIDTH_COLLAPSED = 60;
 const NAVBAR_HEIGHT = 62;
 
 const LayoutContent: React.FC<LayoutWrapperProps> = ({
@@ -19,7 +19,7 @@ const LayoutContent: React.FC<LayoutWrapperProps> = ({
   showSidebar = true,
   showNavbar = true,
 }) => {
-  const { isSidebarExpanded, toggleSidebar } = useSidebar(); // 👈 use context
+  const { isSidebarExpanded, toggleSidebar } = useSidebar();
 
   return (
     <Box sx={{ display: "flex", minHeight: "100vh", overflow: "hidden" }}>
@@ -30,8 +30,8 @@ const LayoutContent: React.FC<LayoutWrapperProps> = ({
             flexShrink: 0,
             transition: (theme) =>
               theme.transitions.create("width", {
-                easing: theme.transitions.easing.sharp,
-                duration: theme.transitions.duration.enteringScreen,
+                easing: theme.transitions.easing.easeInOut,
+                duration: theme.transitions.duration.standard, // Smoother timing
               }),
           }}
         >
@@ -47,8 +47,8 @@ const LayoutContent: React.FC<LayoutWrapperProps> = ({
           }px)`,
           transition: (theme) =>
             theme.transitions.create(["width", "margin"], {
-              easing: theme.transitions.easing.sharp,
-              duration: theme.transitions.duration.enteringScreen,
+              easing: theme.transitions.easing.easeInOut,
+              duration: theme.transitions.duration.standard, // Smoother timing
             }),
         }}
       >
@@ -58,15 +58,14 @@ const LayoutContent: React.FC<LayoutWrapperProps> = ({
               height: NAVBAR_HEIGHT,
               position: "fixed",
               top: 0,
+              left: 0,
               right: 0,
-              width: `calc(100% - ${
-                showSidebar ? (isSidebarExpanded ? SIDEBAR_WIDTH_EXPANDED : SIDEBAR_WIDTH_COLLAPSED) : 0
-              }px)`,
               transition: (theme) =>
-                theme.transitions.create(["width", "margin"], {
-                  easing: theme.transitions.easing.sharp,
-                  duration: theme.transitions.duration.enteringScreen,
+                theme.transitions.create(["width", "left"], {
+                  easing: theme.transitions.easing.easeInOut,
+                  duration: theme.transitions.duration.standard, // Smoother timing
                 }),
+              zIndex: (theme) => theme.zIndex.appBar,
             }}
           >
             <Navbar isSidebarExpanded={isSidebarExpanded} />
@@ -77,13 +76,12 @@ const LayoutContent: React.FC<LayoutWrapperProps> = ({
           component="main"
           sx={{
             flexGrow: 1,
-            p: 3,
             minHeight: "100vh",
             marginTop: showNavbar ? `${NAVBAR_HEIGHT}px` : 0,
             transition: (theme) =>
               theme.transitions.create(["margin"], {
-                easing: theme.transitions.easing.sharp,
-                duration: theme.transitions.duration.enteringScreen,
+                easing: theme.transitions.easing.easeInOut,
+                duration: theme.transitions.duration.standard, // Smoother timing
               }),
             overflow: "auto",
           }}
