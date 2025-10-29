@@ -26,7 +26,7 @@ export default function ProgressBar() {
       #nprogress .bar {
         background: ${themeColors.pantone.main} !important;
         position: fixed;
-        z-index: 1031;
+        z-index: 1400 !important;
         top: 0;
         left: 0;
         width: 100%;
@@ -47,7 +47,7 @@ export default function ProgressBar() {
       #nprogress .spinner {
         display: block;
         position: fixed;
-        z-index: 1031;
+        z-index: 1400 !important;
         top: 15px;
         right: 15px;
       }

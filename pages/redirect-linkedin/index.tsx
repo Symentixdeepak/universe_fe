@@ -66,7 +66,7 @@ export default function LinkedInRedirect() {
             try {
               const user = JSON.parse(storedUser);
               if (user.profileCompleted) {
-                router.replace('/dashboard');
+                router.replace('/user/dashboard');
               } else {
                 router.replace('/interests');
               }
@@ -79,7 +79,7 @@ export default function LinkedInRedirect() {
             if (result.isNewUser) {
               router.replace('/interests');
             } else {
-              router.replace('/dashboard');
+              router.replace('/user/dashboard');
             }
           }
         } else {

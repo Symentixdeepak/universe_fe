@@ -6,7 +6,7 @@ import { useThemeColors } from "@/hooks";
 import Image from "next/image";
 import { useSidebar } from "@/contexts/SideBarContext";
 import ConnectionFound from "./ConnectionFound";
-
+import { useRouter } from "next/router";
 
 interface Message {
   id: string;
@@ -16,6 +16,7 @@ interface Message {
 
 export const Chat = () => {
   const themeColors = useThemeColors();
+  const router = useRouter();
   const { isSidebarExpanded, toggleSidebar } = useSidebar();
 
   const chatEndRef = useRef<HTMLDivElement>(null);
@@ -39,10 +40,12 @@ export const Chat = () => {
     },
   ]);
 
-  // Auto scroll to bottom
+  // Auto scroll to bottom only when chat is visible (not showing ConnectionFound)
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    if (!showConnectionFound && chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages, showConnectionFound]);
 
   const handleSendMessage = () => {
     if (!inputValue.trim()) return;
@@ -62,7 +65,7 @@ export const Chat = () => {
 
   const handleAcceptConnection = () => {
     // Handle accepting the connection
-    setShowConnectionFound(false);
+    router.push("/user/my-universe/1");
   };
 
   const handleDeclineConnection = () => {
@@ -71,7 +74,12 @@ export const Chat = () => {
   };
 
   if (showConnectionFound) {
-    return <ConnectionFound onAccept={handleAcceptConnection} onDecline={handleDeclineConnection} />;
+    return (
+      <ConnectionFound
+        onAccept={handleAcceptConnection}
+        onDecline={handleDeclineConnection}
+      />
+    );
   }
 
   return (
@@ -186,15 +194,12 @@ export const Chat = () => {
         }}
       >
         <Box sx={{ display: "flex", gap: 1, justifyContent: "center" }}>
-          <Chip 
-            label="Connect with Dr. Maya K" 
-            variant="outlined" 
+          <Chip
+            label="Connect with Dr. Maya K"
+            variant="outlined"
             onClick={() => setShowConnectionFound(true)}
           />
-          <Chip 
-            label="View Amelia's Profile" 
-            variant="outlined" 
-          />
+          <Chip label="View Amelia's Profile" variant="outlined" />
         </Box>
 
         <Box sx={{ width: "100%", maxWidth: "680px" }}>

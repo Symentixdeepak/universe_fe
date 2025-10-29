@@ -8,7 +8,7 @@ interface AuthRedirectProps {
   redirectTo?: string;
 }
 
-export default function AuthRedirect({ children, redirectTo = '/dashboard' }: AuthRedirectProps) {
+export default function AuthRedirect({ children, redirectTo = '/user/dashboard' }: AuthRedirectProps) {
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -37,7 +37,7 @@ export default function AuthRedirect({ children, redirectTo = '/dashboard' }: Au
         const user = JSON.parse(storedUser!);
         console.log('AuthRedirect: user data:', user); // Debug log
         console.log('AuthRedirect: profileCompleted:', user.profileCompleted); // Debug log
-        const finalRedirectTo = user.profileCompleted ? '/dashboard' : '/interests';
+        const finalRedirectTo = user.profileCompleted ? '/user/dashboard' : '/interests';
         console.log('AuthRedirect: redirecting to:', finalRedirectTo); // Debug log
         router.replace(finalRedirectTo);
       } catch (error) {

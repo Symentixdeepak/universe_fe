@@ -18,7 +18,7 @@ export default function Home() {
       
       if (storedTokens || legacyToken) {
         // User is authenticated, redirect to dashboard
-        router.replace('/dashboard');
+        router.replace('/user/dashboard');
       } else {
         // User is not authenticated, redirect to login
         router.replace('/auth/login');
