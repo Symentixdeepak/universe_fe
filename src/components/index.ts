@@ -19,6 +19,7 @@ export { default as SvgIcon } from './SvgIcon';
 export type { IconName } from './SvgIcon';
 export { default as ProfilePopover } from './Navbar/ProfilePopover';
 export { default as CommonTabs } from './CommonTabs';
+export { default as ErrorBoundary } from './ErrorBoundary';
 
 // Example:
 // export { Button } from './button';

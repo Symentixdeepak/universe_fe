@@ -3,6 +3,7 @@ import { Box, useTheme, useMediaQuery } from "@mui/material";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 import { SidebarProvider, useSidebar } from "@/contexts/SideBarContext";
+import { ErrorBoundary } from "@/components";
 
 interface LayoutWrapperProps {
   children: React.ReactNode;
@@ -97,7 +98,9 @@ const LayoutContent: React.FC<LayoutWrapperProps> = ({
             overflow: "auto",
           }}
         >
-          {children}
+          <ErrorBoundary>
+            {children}
+          </ErrorBoundary>
         </Box>
       </Box>
     </Box>
