@@ -1,8 +1,8 @@
 import React from "react";
-import { Box, Typography, Avatar } from "@mui/material";
+import { Box, Typography, Avatar, useTheme } from "@mui/material";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { useThemeColors } from "@/hooks";
-import { Button } from "@/components";
+import { Button, SvgIcon } from "@/components";
 import { colorProfiles } from "@/styles/theme";
 import Image from "next/image";
 
@@ -24,6 +24,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   connectedSince = "22/10/2025",
 }) => {
   const themeColors = useThemeColors();
+  const theme = useTheme();
 
   return (
     <Box
@@ -46,9 +47,9 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
           src={avatar}
           alt={name}
           sx={{
-            mt: 1.5,
-            width: 145,
-            height: 145,
+            mt: { xs: 0.5, md: 1.5 },
+            width: { xs: 130, md: 145 },
+            height: { xs: 130, md: 145 },
           }}
         />
 
@@ -64,9 +65,10 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
             }}
           >
             <Typography
-              variant="h3Bold"
               sx={{
                 color: themeColors.text.primary,
+                typography: { xs: "h4Bold", md: "h3Bold" },
+                fontSize: { xs: "20px", md: "28px" },
               }}
             >
               {name}
@@ -77,11 +79,11 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
           <Box
             sx={{ display: "flex", alignItems: "center", gap: 0.5, mb: 0.8 }}
           >
-           <Image src="/assets/images/icons/location.svg" width={13} height={13}/>
+            <SvgIcon name="location" width={13} height={13} />
             <Typography
-              variant="subtitleLight"
               sx={{
                 color: themeColors.text.secondary,
+                typography: { xs: "captionLight", md: "subtitleLight" },
               }}
             >
               {location}
@@ -91,12 +93,21 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
           {/* Description */}
           <Box sx={{ display: "flex", flexDirection: "column" }}>
             <Typography
-              variant="bodyRegular"
               sx={{
                 color: themeColors.text.primary,
+                typography: { xs: "subtitleRegular", md: "bodyRegular" },
                 mb: 0.8,
                 maxWidth: "230px",
                 lineHeight: 1.4,
+
+                // Multi-line ellipsis for xs/sm
+                display: "-webkit-box",
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+
+                [theme.breakpoints.down("md")]: {
+                  WebkitLineClamp: 3, // show max 3 lines then ...
+                },
               }}
             >
               {description}
@@ -104,19 +115,33 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
 
             {/* Connected Via */}
             <Typography
-              variant="subtitleLight"
               sx={{
-                mb: 3,
+                mb: { xs: 0, md: 3 },
                 color: themeColors.text.secondary,
+                typography: { xs: "captionLight", md: "subtitleLight" },
               }}
             >
               Connected via{" "}
               <Typography
-                variant="subtitleBold"
-                sx={{ color: themeColors.pantone.main }}
+                component={"span"}
+                sx={{
+                  color: themeColors.pantone.main,
+                  typography: { xs: "captionBold", md: "subtitleBold" },
+                }}
               >
                 {connectedVia}
               </Typography>
+            </Typography>
+            <Typography
+              variant="captionLight"
+              sx={{
+                mb: { xs: 3, md: 0 },
+                color: themeColors.grey.main,
+                display: { xs: "block", md: "none" },
+              }}
+            >
+              
+              Since {connectedSince}
             </Typography>
           </Box>
 
@@ -131,7 +156,14 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
           alignItems: "center",
         }}
       >
-        <Box sx={{ display: "flex", gap: 2, maxWidth: "400px", width: "100%" }}>
+        <Box
+          sx={{
+            display: "flex",
+            gap: { xs: 1, md: 2 },
+            maxWidth: "400px",
+            width: "100%",
+          }}
+        >
           <Button variant="outlined" fullWidth>
             Message
           </Button>
@@ -155,7 +187,13 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
           </Button>
         </Box>
 
-        <Typography variant="subtitleLight" sx={{color:themeColors.grey.main}}>
+        <Typography
+          variant="subtitleLight"
+          sx={{
+            color: themeColors.grey.main,
+            display: { xs: "none", md: "block" },
+          }}
+        >
           Connected since {connectedSince}
         </Typography>
       </Box>

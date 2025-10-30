@@ -37,86 +37,121 @@ const StyledTextField = styled(MuiTextField, {
   const backgroundColor = useDarkStyling ? themeColors.background.secondary : themeColors.background.secondary;
 
   return {
-    '& .MuiOutlinedInput-root': {
-      height: '41px',
-      ...theme.typography.bodyLight,
-      '& fieldset': {
-        border: `1px solid ${borderColor}`,
-        borderRadius: '999px',
-        transition: 'all 300ms ease-out',
-      },
-      '&:hover fieldset': {
-        border: `1px solid ${hoverBorderColor}`,
-      },
-      '&.Mui-focused fieldset': {
-        border: `2px solid ${focusBorderColor}`,
-      },
-      '& input': {
-        padding: '8px 16px',
-        color: textColor,
-        transition: 'color 300ms ease-out',
-        '&::placeholder': {
-          color: placeholderColor,
-          opacity: 1,
-        },
-      },
-    },
-    '& .MuiFilledInput-root': {
-      height: '41px',
-      ...theme.typography.bodyLight,
-      backgroundColor: backgroundColor,
+  '& .MuiOutlinedInput-root': {
+    height: '41px',
+    ...theme.typography.bodyLight,
+    '& fieldset': {
       border: `1px solid ${borderColor}`,
       borderRadius: '999px',
       transition: 'all 300ms ease-out',
-      '&:hover': {
-        backgroundColor: backgroundColor,
-        border: `1px solid ${hoverBorderColor}`,
-      },
-      '&.Mui-focused': {
-        backgroundColor: backgroundColor,
-        border: `2px solid ${focusBorderColor}`,
-      },
-      '& input': {
-        padding: '8px 16px',
-        color: textColor,
-        '&::placeholder': {
-          color: placeholderColor,
-          opacity: 1,
-        },
-      },
-      '&:before, &:after': {
-        display: 'none',
-      },
     },
-    '& .MuiInput-root': {
-      ...theme.typography.bodyLight,
-      '&:before': {
-        borderBottom: `1px solid ${borderColor}`,
-        transition: 'border-bottom 300ms ease-out',
-      },
-      '&:hover:not(.Mui-disabled):before': {
-        borderBottom: `1px solid ${hoverBorderColor}`,
-      },
-      '&:after': {
-        borderBottom: `2px solid ${focusBorderColor}`,
-      },
-      '& input': {
-        padding: '4px 16px',
-        color: textColor,
-        '&::placeholder': {
-          color: placeholderColor,
-          opacity: 1,
-        },
-      },
+    '&:hover fieldset': {
+      border: `1px solid ${hoverBorderColor}`,
     },
-    '& .MuiInputLabel-root': {
-      color: placeholderColor,
+    '&.Mui-focused fieldset': {
+      border: `2px solid ${focusBorderColor}`,
+    },
+    '& input': {
+      padding: '8px 16px',
+      color: textColor,
       transition: 'color 300ms ease-out',
-      '&.Mui-focused': {
-        color: focusBorderColor,
+
+      // Responsive font sizes
+      fontSize: '13px',
+      [theme.breakpoints.up('md')]: {
+        fontSize: '16px',
+      },
+
+      '&::placeholder': {
+        color: placeholderColor,
+        opacity: 1,
+        fontSize: '13px',
+        [theme.breakpoints.up('md')]: {
+          fontSize: '16px',
+        },
       },
     },
-  };
+  },
+
+  '& .MuiFilledInput-root': {
+    height: '41px',
+    ...theme.typography.bodyLight,
+    backgroundColor: backgroundColor,
+    border: `1px solid ${borderColor}`,
+    borderRadius: '999px',
+    transition: 'all 300ms ease-out',
+    '&:hover': {
+      backgroundColor: backgroundColor,
+      border: `1px solid ${hoverBorderColor}`,
+    },
+    '&.Mui-focused': {
+      backgroundColor: backgroundColor,
+      border: `2px solid ${focusBorderColor}`,
+    },
+    '& input': {
+      padding: '8px 16px',
+      color: textColor,
+
+      fontSize: '13px',
+      [theme.breakpoints.up('md')]: {
+        fontSize: '16px',
+      },
+
+      '&::placeholder': {
+        color: placeholderColor,
+        opacity: 1,
+        fontSize: '13px',
+        [theme.breakpoints.up('md')]: {
+          fontSize: '16px',
+        },
+      },
+    },
+    '&:before, &:after': {
+      display: 'none',
+    },
+  },
+
+  '& .MuiInput-root': {
+    ...theme.typography.bodyLight,
+    '&:before': {
+      borderBottom: `1px solid ${borderColor}`,
+      transition: 'border-bottom 300ms ease-out',
+    },
+    '&:hover:not(.Mui-disabled):before': {
+      borderBottom: `1px solid ${hoverBorderColor}`,
+    },
+    '&:after': {
+      borderBottom: `2px solid ${focusBorderColor}`,
+    },
+    '& input': {
+      padding: '4px 16px',
+      color: textColor,
+
+      fontSize: '13px',
+      [theme.breakpoints.up('md')]: {
+        fontSize: '16px',
+      },
+
+      '&::placeholder': {
+        color: placeholderColor,
+        opacity: 1,
+        fontSize: '13px',
+        [theme.breakpoints.up('md')]: {
+          fontSize: '16px',
+        },
+      },
+    },
+  },
+
+  '& .MuiInputLabel-root': {
+    color: placeholderColor,
+    transition: 'color 300ms ease-out',
+    '&.Mui-focused': {
+      color: focusBorderColor,
+    },
+  },
+};
+
 });
 
 const TextField: React.FC<CustomTextFieldProps> = ({

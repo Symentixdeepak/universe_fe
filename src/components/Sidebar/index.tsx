@@ -9,157 +9,44 @@ import {
   Typography,
   useTheme,
   Collapse,
+  useMediaQuery,
+  Backdrop,
 } from "@mui/material";
 import { useThemeColors } from "@/hooks";
 import { styled } from "@mui/material/styles";
-import Image from "next/image";
 import { useRouter } from "next/router";
 import { useSidebar } from "@/contexts/SideBarContext";
 
 // Icons
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import TextField from "../TextField";
+import { ChildItem, SIDEBAR_WIDTH_COLLAPSED, SIDEBAR_WIDTH_EXPANDED, SidebarItem, sidebarItems } from "./SideBarItems";
+
 
 interface SidebarProps {
   isExpanded?: boolean;
   onToggle?: () => void;
 }
 
-interface SidebarItem {
-  id: string;
-  title: string;
-  icon: React.ReactNode;
-  path: string;
-  children?: ChildItem[];
-}
 
-interface ChildItem {
-  id: number;
-  title: string;
-  path: string;
-}
-
-const SIDEBAR_WIDTH_EXPANDED = 185;
-const SIDEBAR_WIDTH_COLLAPSED = 60;
-
-const childItems: ChildItem[] = [
-  { id: 1, title: "Sub Item 1", path: "/user/dashboard/sub1" },
-  { id: 2, title: "Sub Item 2", path: "/user/dashboard/sub2" },
-  { id: 3, title: "Sub Item 3", path: "/user/dashboard/sub3" },
-];
-
-const sidebarItems: SidebarItem[] = [
-  {
-    id: "dashboard",
-    title: "Your Dashboard",
-    icon: (
-      <Image
-        src="/assets/images/icons/dashboard_nav.svg"
-        alt="Dashboard"
-        width={20}
-        height={20}
-      />
-    ),
-    path: "/user/dashboard",
-  },
-  {
-    id: "search",
-    title: "Search",
-    icon: (
-      <Image
-        src="/assets/images/icons/search_nav.svg"
-        alt="Search"
-        width={20}
-        height={20}
-      />
-    ),
-    path: "/search",
-  },
-  {
-    id: "connected",
-    title: "Get Connected",
-    icon: (
-      <Image
-        src="/assets/images/icons/zoom_search_nav.svg"
-        alt="Get Connected"
-        width={20}
-        height={20}
-        quality={100}
-      />
-    ),
-    path: "/user/connections",
-    children: childItems,
-  },
-  {
-    id: "myuniverse",
-    title: "My Universe",
-    icon: (
-      <Image
-        src="/assets/images/icons/my_universe_nav.svg"
-        alt="My Universe"
-        width={20}
-        height={20}
-      />
-    ),
-    path: "/user/my-universe",
-  },
-  {
-    id: "pending",
-    title: "Pending Connection",
-    icon: (
-      <Image
-        src="/assets/images/icons/pending_conn_nav.svg"
-        alt="Pending Connection"
-        width={20}
-        height={20}
-      />
-    ),
-    path: "/pending-connections",
-  },
-  {
-    id: "notifications",
-    title: "Notifications",
-    icon: (
-      <Image
-        src="/assets/images/icons/notification_nav.svg"
-        alt="Notifications"
-        width={20}
-        height={20}
-      />
-    ),
-    path: "/notifications",
-  },
-  {
-    id: "settings",
-    title: "Settings",
-    icon: (
-      <Image
-        src="/assets/images/icons/setting_nav.svg"
-        alt="Settings"
-        width={20}
-        height={20}
-      />
-    ),
-    path: "/settings",
-  },
-];
 const StyledSidebar = styled(Box, {
-  shouldForwardProp: (prop) => prop !== "isExpanded",
-})<{ isExpanded: boolean }>(({ theme, isExpanded }) => ({
+  shouldForwardProp: (prop) => prop !== "isExpanded" && prop !== "isMobile",
+})<{ isExpanded: boolean; isMobile: boolean }>(({ theme, isExpanded, isMobile }) => ({
   position: "fixed",
   left: 0,
   top: 0,
   bottom: 0,
   width: isExpanded ? SIDEBAR_WIDTH_EXPANDED : SIDEBAR_WIDTH_COLLAPSED,
-  transition: theme.transitions.create(["width"], {
+  transform: isMobile && !isExpanded ? 'translateX(-100%)' : 'translateX(0)',
+  transition: theme.transitions.create(["width", "transform"], {
     duration: theme.transitions.duration.standard,
-    easing: theme.transitions.easing.easeInOut, // Smoother easing
+    easing: theme.transitions.easing.easeInOut,
   }),
   overflow: "hidden",
   display: "flex",
   flexDirection: "column",
-  zIndex: theme.zIndex.drawer,
+  zIndex: isMobile ? theme.zIndex.modal : theme.zIndex.drawer,
 }));
 
 const StyledListItem = styled(ListItem)<{
@@ -171,12 +58,13 @@ const StyledListItem = styled(ListItem)<{
   marginLeft: theme.spacing(0.5),
   marginRight: theme.spacing(0.5),
   cursor: "pointer",
+  position: "relative",
   "&:hover": {
     backgroundColor: "transparent",
   },
-  //   ...(active && {
-  //     backgroundColor: theme.palette.action.selected,
-  //   }),
+  "&:active": {
+    backgroundColor: "transparent",
+  },
 }));
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -188,6 +76,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const router = useRouter();
   const { openSidebar, closeSidebar } = useSidebar();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+  const [clickedItem, setClickedItem] = useState<string | null>(null);
+  
+  // Responsive breakpoints
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   // Function to check if current path matches item path
   const isPathActive = (itemPath: string) => {
@@ -205,6 +98,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
   };
 
   const handleItemClick = (item: SidebarItem) => {
+    setClickedItem(item.id);
+    
+    // Reset click state after a short delay
+    setTimeout(() => {
+      setClickedItem(null);
+    }, 150);
+
     if (item.id === "search") {
       // Open sidebar when search is clicked
       openSidebar();
@@ -221,14 +121,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
       );
     } else {
       // Navigate to path for items without children and close sidebar
-      router.push(item.path);
+      router.push(item.path, undefined, { shallow: true });
       closeSidebar();
     }
   };
 
   const handleChildClick = (childItem: ChildItem) => {
     // Navigate to child path and close sidebar
-    router.push(childItem.path);
+    router.push(childItem.path, undefined, { shallow: true });
     closeSidebar();
   };
 
@@ -239,21 +139,74 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const isItemExpanded = (itemId: string) => expandedItems.includes(itemId);
 
+  // Function to get color based on item state
+  const getItemColor = (item: SidebarItem, isHovered: boolean, isClicked: boolean, isExpanded?: boolean) => {
+    const isActive = isPathActive(item.path);
+    
+    if (isActive || isExpanded) {
+      return themeColors.pantone.main; // Selected state or expanded state
+    }
+    if (isClicked) {
+      return themeColors.pantone.dark; // Click state
+    }
+    if (isHovered) {
+      return themeColors.pantone.light; // Hover state
+    }
+    return themeColors.text.primary; // Default state
+  };
+
+  // Function to get arrow color
+  const getArrowColor = (item: SidebarItem, isHovered: boolean, isClicked: boolean, isExpanded?: boolean) => {
+    const isActive = isPathActive(item.path);
+    
+    if (isActive || isExpanded) {
+      return themeColors.pantone.main;
+    }
+    if (isClicked) {
+      return themeColors.pantone.dark;
+    }
+    if (isHovered) {
+      return themeColors.pantone.light;
+    }
+    return themeColors.text.primary;
+  };
+
   return (
-    <StyledSidebar
-      isExpanded={isExpanded}
-      sx={{
-        backgroundColor: themeColors.white.dark,
-      }}
-    >
+    <>
+      {/* Mobile backdrop */}
+      {isMobile && isExpanded && (
+        <Backdrop
+          open={isExpanded}
+          onClick={closeSidebar}
+          sx={{
+            zIndex: theme.zIndex.modal - 1,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          }}
+        />
+      )}
+      
+      <StyledSidebar
+        isExpanded={isExpanded}
+        isMobile={isMobile}
+        sx={{
+          backgroundColor: themeColors.white.dark,
+        }}
+      >
       <List sx={{ pt: 2 }}>
         {sidebarItems.slice(0, 5).map((item) => {
           if (item.id === "search") {
+            const IconComponent = item.iconComponent;
+            const isHovered = hoveredItem === item.id;
+            const isClicked = clickedItem === item.id;
+            const iconColor = getItemColor(item, isHovered, isClicked);
+            
             return (
               <React.Fragment key={item.id}>
                 <StyledListItem
                   key={item.id}
                   onClick={() => handleItemClick(item)}
+                  onMouseEnter={() => setHoveredItem(item.id)}
+                  onMouseLeave={() => setHoveredItem(null)}
                   isExpanded={isExpanded}
                   sx={{
                     minHeight: 40,
@@ -261,28 +214,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     mb: isExpanded ? 3 : 2,
                     justifyContent: isExpanded ? "initial" : "center",
                     position: "relative",
-                    "&:hover .MuiListItemIcon-root, &:hover .MuiTypography-root": {
-                      color: `${themeColors.pantone.main} !important`,
-                      transition: "color 300ms ease",
-                    },
                   }}
                 >
                   <ListItemIcon
                     sx={{
                       minWidth: 0,
                       mr: isExpanded ? 1.5 : "auto",
-                      mt:-0.5,
+                      mt: -0.5,
                       justifyContent: "center",
                       height: "20px",
                       width: "20px",
-                      transition: "filter 300ms ease",
-                      "&:hover img": {
-                        filter:
-                          "invert(42%) sepia(92%) saturate(964%) hue-rotate(11deg) brightness(91%) contrast(98%)",
-                      },
                     }}
                   >
-                    {item.icon}
+                    <IconComponent color={iconColor} width={20} height={20} />
                   </ListItemIcon>
                   
                   {/* Enhanced TextField with better transitions */}
@@ -341,11 +285,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
           const isActive = isPathActive(item.path);
           const expanded = isItemExpanded(item.id);
+          const IconComponent = item.iconComponent;
+          const isHovered = hoveredItem === item.id;
+          const isClicked = clickedItem === item.id;
+          const iconColor = getItemColor(item, isHovered, isClicked, expanded);
+          const textColor = getItemColor(item, isHovered, isClicked, expanded);
+          const arrowColor = getArrowColor(item, isHovered, isClicked, expanded);
 
           return (
             <React.Fragment key={item.id}>
               <StyledListItem
                 onClick={() => handleItemClick(item)}
+                onMouseEnter={() => setHoveredItem(item.id)}
+                onMouseLeave={() => setHoveredItem(null)}
                 active={isActive}
                 isExpanded={isExpanded}
                 sx={{
@@ -353,10 +305,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   mb: isExpanded ? 0 : -3,
                   justifyContent: isExpanded ? "initial" : "center",
                   position: "relative",
-                  "&:hover .MuiListItemIcon-root, &:hover .MuiTypography-root": {
-                    color: `${themeColors.pantone.main} !important`,
-                    transition: "color 300ms ease",
-                  },
                 }}
               >
                 <ListItemIcon
@@ -367,19 +315,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     mt: 0.5,
                     height: "20px",
                     width: "20px",
-                    transition: "filter 300ms ease",
-                    "& img": {
-                      filter: isActive
-                        ? "invert(42%) sepia(92%) saturate(964%) hue-rotate(11deg) brightness(91%) contrast(98%)"
-                        : "none",
-                    },
-                    "&:hover img": {
-                      filter:
-                        "invert(42%) sepia(92%) saturate(964%) hue-rotate(11deg) brightness(91%) contrast(98%)",
-                    },
                   }}
                 >
-                  {item.icon}
+                  <IconComponent color={iconColor} width={20} height={20} />
                 </ListItemIcon>
 
                 <ListItemText
@@ -389,9 +327,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       sx={{
                         fontSize: 11,
                         opacity: isExpanded ? 1 : 0,
-                        color: isActive
-                          ? themeColors.pantone.main
-                          : themeColors.text.primary,
+                        color: textColor,
                         transition: "color 300ms ease, opacity 300ms ease",
                       }}
                     >
@@ -404,15 +340,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 {isExpanded && item?.children?.length && (
                   <>
                     {expanded ? (
-                      <KeyboardArrowUpIcon
+                      <KeyboardArrowDownIcon
                         sx={{
                           position: "absolute",
                           right: 40,
                           fontSize: 14,
                           mt: 0.5,
-                          color: isActive
-                            ? themeColors.pantone.main
-                            : themeColors.text.primary,
+                          color: arrowColor,
                           transition: "color 300ms ease",
                         }}
                       />
@@ -423,9 +357,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                           right: 40,
                           fontSize: 10,
                           mt: 0.5,
-                          color: isActive
-                            ? themeColors.pantone.main
-                            : themeColors.text.primary,
+                          color: arrowColor,
                           transition: "color 300ms ease",
                         }}
                       />
@@ -480,10 +412,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <List sx={{ mt: "auto", mb: 2 }}>
         {sidebarItems.slice(5).map((item) => {
           const isActive = isPathActive(item.path);
+          const IconComponent = item.iconComponent;
+          const isHovered = hoveredItem === item.id;
+          const isClicked = clickedItem === item.id;
+          const iconColor = getItemColor(item, isHovered, isClicked);
+          const textColor = getItemColor(item, isHovered, isClicked);
+          
           return (
             <StyledListItem
               key={item.id}
               onClick={() => handleItemClick(item)}
+              onMouseEnter={() => setHoveredItem(item.id)}
+              onMouseLeave={() => setHoveredItem(null)}
               active={isActive}
               isExpanded={isExpanded}
               sx={{
@@ -491,13 +431,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 mb: isExpanded ? 0 : -0.5,
                 justifyContent: isExpanded ? "initial" : "center",
                 position: "relative",
-                "&:hover .MuiListItemIcon-root, &:hover .MuiTypography-root": {
-                  color: `${themeColors.pantone.main} !important`,
-                  transition: "color 300ms ease",
-                },
-                "&:hover img": {
-                  filter: "invert(42%) sepia(92%) saturate(964%) hue-rotate(11deg) brightness(91%) contrast(98%)",
-                },
               }}
             >
               <ListItemIcon
@@ -508,15 +441,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   justifyContent: "center",
                   height: "20px",
                   width: "20px",
-                  transition: "filter 300ms ease",
-                  "& img": {
-                    filter: isActive
-                      ? "invert(42%) sepia(92%) saturate(964%) hue-rotate(11deg) brightness(91%) contrast(98%)"
-                      : "none",
-                  },
                 }}
               >
-                {item.icon}
+                <IconComponent color={iconColor} width={20} height={20} />
               </ListItemIcon>
               <ListItemText
                 primary={
@@ -525,9 +452,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     sx={{
                       fontSize: 11,
                       opacity: isExpanded ? 1 : 0,
-                      color: isActive
-                        ? themeColors.pantone.main
-                        : themeColors.text.primary,
+                      color: textColor,
                       transition: "color 300ms ease, opacity 300ms ease",
                     }}
                   >
@@ -541,6 +466,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         })}
       </List>
     </StyledSidebar>
+    </>
   );
 };
 

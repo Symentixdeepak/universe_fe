@@ -4,6 +4,7 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import GroupIcon from "@mui/icons-material/Group";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import { useThemeColors } from "@/hooks";
+import { SvgIcon } from "@/components";
 import Image from "next/image";
 
 interface ProfileDetailItem {
@@ -29,8 +30,8 @@ const ProfileDetails: React.FC<ProfileDetailsProps> = ({
   const details: ProfileDetailItem[] = [
     {
       icon: (
-        <Image
-          src={"/assets/images/icons/timerBig.svg"}
+        <SvgIcon
+          name="timerBig"
           width={50}
           height={50}
         />
@@ -41,8 +42,8 @@ const ProfileDetails: React.FC<ProfileDetailsProps> = ({
     },
     {
       icon: (
-        <Image
-          src={"/assets/images/icons/peoplebig.svg"}
+        <SvgIcon
+          name="peoplebig"
           width={50}
           height={50}
         />
@@ -53,8 +54,8 @@ const ProfileDetails: React.FC<ProfileDetailsProps> = ({
     },
     {
       icon: (
-        <Image
-          src={"/assets/images/icons/badgebig.svg"}
+        <SvgIcon
+          name="badgebig"
           width={50}
           height={50}
         />
@@ -68,8 +69,9 @@ const ProfileDetails: React.FC<ProfileDetailsProps> = ({
   return (
     <Box
       sx={{
-        display: "flex",
-        gap: 10,
+        display: "flex",  flexWrap: "wrap",
+        columnGap: 10,
+        rowGap: 5,
         mt: 5,
       }}
     >
@@ -79,6 +81,7 @@ const ProfileDetails: React.FC<ProfileDetailsProps> = ({
           sx={{
             display: "flex",
             alignItems: "center",
+          
           }}
         >
           {/* Icon */}
