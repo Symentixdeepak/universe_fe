@@ -1,9 +1,9 @@
 import React from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { useThemeColors } from "@/hooks";
 import Image from "next/image";
 import ConnectingDots from "@/components/ConnectingDots";
-import { Button } from "@/components";
+import { Button, SvgIcon } from "@/components";
 
 interface ConnectionFoundProps {
   onAccept?: () => void;
@@ -15,23 +15,27 @@ export const ConnectionFound: React.FC<ConnectionFoundProps> = ({
   onDecline,
 }) => {
   const themeColors = useThemeColors();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   return (
     <Box
       sx={{
         maxWidth: "604px",
         margin: "0 auto",
-        // minHeight: "100vh",
+        minHeight: { xs: "calc(100vh - 56px)", md: "calc(100vh - 62px)" },
+
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
+        justifyContent: "center",
         pt: 4,
-      
+        padding: { xs: 3, md: 0 },
       }}
     >
       {/* Title */}
       <Typography
-        variant="h2Bold"
+        variant={isMobile ? "h4Bold" : "h2Bold"}
         sx={{
           color: themeColors.pantone.main,
           mb: 5,
@@ -61,8 +65,8 @@ export const ConnectionFound: React.FC<ConnectionFoundProps> = ({
         <Box sx={{ textAlign: "center" }}>
           <Box
             sx={{
-              width: 190,
-              height: 190,
+              width: isMobile ? 120 : 190,
+              height: isMobile ? 120 : 190,
               position: "relative",
               borderRadius: "50%",
               overflow: "hidden",
@@ -77,7 +81,7 @@ export const ConnectionFound: React.FC<ConnectionFoundProps> = ({
             />
           </Box>
           <Typography
-            variant="bodyBold"
+            variant={isMobile ? "subtitleBold" : "bodyBold"}
             sx={{
               color: themeColors.grey.main,
               textAlign: "center",
@@ -91,8 +95,8 @@ export const ConnectionFound: React.FC<ConnectionFoundProps> = ({
         <Box sx={{ textAlign: "center" }}>
           <Box
             sx={{
-              width: 190,
-              height: 190,
+              width: isMobile ? 120 : 190,
+              height: isMobile ? 120 : 190,
               position: "relative",
               borderRadius: "50%",
               overflow: "hidden",
@@ -107,7 +111,7 @@ export const ConnectionFound: React.FC<ConnectionFoundProps> = ({
             />
           </Box>
           <Typography
-            variant="bodyBold"
+            variant={isMobile ? "subtitleBold" : "bodyBold"}
             sx={{
               color: themeColors.grey.main,
               textAlign: "center",
@@ -129,32 +133,30 @@ export const ConnectionFound: React.FC<ConnectionFoundProps> = ({
           maxWidth: "600px",
         }}
       >
-        <Box sx={{ display: "flex", gap: 2.5 }}>
-          <Image
-            src="/assets/images/icons/notice_i.svg"
-            height={20}
+        <Box sx={{ display: "flex", gap: { xs: 1.5, md: 2.5 } }}>
+          <SvgIcon
+            name="notice_i"
             width={20}
+            height={20}
             style={{ marginTop: 4 }}
-            alt="info icon"
           />
 
           <Box>
             <Typography
-              variant="bodyBold"
+              variant={isMobile ? "subtitleBold" : "bodyBold"}
               sx={{
                 color: themeColors.text.primary,
               }}
             >
               Why we think this is a good connection
             </Typography>
-
             <Typography
-              variant="bodyLight"
+              variant={isMobile ? "subtitleLight" : "bodyLight"}
               sx={{
                 color: themeColors.text.primary,
                 mt: 1,
                 lineHeight: "150%",
-                display: "block",
+                display: { xs: "none", md: "block" },
               }}
             >
               Dr. Maya shares your interest in the intersection of AI and
@@ -167,6 +169,22 @@ export const ConnectionFound: React.FC<ConnectionFoundProps> = ({
             </Typography>
           </Box>
         </Box>
+        <Typography
+          variant={isMobile ? "subtitleLight" : "bodyLight"}
+          sx={{
+            color: themeColors.text.primary,
+            mt: 1,
+            lineHeight: "150%",
+            display: { xs: "block", md: "none" },
+          }}
+        >
+          Dr. Maya shares your interest in the intersection of AI and meaningful
+          social impact. Her focus on healthcare innovation aligns closely with
+          your goal of connecting with leaders driving purposeful change. With
+          her background in startups and mentorship, she offers not only
+          industry expertise but also a collaborative mindset — making her an
+          ideal connection for building both knowledge and opportunity.
+        </Typography>
       </Box>
 
       {/* Action Buttons */}

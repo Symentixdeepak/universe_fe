@@ -9,10 +9,12 @@ import {
   ListItemAvatar,
   ListItemText,
   IconButton,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { TextField } from "@/components";
+import { TextField, SvgIcon } from "@/components";
 import { useThemeColors } from "@/hooks";
 import { useRouter } from "next/router";
 import Image from "next/image";
@@ -53,20 +55,27 @@ const SearchSidebar: React.FC<SearchSidebarProps> = ({
 }) => {
   const themeColors = useThemeColors();
   const router = useRouter();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [searchValue, setSearchValue] = useState("");
 
   const handleConnectionClick = (connectionId: string) => {
     // Call the parent callback if provided
     onConnectionSelect?.(connectionId);
     
-    // Navigate to the user's profile using router.push
-    router.push(`/user/my-universe/${connectionId}`);
+    // Navigate on both mobile and desktop
+    if (isMobile) {
+      // Use shallow routing on mobile for smoother UX
+      router.push(`/user/my-universe/${connectionId}`, undefined, { shallow: true });
+    } else {
+      router.push(`/user/my-universe/${connectionId}`);
+    }
   };
 
   return (
     <Box
       sx={{
-        width: 370,
+        width: {xs:"100%", md:"370px"},
         height: "100vh",
         display: "flex",
         flexDirection: "column",
@@ -83,11 +92,10 @@ const SearchSidebar: React.FC<SearchSidebarProps> = ({
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <Image
-                  src="/assets/images/icons/search_nav.svg"
-                  alt="Search"
-                  height={20}
+                <SvgIcon
+                  name="search_nav"
                   width={20}
+                  height={20}
                 />
               </InputAdornment>
             ),
@@ -104,7 +112,7 @@ const SearchSidebar: React.FC<SearchSidebarProps> = ({
               <ListItem
                 key={connection.id}
                 sx={{
-                  padding: "4px 16px 4px 16px",
+                  padding: {xs : "4px 2px 4px 2px", md:"4px 16px 4px 16px",},
                   cursor: "pointer",
                   mb: 0.5,
                   borderRadius: "15px",
@@ -175,17 +183,17 @@ const SearchSidebar: React.FC<SearchSidebarProps> = ({
                   }}
                 >
                   <IconButton>
-                    <Image
-                      src="/assets/images/icons/cross.svg"
-                      height={20}
+                    <SvgIcon
+                      name="cross"
                       width={20}
+                      height={20}
                     />
                   </IconButton>
                   <IconButton>
-                    <Image
-                      src="/assets/images/icons/clock_reminder.svg"
-                      height={20}
+                    <SvgIcon
+                      name="clock_reminder"
                       width={20}
+                      height={20}
                     />
                   </IconButton>
                 </Box>

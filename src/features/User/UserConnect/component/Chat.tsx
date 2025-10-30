@@ -1,7 +1,14 @@
 import React, { useRef, useEffect, useState } from "react";
-import { Box, Typography, IconButton, InputAdornment } from "@mui/material";
+import {
+  Box,
+  Typography,
+  IconButton,
+  InputAdornment,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import ArrowCircleRightOutlinedIcon from "@mui/icons-material/ArrowCircleRightOutlined";
-import { Button, Chip, TextField } from "@/components";
+import { Button, Chip, TextField, SvgIcon } from "@/components";
 import { useThemeColors } from "@/hooks";
 import Image from "next/image";
 import { useSidebar } from "@/contexts/SideBarContext";
@@ -14,8 +21,10 @@ interface Message {
   content: string;
 }
 
-export const Chat = () => {
+export const Chat = ({ setShowChat }) => {
   const themeColors = useThemeColors();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const router = useRouter();
   const { isSidebarExpanded, toggleSidebar } = useSidebar();
 
@@ -71,6 +80,8 @@ export const Chat = () => {
   const handleDeclineConnection = () => {
     // Handle declining the connection
     setShowConnectionFound(false);
+    setShowChat(false);
+    router.push("/user/dashboard");
   };
 
   if (showConnectionFound) {
@@ -93,6 +104,8 @@ export const Chat = () => {
         pb: "10px", // leave space at bottom
         minHeight: "100vh",
         boxSizing: "border-box",
+
+        padding: { xs: 3, md: 0 },
       }}
     >
       {/* Chat Messages (main scroll area) */}
@@ -118,10 +131,15 @@ export const Chat = () => {
               sx={{
                 bgcolor:
                   message.type === "user"
-                    ? themeColors.white.dark
+                    ? {
+                        xs: themeColors.pantone.main,
+                        md: themeColors.white.dark,
+                      }
                     : themeColors.background.primary,
-                p: message.type === "user" ? "10px 20px" : 0,
-                borderRadius: message.type === "user" ? "20px" : 0,
+                p: message.type === "user" ? "14px 20px" : 0,
+                borderBottomLeftRadius: message.type === "user" ? "20px" : 0,
+                borderTopRightRadius: message.type === "user" ? "20px" : 0,
+                borderTopLeftRadius: message.type === "user" ? "20px" : 0,
                 maxWidth: message.type === "user" ? "320px" : "90%",
                 boxShadow:
                   message.type === "user"
@@ -132,7 +150,13 @@ export const Chat = () => {
               <Typography
                 variant="bodyLight"
                 sx={{
-                  color: themeColors.text.primary,
+                  color: {
+                    xs:
+                      message.type === "user"
+                        ? themeColors.white.main
+                        : themeColors.text.primary,
+                    md: themeColors.text.primary,
+                  },
                   whiteSpace: "pre-wrap",
                 }}
               >
@@ -143,28 +167,13 @@ export const Chat = () => {
             {message.type === "system" && (
               <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
                 <IconButton size="small">
-                  <Image
-                    src="/assets/images/icons/chat_copy.svg"
-                    alt="copy"
-                    width={20}
-                    height={20}
-                  />
+                  <SvgIcon name="chat_copy" width={20} height={20} />
                 </IconButton>
                 <IconButton size="small">
-                  <Image
-                    src="/assets/images/icons/chat_retry.svg"
-                    alt="retry"
-                    width={20}
-                    height={20}
-                  />
+                  <SvgIcon name="chat_retry" width={20} height={20} />
                 </IconButton>
                 <IconButton size="small">
-                  <Image
-                    src="/assets/images/icons/chat_dot.svg"
-                    alt="options"
-                    width={20}
-                    height={20}
-                  />
+                  <SvgIcon name="chat_dot" width={20} height={20} />
                 </IconButton>
               </Box>
             )}
@@ -207,7 +216,7 @@ export const Chat = () => {
             fullWidth
             multiline
             maxRows={4}
-            placeholder="Describe the connection or person you are looking for."
+            placeholder={isMobile ? "Describe the connection you are looking for" : "Describe the connection or person you are looking for."}
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyPress}
@@ -234,7 +243,7 @@ export const Chat = () => {
             sx={{
               color: themeColors.grey.main,
               textAlign: "center",
-              display: "block",
+              display: {xs:"none", md:"block"},
               mt: 1,
             }}
           >

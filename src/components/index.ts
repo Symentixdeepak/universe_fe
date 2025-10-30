@@ -15,6 +15,10 @@ export { default as Loader } from './Loader';
 export { default as ProgressBar } from './ProgressBar';
 export { default as ProtectedRoute } from './ProtectedRoute';
 export { default as AsyncWrapper, withAsyncLoader, createAsyncComponent, LoaderConfigs } from './AsyncWrapper';
+export { default as SvgIcon } from './SvgIcon';
+export type { IconName } from './SvgIcon';
+export { default as ProfilePopover } from './Navbar/ProfilePopover';
+export { default as CommonTabs } from './CommonTabs';
 
 // Example:
 // export { Button } from './button';

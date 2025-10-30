@@ -23,11 +23,11 @@ export const Chip: React.FC<ChipProps> = ({
 }) => {
   // Base styles that work for all variants
   const baseStyles = {
-    fontSize: "16px",
+    fontSize: { xs: 10, md: 16 },
     fontFamily: "Hanken Grotesk, sans-serif",
     fontWeight: 300,
     borderRadius: "999px",
-    height: "40px",
+    height: { xs: "33px", md: "40px" },
     transition: "all 300ms ease-out",
     "& .MuiChip-label": {
       padding: "10px 20px 10px 20px",
