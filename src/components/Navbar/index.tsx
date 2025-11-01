@@ -151,6 +151,7 @@ export const Navbar: React.FC<NavbarProps> = ({ isSidebarExpanded = true }) => {
       {/* Profile Popover */}
       <ProfilePopover
         open={isProfileOpen}
+        isMobile={isMobile}
         anchorEl={profileAnchorEl}
         onClose={handleProfileClose}
         userName="Aelia Kos"

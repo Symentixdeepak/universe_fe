@@ -93,7 +93,7 @@ const MyUniverse: React.FC<MyUniverseProps> = ({ selectedUserId }) => {
           <ProfileHeader
             name="Dr. Maya K."
             location="San Francisco, CA"
-            description="Passionate healthcare innovator focused on AI-driven solutions that improve patient outcomes and accessibility."
+            description="Building AI solutions that make healthcare smarter and more human."
             connectedVia="Aelia Kos"
             avatar="/dr_maya.png"
             connectedSince="Dec 2024"
