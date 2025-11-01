@@ -63,7 +63,7 @@ export const UserConnectHome = () => {
         variant="h4Regular"
         sx={{
           color: themeColors.text.primary,
-          mb: { xs: 2, md: 10 },
+          mb: { xs: 2, md: 8 },
           textAlign: 'center',
           mt: -0.6,
           px: { xs: 2, md: 0 }, // Add padding on mobile for better text wrapping

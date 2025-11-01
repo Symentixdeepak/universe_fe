@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from "react";
 import {
   Box,
   Typography,
@@ -8,14 +8,17 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-} from '@mui/material';
-import { useThemeColors } from '@/hooks';
-import { SvgIcon, IconName } from '@/components';
+} from "@mui/material";
+import { useThemeColors } from "@/hooks";
+import { SvgIcon, IconName } from "@/components";
+import Image from "next/image";
+import { useAuth } from "@/contexts/AuthContext";
+import { ProfileIcon, SettingNavIcon, NotificationNavIcon, SignoutIcon } from "./Icons";
 
 interface ProfileMenuItem {
   id: string;
   label: string;
-  icon: IconName;
+  icon: 'profile' | 'setting_nav' | 'notification_nav' | 'signout';
   color?: string;
   onClick?: () => void;
 }
@@ -26,55 +29,94 @@ interface ProfilePopoverProps {
   onClose: () => void;
   userName?: string;
   userAvatar?: string;
+  isMobile: boolean;
 }
 
 export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
   open,
   anchorEl,
   onClose,
+  isMobile,
   userName = "Aelia Kos",
-  userAvatar = "/charactor.png"
+  userAvatar = "/charactor.png",
 }) => {
   const themeColors = useThemeColors();
+  const { logout } = useAuth();
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+  const [activeItem, setActiveItem] = useState<string | null>(null);
 
+  const renderIcon = (iconName: string, itemId: string) => {
+    const isHovered = hoveredItem === itemId;
+    const isActive = activeItem === itemId;
+    const isSignout = itemId === "sign-out";
+    
+    let iconColor = themeColors.text.primary;
+    
+    if (isSignout) {
+      iconColor = "#BE0000";
+    } else if (isActive) {
+      iconColor = themeColors.pantone.main;
+    } else if (isHovered) {
+      iconColor = themeColors.pantone.light;
+    }
+
+    const iconProps = {
+      color: iconColor,
+      width: 17,
+      height: 17,
+    };
+
+    switch (iconName) {
+      case 'profile':
+        return <ProfileIcon {...iconProps} />;
+      case 'setting_nav':
+        return <SettingNavIcon {...iconProps} />;
+      case 'notification_nav':
+        return <NotificationNavIcon {...iconProps} />;
+      case 'signout':
+        return <SignoutIcon {...iconProps} />;
+      default:
+        return null;
+    }
+  };
   const menuItems: ProfileMenuItem[] = [
     {
-      id: 'view-profile',
-      label: 'View Profile',
-      icon: 'setting_nav',
+      id: "view-profile",
+      label: "View Profile",
+      icon: "profile",
       onClick: () => {
-        console.log('View Profile clicked');
+        console.log("View Profile clicked");
         onClose();
-      }
+      },
     },
     {
-      id: 'manage-account',
-      label: 'Manage Account',
-      icon: 'setting_nav',
+      id: "manage-account",
+      label: "Manage Account",
+      icon: "setting_nav",
       onClick: () => {
-        console.log('Manage Account clicked');
+        console.log("Manage Account clicked");
         onClose();
-      }
+      },
     },
     {
-      id: 'notifications',
-      label: 'Notifications',
-      icon: 'notification_nav',
+      id: "notifications",
+      label: "Notifications",
+      icon: "notification_nav",
       onClick: () => {
-        console.log('Notifications clicked');
+        console.log("Notifications clicked");
         onClose();
-      }
+      },
     },
     {
-      id: 'sign-out',
-      label: 'Sign out',
-      icon: 'setting_nav',
-      color: '#BE0000',
+      id: "sign-out",
+      label: "Sign out",
+      icon: "signout",
+      color: "#BE0000",
       onClick: () => {
-        console.log('Sign out clicked');
+        logout();
         onClose();
-      }
-    }
+      },
+    },
   ];
 
   return (
@@ -82,118 +124,114 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
       open={open}
       anchorEl={anchorEl}
       onClose={onClose}
+      disableScrollLock={true}
+      disableRestoreFocus={true}
+      disableAutoFocus={true}
       anchorOrigin={{
-        vertical: 'bottom',
-        horizontal: 'right',
+        vertical: "bottom",
+        horizontal: "right",
       }}
       transformOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
+        vertical: "top",
+        horizontal: "right",
       }}
       sx={{
-        '& .MuiPopover-paper': {
-          mt: 1,
-          borderRadius: '16px',
-          boxShadow: '0px 8px 32px rgba(0, 0, 0, 0.12)',
-          bgcolor: themeColors.background.primary,
-          border: `1px solid ${themeColors.border.secondary}`,
-          minWidth: '240px',
-          overflow: 'visible',
+        "& .MuiPopover-paper": {
+          mt: -5.8,
+          borderRadius: "6px",
+          boxShadow: 0,
+          ml: 0.5,
+          bgcolor: themeColors.white.dark,
+          maxWidth: "170px",
+          overflow: "visible",
         },
       }}
     >
-      <Box sx={{ p: 2 }}>
+      <Box sx={{}}>
         {/* User Info Section */}
         <Box
           sx={{
-            display: 'flex',
-            alignItems: 'center',
+            display: "flex",
+            alignItems: "center",
             gap: 2,
-            mb: 2,
-            pb: 2,
-            borderBottom: `1px solid ${themeColors.border.secondary}`,
+            justifyContent: "space-between",
+            // mb: 2,
+            mt: -1,
+            padding: "15px",
           }}
         >
-          <Avatar
-            src={userAvatar}
-            alt={userName}
-            sx={{
-              width: 48,
-              height: 48,
-            }}
-          />
           <Typography
-            variant="h6"
+            variant="bodyRegular"
             sx={{
               color: themeColors.pantone.main,
-              fontWeight: 600,
             }}
           >
             {userName}
           </Typography>
+          <Image
+            src="/charactor.png"
+            alt="User Avatar"
+            width={40}
+            height={40}
+            style={{
+              marginRight: -10,
+              objectFit: "cover",
+            }}
+          />
         </Box>
 
         {/* Menu Items */}
+
         <List sx={{ p: 0 }}>
           {menuItems.map((item) => (
             <ListItem
               key={item.id}
               onClick={item.onClick}
+              onMouseEnter={() => setHoveredItem(item.id)}
+              onMouseLeave={() => setHoveredItem(null)}
+              onMouseDown={() => setActiveItem(item.id)}
+              onMouseUp={() => setActiveItem(null)}
               sx={{
-                borderRadius: '8px',
-                cursor: 'pointer',
-                px: 1,
-                py: 1.5,
-                mb: 0.5,
-                transition: 'all 0.2s ease-in-out',
-                '&:hover': {
-                  bgcolor: themeColors.pantone.light,
-                  '& .MuiListItemText-primary': {
-                    color: item.id === 'sign-out' 
-                      ? item.color 
-                      : themeColors.pantone.light,
-                  }
+                borderRadius: "8px",
+                cursor: "pointer",
+                mb: -0.5,
+                transition: "all 0.2s ease-in-out",
+                "&:hover": {
+                  "& .MuiListItemText-primary": {
+                    color:
+                      item.id === "sign-out"
+                        ? item.color
+                        : themeColors.pantone.light,
+                  },
                 },
-                '&:active': {
-                  bgcolor: themeColors.pantone.dark,
-                  '& .MuiListItemText-primary': {
-                    color: item.id === 'sign-out' 
-                      ? item.color 
-                      : themeColors.pantone.dark,
-                  }
+                "&:active": {
+                  "& .MuiListItemText-primary": {
+                    color:
+                      item.id === "sign-out"
+                        ? item.color
+                        : themeColors.pantone.main,
+                  },
                 },
-                '&:last-child': {
+                "&:last-child": {
                   mb: 0,
-                }
+                },
               }}
             >
               <ListItemIcon
                 sx={{
-                  minWidth: '32px',
+                  minWidth: "32px",
                 }}
               >
-                <SvgIcon
-                  name={item.icon}
-                  width={20}
-                  height={20}
-                  style={{
-                    filter: item.id === 'sign-out' 
-                      ? `brightness(0) saturate(100%) invert(14%) sepia(93%) saturate(7426%) hue-rotate(5deg) brightness(90%) contrast(115%)` 
-                      : 'none',
-                  }}
-                />
+                {renderIcon(item.icon, item.id)}
               </ListItemIcon>
               <ListItemText
                 primary={item.label}
                 primaryTypographyProps={{
-                  variant: 'body2',
+                  variant: "subtitleLight",
                   sx: {
-                    color: item.id === 'sign-out' 
-                      ? item.color 
-                      : themeColors.text.primary,
-                    fontWeight: 500,
-                    transition: 'color 0.2s ease-in-out',
-                  }
+                    color: themeColors.text.primary,
+                    transition: "color 0.2s ease-in-out",
+                  },
                 }}
               />
             </ListItem>
