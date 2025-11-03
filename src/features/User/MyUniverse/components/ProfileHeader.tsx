@@ -164,10 +164,10 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
             width: "100%",
           }}
         >
-          <Button variant="outlined" fullWidth>
+          <Button sx={{maxWidth:200}} variant="outlined" fullWidth>
             Message
           </Button>
-
+{/* 
           <Button
             sx={{
               borderRadius: "25px",
@@ -184,7 +184,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
             fullWidth
           >
             LinkedIn
-          </Button>
+          </Button> */}
         </Box>
 
         <Typography

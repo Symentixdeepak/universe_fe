@@ -11,9 +11,7 @@ import { useThemeColors } from "@/hooks";
 import { useRouter } from "next/router";
 import {
   SearchSidebar,
-  ProfileHeader,
-  ProfileDetails,
-  ProfileAboutFooter,
+
 } from "./components";
 
 interface MyUniverseProps {
@@ -50,12 +48,12 @@ const MyUniverse: React.FC<MyUniverseProps> = ({ selectedUserId }) => {
     if (isMobile) {
       setShowMobileContent(true);
       // Navigate to the user's profile with router.push on mobile too
-      router.push(`/user/my-universe/${connectionId}`, undefined, {
+      router.push(`/user/pending_connections/${connectionId}`, undefined, {
         shallow: true,
       });
     } else {
       // Navigate to the new user's profile on desktop
-      router.push(`/user/my-universe/${connectionId}`);
+      router.push(`/user/pending_connections/${connectionId}`);
     }
   };
 
@@ -64,7 +62,7 @@ const MyUniverse: React.FC<MyUniverseProps> = ({ selectedUserId }) => {
       setShowMobileContent(false);
       setSelectedConnectionId("");
       // Navigate back to the index route
-      router.push("/user/my-universe", undefined, { shallow: true });
+      router.push("/user/pending_connections", undefined, { shallow: true });
     }
   };
 
@@ -97,21 +95,7 @@ const MyUniverse: React.FC<MyUniverseProps> = ({ selectedUserId }) => {
             width: isMobile ? "100%" : "auto",
           }}
         >
-          {/* Profile Header */}
-          <ProfileHeader
-            name="Dr. Maya K."
-            location="San Francisco, CA"
-            description="Building AI solutions that make healthcare smarter and more human."
-            connectedVia="Aelia Kos"
-            avatar="/dr_maya.png"
-            connectedSince="Dec 2024"
-          />
-
-          {/* Profile Details */}
-          <ProfileDetails />
-
-          {/* Profile About Footer */}
-          <ProfileAboutFooter />
+   
         </Box>
       )}
 
@@ -121,7 +105,7 @@ const MyUniverse: React.FC<MyUniverseProps> = ({ selectedUserId }) => {
             variant="bodyLight"
             sx={{ color: themeColors.text.primary }}
           >
-        Select a chat to start talking
+            Select a connection to view their profile.
           </Typography>
         </Box>
       )}

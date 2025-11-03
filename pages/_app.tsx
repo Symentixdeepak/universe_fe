@@ -1,4 +1,6 @@
 import type { AppProps } from 'next/app';
+import type { ReactElement, ReactNode } from 'react';
+import type { NextPage } from 'next';
 import Head from 'next/head';
 import { Noto_Serif_Display } from "next/font/google";
 import "@/styles/global.css";
@@ -13,7 +15,19 @@ const notoSerifDisplay = Noto_Serif_Display({
   weight: ["300", "400", "500", "600", "700", "800"],
 });
 
-export default function App({ Component, pageProps }: AppProps) {
+// Extended types to support per-page layouts
+export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
+  getLayout?: (page: ReactElement) => ReactNode;
+};
+
+type AppPropsWithLayout = AppProps & {
+  Component: NextPageWithLayout;
+};
+
+export default function App({ Component, pageProps }: AppPropsWithLayout) {
+  // Use the layout defined at the page level, if available
+  const getLayout = Component.getLayout ?? ((page) => page);
+
   return (
     <>
       <Head>
@@ -28,7 +42,7 @@ export default function App({ Component, pageProps }: AppProps) {
       <div className={notoSerifDisplay.variable}>
         <Providers>
           <ProgressBar />
-          <Component {...pageProps} />
+          {getLayout(<Component {...pageProps} />)}
         </Providers>
       </div>
     </>

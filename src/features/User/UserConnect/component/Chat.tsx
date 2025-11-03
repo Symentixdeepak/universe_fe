@@ -74,7 +74,7 @@ export const Chat = ({ setShowChat }) => {
 
   const handleAcceptConnection = () => {
     // Handle accepting the connection
-    router.push("/user/my-universe/1");
+    router.push("/user/pending_connections/1");
   };
 
   const handleDeclineConnection = () => {

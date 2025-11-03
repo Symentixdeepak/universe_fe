@@ -13,10 +13,8 @@ const nextConfig: NextConfig = {
   },
   // Ensure proper static generation
   trailingSlash: false,
-  // Disable problematic features for edge functions
-  experimental: {
-    serverComponentsExternalPackages: ['sharp'],
-  },
+  // External packages for server
+  serverExternalPackages: ['sharp'],
   
 };
 

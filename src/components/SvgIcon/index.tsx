@@ -23,7 +23,8 @@ const iconMap = {
   unlock: '/assets/images/icons/unlock.svg',
   zoom_search_nav: '/assets/images/icons/zoom_search_nav.svg',
   signout:"/assets/images/icons/signout.svg",
-  profile:"/assets/images/icons/profile.svg"
+  profile:"/assets/images/icons/profile.svg",
+  three_dot:"/assets/images/icons/three_dot.svg",
 };
 
 export type IconName = keyof typeof iconMap;

@@ -12,7 +12,8 @@ import {
   shouldRefreshToken, 
   loginUser,
   getLinkedInLoginUrl,
-  handleLinkedInCallback
+  handleLinkedInCallback,
+  UserRole
 } from "@/lib/authApi";
 
 interface User {
@@ -23,6 +24,7 @@ interface User {
   location: string;
   occupation: string;
   profileCompleted: boolean;
+  role: UserRole; // Add role to user interface
 }
 
 interface TokenData {
@@ -235,11 +237,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           location: response.data.user.location || "",
           occupation: response.data.user.occupation || "",
           profileCompleted: response.data.user.profile_completed || false,
+          // FUTURE: When API returns role, uncomment this line
+          // role: response.data.user.role || "user",
+          // TEMPORARY: Default to "user" role until API supports it
+          role: "user" as UserRole,
         };
 
         console.log("User data to save:", userData); // Debug log
         console.log("profileCompleted from API:", response.data.user.profile_completed); // Debug log
         console.log("profileCompleted in userData:", userData.profileCompleted); // Debug log
+        console.log("User role:", userData.role); // Debug log
 
         // Save tokens and user data
         saveTokens(tokenData);
@@ -272,7 +279,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       if (response.success && "data" in response) {
         // Redirect to LinkedIn login URL
-        window.location.href = response.data.data?.authUrl;
+        window.location.href = response.data.url;
         return { success: true };
       } else {
         const error =
@@ -310,11 +317,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const userData: User = {
           id: response.data.user.id,
           email: response.data.user.email,
-          full_name: response.data.user.fullName || response.data.user.full_name || "",
+          full_name: response.data.user.full_name || "",
           date_of_birth: response.data.user.date_of_birth || "",
           location: response.data.user.location || "",
           occupation: response.data.user.occupation || "",
-          profileCompleted: response.data.user.profileCompleted || false,
+          profileCompleted: response.data.user.profile_completed || false,
+          // FUTURE: When API returns role, uncomment this line
+          // role: response.data.user.role || "user",
+          // TEMPORARY: Default to "user" role until API supports it
+          role: "user" as UserRole,
         };
 
         // Save tokens and user data
@@ -322,6 +333,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         saveUser(userData);
 
         console.log("LinkedIn tokens and user saved to localStorage"); // Debug log
+        console.log("LinkedIn user role:", userData.role); // Debug log
 
         return { 
           success: true, 
@@ -353,6 +365,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const value: AuthContextType = {
+    // DO NOT hardcode role here. Return actual user from state.
     user,
     tokens,
     isLoading,

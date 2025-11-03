@@ -195,11 +195,11 @@ export const ConnectionFound: React.FC<ConnectionFoundProps> = ({
           width: "100%",
         }}
       >
-        <Button onClick={onAccept} fullWidth variant="outlined">
-          Accept
+        <Button onClick={onAccept} fullWidth variant="contained">
+          Request Connection
         </Button>
-        <Button onClick={onDecline} fullWidth variant="contained">
-          Decline
+        <Button onClick={onDecline} fullWidth variant="outlined">
+          Skip Connection
         </Button>
       </Box>
     </Box>

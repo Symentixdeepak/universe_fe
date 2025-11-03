@@ -3,6 +3,9 @@ const API_BASE_URL =
   process.env.NEXT_PUBLIC_SERVER_URL ||
   "https://sbvx0z24-3005.inc1.devtunnels.ms/api/v1";
 
+// Define user roles
+export type UserRole = "user" | "superconnector";
+
 export interface SignupRequest {
   email: string;
   password: string;
@@ -11,11 +14,13 @@ export interface SignupRequest {
   date_of_birth: string; // YYYY-MM-DD format
   location: string;
   occupation: string;
+  // role?: UserRole; // FUTURE: Will be added when API supports it
 }
 
 export interface LoginRequest {
   email: string;
   password: string;
+  // role?: UserRole; // FUTURE: Will be added when API supports it
 }
 
 export interface TokenData {
@@ -31,6 +36,8 @@ export interface User {
   date_of_birth: string;
   location: string;
   occupation: string;
+  role: UserRole; // User role: 'user' or 'superconnector'
+  profile_completed?: boolean; // Optional field from API
 }
 
 export interface SignupResponse {

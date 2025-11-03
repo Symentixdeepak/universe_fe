@@ -1,6 +1,7 @@
 // Export all custom React hooks here
 export * from './useQuery';
 export { default as useThemeColors } from './useThemeColors';
+export * from './useUserRole';
 
 // Example:
 // export { useLocalStorage } from './use-local-storage';

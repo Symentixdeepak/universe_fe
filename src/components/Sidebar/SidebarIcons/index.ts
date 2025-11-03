@@ -5,3 +5,5 @@ export { default as MyUniverseIcon } from './MyUniverseIcon';
 export { default as PendingConnectionIcon } from './PendingConnectionIcon';
 export { default as NotificationIcon } from './NotificationIcon';
 export { default as SettingsIcon } from './SettingsIcon';
+export { default as ConnectIcon } from './ConnectIcon';
+export { default as ConnectionMadeIcon } from './ConnectionMadeIcon';

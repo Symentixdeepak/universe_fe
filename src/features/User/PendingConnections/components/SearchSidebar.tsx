@@ -11,7 +11,6 @@ import {
   IconButton,
   useMediaQuery,
   useTheme,
-  Badge,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -63,22 +62,20 @@ const SearchSidebar: React.FC<SearchSidebarProps> = ({
   const handleConnectionClick = (connectionId: string) => {
     // Call the parent callback if provided
     onConnectionSelect?.(connectionId);
-
+    
     // Navigate on both mobile and desktop
     if (isMobile) {
       // Use shallow routing on mobile for smoother UX
-      router.push(`/user/my-universe/${connectionId}`, undefined, {
-        shallow: true,
-      });
+      router.push(`/user/pending_connections/${connectionId}`, undefined, { shallow: true });
     } else {
-      router.push(`/user/my-universe/${connectionId}`);
+      router.push(`/user/pending_connections/${connectionId}`);
     }
   };
 
   return (
     <Box
       sx={{
-        width: { xs: "100%", md: "370px" },
+        width: {xs:"100%", md:"370px"},
         height: "100vh",
         display: "flex",
         flexDirection: "column",
@@ -96,7 +93,11 @@ const SearchSidebar: React.FC<SearchSidebarProps> = ({
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <SvgIcon name="search_nav" width={20} height={20} />
+                <SvgIcon
+                  name="search_nav"
+                  width={20}
+                  height={20}
+                />
               </InputAdornment>
             ),
           }}
@@ -112,7 +113,7 @@ const SearchSidebar: React.FC<SearchSidebarProps> = ({
               <ListItem
                 key={connection.id}
                 sx={{
-                  padding: { xs: "4px 2px 4px 2px", md: "4px 16px 4px 16px" },
+                  padding: {xs : "4px 2px 4px 2px", md:"4px 16px 4px 16px",},
                   cursor: "pointer",
                   mb: 0.5,
                   borderRadius: "15px",
@@ -127,77 +128,76 @@ const SearchSidebar: React.FC<SearchSidebarProps> = ({
                   <Avatar
                     src={connection.avatar}
                     alt={connection.name}
-                    sx={{ width: 60, height: 60, mr: 2.5, mt: 0.5 }}
+                    sx={{ width: 60, height: 60 }}
                   />
                 </ListItemAvatar>
 
-                <ListItemText>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                  >
+                <ListItemText
+                  primary={
                     <Typography
                       variant="bodyRegular"
                       sx={{
                         color: themeColors.text.primary,
+
+                        //   mb: 0.5,
                       }}
                     >
                       {connection.name}
                     </Typography>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 0.6,
-                      }}
-                    >
+                  }
+                  secondary={
+                    <>
                       <Typography
                         variant="subtitleLight"
-                        sx={{ color: themeColors.text.secondary }}
+                        sx={{
+                          display: "block",
+                          color: themeColors.text.secondary,
+                        }}
                       >
-                        32 m
-                      </Typography>
-
-                      <IconButton>
-                        <SvgIcon name="three_dot" width={20} height={20} />
-                      </IconButton>
-                    </Box>
-                  </Box>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Typography
-                      variant="subtitleLight"
-                      sx={{
-                        display: "block",
-                        color: themeColors.text.secondary,
-                        mt: -0.5,
-                      }}
-                    >
-                      Hello, how’s it going?
-                    </Typography>
-
-                    <Badge
-                      badgeContent={
+                        Connected via{" "}
                         <Typography
-                          variant="subtitleRegular"
-                          sx={{ color: themeColors.white.main }}
+                          variant="subtitleBold"
+                          component={"span"}
+                          sx={{
+                            color: themeColors.pantone.main,
+                          }}
                         >
-                          2
+                          {connection.connectedVia}
                         </Typography>
-                      }
-                      sx={{ mr: 2.3 }}
-                      color="primary"
-                    ></Badge>
-                  </Box>
-                </ListItemText>
+                      </Typography>
+                      <Typography
+                        sx={{ color: themeColors.text.secondary }}
+                        variant="captionLight"
+                      >
+                        {connection.timeAgo}
+                      </Typography>
+                    </>
+                  }
+                  sx={{ ml: 1 }}
+                />
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    flexDirection: "column",
+                    gap: 0.6,
+                  }}
+                >
+                  <IconButton>
+                    <SvgIcon
+                      name="cross"
+                      width={20}
+                      height={20}
+                    />
+                  </IconButton>
+                  <IconButton>
+                    <SvgIcon
+                      name="clock_reminder"
+                      width={20}
+                      height={20}
+                    />
+                  </IconButton>
+                </Box>
               </ListItem>
             );
           })}

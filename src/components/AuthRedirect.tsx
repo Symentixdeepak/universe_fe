@@ -2,13 +2,15 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import { UserRole } from '@/lib/authApi';
+import { getRedirectPath } from '@/config/routes';
 
 interface AuthRedirectProps {
   children: React.ReactNode;
-  redirectTo?: string;
+  redirectTo?: string; // Optional: custom redirect path (overrides role-based redirect)
 }
 
-export default function AuthRedirect({ children, redirectTo = '/user/dashboard' }: AuthRedirectProps) {
+export default function AuthRedirect({ children, redirectTo }: AuthRedirectProps) {
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -32,12 +34,19 @@ export default function AuthRedirect({ children, redirectTo = '/user/dashboard' 
     setIsAuthenticated(authenticated);
     
     if (authenticated) {
-      // Check if user profile is completed to determine redirect
+      // Check user role and profile completion to determine redirect
       try {
         const user = JSON.parse(storedUser!);
         console.log('AuthRedirect: user data:', user); // Debug log
         console.log('AuthRedirect: profileCompleted:', user.profileCompleted); // Debug log
-        const finalRedirectTo = user.profileCompleted ? '/user/dashboard' : '/interests';
+        console.log('AuthRedirect: user role:', user.role); // Debug log
+        
+        // Use custom redirect if provided, otherwise use role-based redirect
+        const finalRedirectTo = redirectTo || getRedirectPath(
+          user.role as UserRole,
+          user.profileCompleted
+        );
+        
         console.log('AuthRedirect: redirecting to:', finalRedirectTo); // Debug log
         router.replace(finalRedirectTo);
       } catch (error) {

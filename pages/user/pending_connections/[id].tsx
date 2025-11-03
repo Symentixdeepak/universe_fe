@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import Head from "next/head";
 import { ProtectedRoute } from '@/components';
 import LayoutWrapper from "@/components/LayoutWrapper";
-import MyUniverse from '@/features/User/MyUniverse';
+import MyUniverse from '@/features/User/PendingConnections';
 
 interface MyUniversePageProps {
   userId: string;
@@ -21,7 +21,7 @@ function MyUniversePage({ userId }: MyUniversePageProps) {
   return (
     <>
       <Head>
-        <title>My Universe - Universe Club</title>
+        <title>Pending Connections - Universe Club</title>
       </Head>
       <LayoutWrapper showNavbar={false}>
         <MyUniverse selectedUserId={userId} />
