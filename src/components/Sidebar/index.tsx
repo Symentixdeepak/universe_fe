@@ -115,7 +115,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const handleItemClick = (item: SidebarItem) => {
     setClickedItem(item.id);
-
     // Reset click state after a short delay
     setTimeout(() => {
       setClickedItem(null);
