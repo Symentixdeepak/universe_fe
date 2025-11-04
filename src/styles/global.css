@@ -32,7 +32,10 @@ html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
-  padding-bottom: 50px;
+  overflow-y: hidden;
+  padding: 0;
+  margin: 0;
+  height: 100vh;
 }
 
 /* Base reset - let MUI theme handle the rest */
@@ -58,9 +61,10 @@ html {
   color: var(--white-main);
 }
 
-/* Custom scrollbar for webkit browsers */
+/* Custom scrollbar for webkit browsers - Only visible on hover */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 0px;
+  transition: width 0.3s ease;
 }
 
 ::-webkit-scrollbar-track {
@@ -68,10 +72,20 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--grey-main);
+  background: transparent;
   border-radius: 4px;
+  transition: background 0.3s ease;
 }
 
-::-webkit-scrollbar-thumb:hover {
+/* Show scrollbar on hover */
+*:hover::-webkit-scrollbar {
+  width: 6px;
+}
+
+*:hover::-webkit-scrollbar-thumb {
+  background: var(--grey-main);
+}
+
+*:hover::-webkit-scrollbar-thumb:hover {
   background: var(--pantone-main);
 }

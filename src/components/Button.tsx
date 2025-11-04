@@ -5,6 +5,8 @@ import {
   CircularProgress,
   styled,
   Box,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import { useThemeColors } from "@/hooks";
 
@@ -20,6 +22,7 @@ interface CustomButtonProps extends Omit<MuiButtonProps, "color" | "variant"> {
   customSx?: object;
   loading?: boolean; // 👈 New prop
   loadingText?: string; // 👈 Optional text during loading
+  small?: boolean; // 👈 New prop for small size
 }
 
 // Helper function to get button styles based on theme and state
@@ -30,7 +33,9 @@ const getButtonStyles = (
   isSelected: boolean,
   isHovered: boolean,
   isActive: boolean,
-  disabled?: boolean
+  disabled?: boolean,
+  isMobile?: boolean,
+  isSmall?: boolean
 ) => {
   const effectiveTheme =
     buttonTheme === "auto"
@@ -45,13 +50,13 @@ const getButtonStyles = (
 
   const baseStyles = {
     fontFamily: "Hanken Grotesk, sans-serif",
-    fontSize: "16px",
+    fontSize: isSmall ? "13px" : "16px",
     fontWeight: 300,
     borderRadius: "999px",
     padding: "10px 40px",
     textTransform: "none" as const,
     transition: "all 300ms ease-out",
-    height: "41px",
+    height: isMobile ? "37px" : "41px",
     border: "1px solid transparent",
     display: "inline-flex",
     alignItems: "center",
@@ -275,11 +280,14 @@ const Button: React.FC<CustomButtonProps> = ({
   disabled = false,
   loading = false,
   loadingText,
+  small = false,
   children,
   onClick,
   ...props
 }) => {
   const themeColors = useThemeColors();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [isHovered, setIsHovered] = useState(false);
   const [isActive, setIsActive] = useState(false);
 
@@ -302,7 +310,9 @@ const Button: React.FC<CustomButtonProps> = ({
     selected,
     isHovered,
     isActive,
-    disabled || loading
+    disabled || loading,
+    isMobile,
+    small
   );
 
   return (

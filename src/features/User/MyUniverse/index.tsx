@@ -5,16 +5,15 @@ import {
   useTheme,
   IconButton,
   Typography,
+  Fade,
+  Slide,
+  Zoom,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useThemeColors } from "@/hooks";
 import { useRouter } from "next/router";
-import {
-  SearchSidebar,
-  ProfileHeader,
-  ProfileDetails,
-  ProfileAboutFooter,
-} from "./components";
+import { SearchSidebar, MiddleContent, RightContent } from "./components";
+import { Loader } from "@/components";
 
 interface MyUniverseProps {
   selectedUserId?: string;
@@ -30,99 +29,215 @@ const MyUniverse: React.FC<MyUniverseProps> = ({ selectedUserId }) => {
     selectedUserId || ""
   );
 
-  // Track if we should show content on mobile (when a connection is selected)
-  const [showMobileContent, setShowMobileContent] = useState(false);
+  // Track if we should show profile on mobile
+  const [showMobileProfile, setShowMobileProfile] = useState(false);
+  
+  // Track loading state
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Update selectedConnectionId when selectedUserId prop changes
+  // Simple effect to handle route changes
   useEffect(() => {
+    const showProfile = router.query.show_profile === 'true';
+    
     if (selectedUserId) {
       setSelectedConnectionId(selectedUserId);
-      if (isMobile) {
-        setShowMobileContent(true);
-      }
+      setIsLoading(false); // Content is ready
     }
-  }, [selectedUserId, isMobile]);
+    
+    if (isMobile && showProfile && selectedUserId) {
+      setShowMobileProfile(true);
+    } else {
+      setShowMobileProfile(false);
+    }
+  }, [selectedUserId, router.query.show_profile, isMobile]);
 
   const handleConnectionSelect = (connectionId: string) => {
-    setSelectedConnectionId(connectionId);
-
-    // On mobile, show the content and navigate with router
-    if (isMobile) {
-      setShowMobileContent(true);
-      // Navigate to the user's profile with router.push on mobile too
-      router.push(`/user/my-universe/${connectionId}`, undefined, {
-        shallow: true,
-      });
-    } else {
-      // Navigate to the new user's profile on desktop
-      router.push(`/user/my-universe/${connectionId}`);
-    }
+    // Show loading and navigate
+    setIsLoading(true);
+    router.push(`/user/my-universe/${connectionId}`, undefined, {
+      shallow: true,
+    });
   };
 
   const handleBackToSidebar = () => {
     if (isMobile) {
-      setShowMobileContent(false);
-      setSelectedConnectionId("");
       // Navigate back to the index route
       router.push("/user/my-universe", undefined, { shallow: true });
     }
   };
 
+  const handleBackFromProfile = () => {
+    if (isMobile) {
+      setShowMobileProfile(false);
+      // Remove the show_profile query parameter
+      const currentPath = router.asPath.split('?')[0];
+      router.push(currentPath, undefined, { shallow: true });
+    }
+  };
+
+  // Simple logic: show content if we have a selectedUserId
+  const showContent = !!selectedUserId;
+  const showMobileContent = isMobile && !!selectedUserId && !showMobileProfile;
+
   return (
     <Box
       sx={{
-        display: isMobile ? "block" : "flex",
-        minHeight: "100vh",
-        bgcolor: selectedConnectionId
-          ? themeColors.white.main
-          : themeColors.white.dark,
+        display: "flex",
+        height: "100%",
+        bgcolor: themeColors.white.dark,
+        overflow: "hidden",
+        width: "100%",
       }}
     >
-      {/* Left Sidebar - Show when no connection selected on mobile or always on desktop */}
-      {(!isMobile || !showMobileContent) && (
-        <SearchSidebar
-          selectedConnectionId={selectedConnectionId}
-          onConnectionSelect={handleConnectionSelect}
-        />
-      )}
-
-      {/* Main Content - Show on desktop or when connection selected on mobile */}
-      {(!isMobile || showMobileContent) && selectedConnectionId && (
+      {/* Left Sidebar - Show when no content selected or on desktop */}
+      {(!isMobile || (!showContent && !showMobileProfile)) && (
         <Box
           sx={{
-            flex: 1,
-            display: "flex",
-            flexDirection: "column",
-            padding: isMobile ? "25px" : "40px",
-            width: isMobile ? "100%" : "auto",
+            width: { xs: "100%", md: "28%" },
+            height: "100%",
+            overflow: "hidden",
+            flexShrink: 0,
           }}
         >
-          {/* Profile Header */}
-          <ProfileHeader
-            name="Dr. Maya K."
-            location="San Francisco, CA"
-            description="Building AI solutions that make healthcare smarter and more human."
-            connectedVia="Aelia Kos"
-            avatar="/dr_maya.png"
-            connectedSince="Dec 2024"
+          <SearchSidebar
+            selectedConnectionId={selectedConnectionId}
+            onConnectionSelect={handleConnectionSelect}
           />
-
-          {/* Profile Details */}
-          <ProfileDetails />
-
-          {/* Profile About Footer */}
-          <ProfileAboutFooter />
         </Box>
       )}
 
+      {/* Desktop: Show placeholder when no selection */}
       {!isMobile && !selectedConnectionId && (
-        <Box sx={{m:'auto'}}>
+        <Box
+          sx={{
+            m: "auto",
+          }}
+        >
           <Typography
             variant="bodyLight"
-            sx={{ color: themeColors.text.primary }}
+            sx={{ color: themeColors.text.secondary }}
           >
-        Select a chat to start talking
+            Select a chat to start messaging
           </Typography>
+        </Box>
+      )}
+
+      {/* Middle Content - Show when user selected and not showing profile */}
+      {showMobileContent && (
+        <Box
+          sx={{
+            width: { xs: "100%", md: "44%" },
+            height: "100%",
+            overflow: "hidden",
+            flexShrink: 0,
+          }}
+        >
+          {isLoading ? (
+            <Box
+              sx={{
+                height: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Loader />
+            </Box>
+          ) : (
+            <MiddleContent
+              selectedConnectionId={selectedConnectionId}
+              selectedConnection={
+                selectedConnectionId
+                  ? {
+                      id: selectedConnectionId,
+                      name: "Dr. Maya K.",
+                      avatar: "/dr_maya.png",
+                      status: "online",
+                    }
+                  : undefined
+              }
+              onBackClick={handleBackToSidebar}
+            />
+          )}
+        </Box>
+      )}
+
+      {/* Desktop Middle Content */}
+      {!isMobile && showContent && (
+        <Box
+          sx={{
+            width: "44%",
+            height: "100%",
+            overflow: "hidden",
+            flexShrink: 0,
+          }}
+        >
+          {isLoading ? (
+            <Box
+              sx={{
+                height: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Loader />
+            </Box>
+          ) : (
+            <MiddleContent
+              selectedConnectionId={selectedConnectionId}
+              selectedConnection={
+                selectedConnectionId
+                  ? {
+                      id: selectedConnectionId,
+                      name: "Dr. Maya K.",
+                      avatar: "/dr_maya.png",
+                      status: "online",
+                    }
+                  : undefined
+              }
+              onBackClick={handleBackToSidebar}
+            />
+          )}
+        </Box>
+      )}
+
+      {/* Right Content - Desktop or Mobile Profile */}
+      {((!isMobile && showContent) || (isMobile && showMobileProfile)) && (
+        <Box
+          sx={{
+            width: { xs: "100%", md: "28%" },
+            height: "100%",
+            overflow: "hidden",
+            flexShrink: 0,
+          }}
+        >
+          <RightContent
+            selectedConnectionId={selectedConnectionId}
+            onBackClick={isMobile ? handleBackFromProfile : undefined}
+            userInfo={
+              selectedConnectionId
+                ? {
+                    id: selectedConnectionId,
+                    name: "Dr. Maya K.",
+                    avatar: "/dr_maya.png",
+                    status: "online",
+                    mutualConnections: 12,
+                    connectedVia: "UniVerse",
+                    location: "San Francisco, CA",
+                    bio:
+                      "Passionate about connecting people and building meaningful relationships in the digital age.",
+                    interests: [
+                      "Technology",
+                      "Healthcare",
+                      "Innovation",
+                      "Research",
+                      "Networking",
+                    ],
+                  }
+                : undefined
+            }
+          />
         </Box>
       )}
     </Box>

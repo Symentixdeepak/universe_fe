@@ -11,7 +11,9 @@ import { useThemeColors } from "@/hooks";
 import { useRouter } from "next/router";
 import {
   SearchSidebar,
-
+  ProfileHeader,
+  ProfileDetails,
+  ProfileAboutFooter,
 } from "./components";
 
 interface MyUniverseProps {
@@ -95,7 +97,21 @@ const MyUniverse: React.FC<MyUniverseProps> = ({ selectedUserId }) => {
             width: isMobile ? "100%" : "auto",
           }}
         >
-   
+             {/* Profile Header */}
+          <ProfileHeader
+            name="Dr. Maya K."
+            location="San Francisco, CA"
+            description="Building AI solutions that make healthcare smarter and more human."
+            connectedVia="Aelia Kos"
+            avatar="/dr_maya.png"
+            connectedSince="Dec 2024"
+          />
+
+          {/* Profile Details */}
+          <ProfileDetails />
+
+          {/* Profile About Footer */}
+          <ProfileAboutFooter />
         </Box>
       )}
 

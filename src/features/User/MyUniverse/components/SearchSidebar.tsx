@@ -78,12 +78,13 @@ const SearchSidebar: React.FC<SearchSidebarProps> = ({
   return (
     <Box
       sx={{
-        width: { xs: "100%", md: "370px" },
-        height: "100vh",
+        width: "100%",
+        height: "100%",
         display: "flex",
         flexDirection: "column",
         padding: "20px",
         background: themeColors.white.main,
+        overflow: "hidden",
       }}
     >
       {/* Search Header */}
@@ -156,7 +157,10 @@ const SearchSidebar: React.FC<SearchSidebarProps> = ({
                     >
                       <Typography
                         variant="subtitleLight"
-                        sx={{ color: themeColors.text.secondary }}
+                        sx={{
+                          color: themeColors.text.secondary,
+                          visibility: { xs: "hidden", md: "visible" },
+                        }}
                       >
                         32 m
                       </Typography>
@@ -173,16 +177,29 @@ const SearchSidebar: React.FC<SearchSidebarProps> = ({
                       alignItems: "center",
                     }}
                   >
-                    <Typography
-                      variant="subtitleLight"
-                      sx={{
-                        display: "block",
-                        color: themeColors.text.secondary,
-                        mt: -0.5,
-                      }}
-                    >
-                      Hello, how’s it going?
-                    </Typography>
+                    <div>
+                      <Typography
+                        variant="subtitleLight"
+                        noWrap
+                        sx={{
+                          display: "block",
+                          maxWidth: 200,
+                          color: themeColors.text.secondary,
+                          mt: -0.5,
+                        }}
+                      >
+                        Hello, how’s it going?
+                      </Typography>
+                      <Typography
+                        variant="captionLight"
+                        sx={{
+                          color: themeColors.text.secondary,
+                          display: { xs: "flex", md: "none" },
+                        }}
+                      >
+                        30 minutes ago
+                      </Typography>
+                    </div>
 
                     <Badge
                       badgeContent={

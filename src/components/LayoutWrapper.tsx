@@ -27,7 +27,7 @@ const LayoutContent: React.FC<LayoutWrapperProps> = ({
   const navbarHeight = isMobile ? NAVBAR_HEIGHT_MOBILE : NAVBAR_HEIGHT_DESKTOP;
 
   return (
-    <Box sx={{ display: "flex", minHeight: "100vh", overflow: "hidden" }}>
+    <Box sx={{ display: "flex", height: "100vh", overflow: "auto" }}>
       {showSidebar && !isMobile && (
         <Box
           sx={{
@@ -88,7 +88,7 @@ const LayoutContent: React.FC<LayoutWrapperProps> = ({
           component="main"
           sx={{
             flexGrow: 1,
-            minHeight: "100vh",
+            height: `calc(100vh - ${(showNavbar || isMobile) ? navbarHeight : 0}px)`,
             marginTop: (showNavbar || isMobile) ? `${navbarHeight}px` : 0,
             transition: (theme) =>
               theme.transitions.create(["margin"], {

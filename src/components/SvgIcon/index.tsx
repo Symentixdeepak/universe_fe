@@ -25,6 +25,10 @@ const iconMap = {
   signout:"/assets/images/icons/signout.svg",
   profile:"/assets/images/icons/profile.svg",
   three_dot:"/assets/images/icons/three_dot.svg",
+  user_tick:"/assets/images/icons/user_tick.svg",
+  search_icon:"/assets/images/icons/search_bar.svg",
+  attach:"/assets/images/icons/attach_icon.svg",
+  send_icon:"/assets/images/icons/sendChat.svg",
 };
 
 export type IconName = keyof typeof iconMap;

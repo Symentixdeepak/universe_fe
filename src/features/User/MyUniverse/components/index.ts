@@ -1,4 +1,3 @@
 export { default as SearchSidebar } from './SearchSidebar';
-export { default as ProfileHeader } from './ProfileHeader';
-export { default as ProfileDetails } from './ProfileDetails';
-export { default as ProfileAboutFooter } from './ProfileAboutFooter';
+export { default as MiddleContent } from './MiddleContent';
+export { default as RightContent } from './RightContent';
