@@ -26,7 +26,7 @@ export const ROUTE_CONFIG: RouteConfig[] = [
     path: "/user/my-universe",
     allowedRoles: ["user"],
   },
-    {
+  {
     path: "/user/pending_connections",
     allowedRoles: ["user"],
   },
@@ -39,15 +39,17 @@ export const ROUTE_CONFIG: RouteConfig[] = [
     path: "/superconnector/dashboard",
     allowedRoles: ["superconnector"],
   },
-  
+
+  {
+    path: "/superconnector/connections",
+    allowedRoles: ["superconnector"],
+  },
+
   // Common routes - accessible by both roles
   {
     path: "/interests",
     allowedRoles: ["user", "superconnector"],
   },
-  
-  // Public routes (handled separately, not in protected routes)
-  // /auth/login, /auth/register, /redirect-linkedin
 ];
 
 // Role-based default redirect paths
@@ -56,12 +58,8 @@ export const ROLE_REDIRECT_PATHS: Record<UserRole, string> = {
   superconnector: "/superconnector/dashboard",
 };
 
-// Get default redirect path for incomplete profiles
 export const PROFILE_INCOMPLETE_REDIRECT = "/interests";
 
-/**
- * Check if a user with a specific role can access a given path
- */
 export function canAccessRoute(path: string, userRole: UserRole): boolean {
   // Find matching route configuration
   const matchingRoute = ROUTE_CONFIG.find((route) => {

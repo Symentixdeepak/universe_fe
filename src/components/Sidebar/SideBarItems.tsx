@@ -114,7 +114,7 @@ export const sidebarItemsSuperConnector: SidebarItem[] = [
     id: "connection_made",
     title: "Connections Made",
     iconComponent: ConnectionMadeIcon,
-    path: "/superconnector/connections-made",
+    path: "/superconnector/connections",
   },
   {
     id: "connected",

@@ -366,6 +366,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const value: AuthContextType = {
     // DO NOT hardcode role here. Return actual user from state.
+    // user::{...user,role:"superconnector" as UserRole},
     user,
     tokens,
     isLoading,
