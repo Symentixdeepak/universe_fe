@@ -90,7 +90,7 @@ const ProfileDetails: React.FC<ProfileDetailsProps> = ({
               width: 60,
               height: 60,
               borderRadius: "50%",
-              bgcolor: themeColors.background.secondary,
+              // bgcolor: themeColors.background.secondary,
               display: "flex",
               alignItems: "center",
               //   justifyContent: "center",

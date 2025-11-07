@@ -117,7 +117,7 @@ const SvgIcon: React.FC<SvgIconProps> = ({
           width, 
           height, 
           display: 'inline-block',
-          backgroundColor: '#f0f0f0',
+          // backgroundColor: '#f0f0f0',
           ...style 
         }} 
       />
