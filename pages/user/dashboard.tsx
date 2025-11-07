@@ -1,7 +1,16 @@
 import { ReactElement } from "react";
 import Head from "next/head";
-import { ProtectedRoute } from "@/components";
-import UserConnector from "@/features/User/UserConnect";
+import { createAsyncComponent, LoaderConfigs } from '@/components/AsyncWrapper';
+
+// Dynamic imports for better performance
+const ProtectedRoute = createAsyncComponent(
+  () => import("@/components/ProtectedRoute"),
+  LoaderConfigs.component
+);
+const UserConnector = createAsyncComponent(
+  () => import("@/features/User/UserConnect"),
+  LoaderConfigs.page
+);
 
 function Dashboard() {
   return (

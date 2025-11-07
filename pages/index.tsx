@@ -2,9 +2,15 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { Box } from '@mui/material';
-import Loader from '@/components/Loader';
+import { createAsyncComponent, LoaderConfigs } from '@/components/AsyncWrapper';
 import { getRedirectPath } from '@/config/routes';
 import { UserRole } from '@/lib/authApi';
+
+// Dynamic import for Loader component
+const Loader = createAsyncComponent(
+  () => import('@/components/Loader'),
+  LoaderConfigs.page
+);
 
 export default function Home() {
   const router = useRouter();

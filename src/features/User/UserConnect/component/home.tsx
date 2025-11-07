@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Box, Typography, useTheme, useMediaQuery } from '@mui/material';
-import { TextField, Chip } from '@/components';
+import { TextField, Chip, AssistantChat } from '@/components';
 import { useThemeColors } from '@/hooks';
 import ArrowCircleRightOutlinedIcon from '@mui/icons-material/ArrowCircleRightOutlined';
 import Chat from './Chat';
+import ConnectionFound from './ConnectionFound';
 const suggestions = [
   'Find me a travel partner',
   'Find me someone in the tech industry',
@@ -17,6 +18,7 @@ export const UserConnectHome = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [searchText, setSearchText] = useState('');
   const [showChat, setShowChat] = useState(false);
+  const [showConnectionFound, setShowConnectionFound] = useState(false);
 
   const handleSearch = () => {
     if (searchText.trim()) {
@@ -24,8 +26,42 @@ export const UserConnectHome = () => {
     }
   };
 
+  const handleConnectDrMaya = () => {
+    setShowConnectionFound(true);
+  };
+
+  const handleViewProfile = () => {
+    // Handle view profile action
+    console.log('View Amelia\'s Profile clicked');
+  };
+
+  const handleAcceptConnection = () => {
+    // Handle accepting the connection
+    console.log('Connection accepted');
+    // You can navigate to pending connections or show success message
+  };
+
+  const handleDeclineConnection = () => {
+    // Handle declining the connection - go back to chat
+    setShowConnectionFound(false);
+  };
+
+  if (showConnectionFound) {
+    return (
+      <ConnectionFound
+        onAccept={handleAcceptConnection}
+        onDecline={handleDeclineConnection}
+      />
+    );
+  }
+
   if (showChat) {
-    return <Chat setShowChat={setShowChat} />;
+    return (
+      <AssistantChat
+        onConnectDrMaya={handleConnectDrMaya}
+        onViewProfile={handleViewProfile}
+      />
+    );
   }
 
   return (

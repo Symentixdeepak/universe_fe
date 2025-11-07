@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 
 // Icon mapping with all available SVG icons
@@ -29,6 +29,9 @@ const iconMap = {
   search_icon:"/assets/images/icons/search_bar.svg",
   attach:"/assets/images/icons/attach_icon.svg",
   send_icon:"/assets/images/icons/sendChat.svg",
+  profile_cricle:"/assets/images/icons/profile_circle.svg",
+  add_circle:"/assets/images/icons/add_circle.svg",
+  copy:"/assets/images/icons/copy.svg",
 };
 
 export type IconName = keyof typeof iconMap;
@@ -42,6 +45,8 @@ interface SvgIconProps {
   style?: React.CSSProperties;
   quality?: number;
   priority?: boolean;
+  color?: string;
+  hoverColor?: string;
 }
 
 const SvgIcon: React.FC<SvgIconProps> = ({
@@ -53,7 +58,11 @@ const SvgIcon: React.FC<SvgIconProps> = ({
   style,
   quality = 100,
   priority = false,
+  color,
+  hoverColor,
 }) => {
+  const [svgContent, setSvgContent] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(false);
   const iconSrc = iconMap[name];
 
   if (!iconSrc) {
@@ -61,23 +70,96 @@ const SvgIcon: React.FC<SvgIconProps> = ({
     return null;
   }
 
-  // Merge custom dimensions with existing style
-  const mergedStyle = {
-    ...style,
-    ...(width !== 20 && { width }),
-    ...(height !== 20 && { height }),
-  };
+  // Fetch and parse SVG content when color is provided
+  useEffect(() => {
+    if (color || hoverColor) {
+      setIsLoading(true);
+      fetch(iconSrc)
+        .then(response => response.text())
+        .then(svgText => {
+          setSvgContent(svgText);
+          setIsLoading(false);
+        })
+        .catch(error => {
+          console.error('Error loading SVG:', error);
+          setIsLoading(false);
+        });
+    }
+  }, [iconSrc, color, hoverColor]);
+
+  // If no color is specified, use the regular Image component
+  if (!color && !hoverColor) {
+    const mergedStyle: React.CSSProperties = {
+      ...style,
+      ...(width !== 20 && { width }),
+      ...(height !== 20 && { height }),
+    };
+
+    return (
+      <Image
+        src={iconSrc}
+        alt={alt || name}
+        width={width}
+        height={height}
+        quality={quality}
+        priority={priority}
+        className={className}
+        style={mergedStyle}
+      />
+    );
+  }
+
+  // For colored icons, render inline SVG
+  if (isLoading || !svgContent) {
+    return (
+      <div 
+        style={{ 
+          width, 
+          height, 
+          display: 'inline-block',
+          backgroundColor: '#f0f0f0',
+          ...style 
+        }} 
+      />
+    );
+  }
+
+  // Parse and modify SVG content to apply colors
+  const modifiedSvg = svgContent
+    .replace(/width="[^"]*"/g, `width="${width}"`)
+    .replace(/height="[^"]*"/g, `height="${height}"`)
+    .replace(/fill="[^"]*"/g, `fill="${color || '#000000'}"`)
+    .replace(/<path(?![^>]*fill=)/g, `<path fill="${color || '#000000'}"`)
+    .replace(/<circle(?![^>]*fill=)/g, `<circle fill="${color || '#000000'}"`)
+    .replace(/<rect(?![^>]*fill=)/g, `<rect fill="${color || '#000000'}"`);
 
   return (
-    <Image
-      src={iconSrc}
-      alt={alt || name}
-      width={width}
-      height={height}
-      quality={quality}
-      priority={priority}
+    <div
       className={className}
-      style={mergedStyle}
+      style={{
+        ...style,
+        display: 'inline-block',
+        transition: 'all 0.2s ease-in-out',
+      }}
+      dangerouslySetInnerHTML={{ __html: modifiedSvg }}
+      onMouseEnter={hoverColor ? (e) => {
+        const svgElement = e.currentTarget.querySelector('svg');
+        if (svgElement) {
+          const elements = svgElement.querySelectorAll('path, circle, rect, polygon');
+          elements.forEach(el => {
+            (el as SVGElement).setAttribute('fill', hoverColor);
+          });
+        }
+      } : undefined}
+      onMouseLeave={color ? (e) => {
+        const svgElement = e.currentTarget.querySelector('svg');
+        if (svgElement) {
+          const elements = svgElement.querySelectorAll('path, circle, rect, polygon');
+          elements.forEach(el => {
+            (el as SVGElement).setAttribute('fill', color);
+          });
+        }
+      } : undefined}
     />
   );
 };

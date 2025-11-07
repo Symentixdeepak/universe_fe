@@ -196,6 +196,7 @@ export const Chat = ({ setShowChat }) => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+         
           margin: "0 auto",
           gap: 2,
           transition: "left 0.3s ease", // smooth animation when toggling sidebar
@@ -211,7 +212,7 @@ export const Chat = ({ setShowChat }) => {
           <Chip label="View Amelia's Profile" variant="outlined" />
         </Box>
 
-        <Box sx={{ width: "100%", maxWidth: "680px" }}>
+        <Box sx={{ width: "100%", maxWidth: "680px",}}>
           <TextField
             fullWidth
             multiline

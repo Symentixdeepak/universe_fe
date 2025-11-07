@@ -9,7 +9,6 @@ import {
   Slide,
   Zoom,
 } from "@mui/material";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useThemeColors } from "@/hooks";
 import { useRouter } from "next/router";
 import { Loader } from "@/components";
@@ -63,12 +62,7 @@ const MyUniverse: React.FC<MyConnectionsProps> = ({ selectedUserId }) => {
     });
   };
 
-  const handleBackToSidebar = () => {
-    if (isMobile) {
-      // Navigate back to the index route
-      router.push("/user/my-universe", undefined, { shallow: true });
-    }
-  };
+
 
   const handleStatusChange = (status: 'accepted' | 'pending') => {
     setCurrentStatus(status);

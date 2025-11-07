@@ -11,7 +11,7 @@ export interface LoaderProps {
 }
 
 const Loader: React.FC<LoaderProps> = ({
-  message,
+  message = '',
   size = 22,
   color = 'primary',
 }) => {
@@ -71,19 +71,7 @@ const Loader: React.FC<LoaderProps> = ({
         ))}
       </Box>
 
-      {message && (
-        <Typography
-          variant="bodyRegular"
-          sx={{
-            color: themeColors.text.secondary,
-            mt: 2,
-            textAlign: 'center',
-            maxWidth: 300,
-          }}
-        >
-          {message}
-        </Typography>
-      )}
+
     </Box>
   );
 };

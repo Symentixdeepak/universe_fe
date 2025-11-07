@@ -9,6 +9,7 @@ interface LayoutWrapperProps {
   children: React.ReactNode;
   showSidebar?: boolean;
   showNavbar?: boolean;
+  showIconOnlyNavbar?: boolean;
 }
 
 const SIDEBAR_WIDTH_EXPANDED = 185;
@@ -20,7 +21,9 @@ const LayoutContent: React.FC<LayoutWrapperProps> = ({
   children,
   showSidebar = true,
   showNavbar = true,
+  showIconOnlyNavbar = false,
 }) => {
+  console.log('LayoutContent received:', { showSidebar, showNavbar, showIconOnlyNavbar });
   const { isSidebarExpanded, toggleSidebar } = useSidebar();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -80,7 +83,7 @@ const LayoutContent: React.FC<LayoutWrapperProps> = ({
               zIndex: (theme) => theme.zIndex.appBar,
             }}
           >
-            <Navbar isSidebarExpanded={isSidebarExpanded} />
+            <Navbar showIconOnlyNavbar={showIconOnlyNavbar} isSidebarExpanded={isSidebarExpanded} />
           </Box>
         )}
 
@@ -107,10 +110,13 @@ const LayoutContent: React.FC<LayoutWrapperProps> = ({
   );
 };
 
-export const LayoutWrapper: React.FC<LayoutWrapperProps> = (props) => (
-  <SidebarProvider>
-    <LayoutContent {...props} />
-  </SidebarProvider>
-);
+export const LayoutWrapper: React.FC<LayoutWrapperProps> = (props) => {
+  console.log('LayoutWrapper received props:', props);
+  return (
+    <SidebarProvider>
+      <LayoutContent {...props} />
+    </SidebarProvider>
+  );
+};
 
 export default LayoutWrapper;

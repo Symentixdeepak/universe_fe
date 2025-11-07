@@ -1,10 +1,17 @@
 import { ReactElement } from "react";
-import ProtectedRoute from "@/components/ProtectedRoute";
 import { Box, Typography, Container } from "@mui/material";
 import { useUserRole } from "@/hooks";
-import Navbar from "@/components/Navbar";
-import Sidebar from "@/components/Sidebar";
-import LayoutWrapper from "@/components/LayoutWrapper";
+import { createAsyncComponent, LoaderConfigs } from '@/components/AsyncWrapper';
+
+// Dynamic imports for better performance
+const ProtectedRoute = createAsyncComponent(
+  () => import("@/components/ProtectedRoute"),
+  LoaderConfigs.component
+);
+const LayoutWrapper = createAsyncComponent(
+  () => import("@/components/LayoutWrapper"),
+  LoaderConfigs.component
+);
 
 /**
  * Superconnector Dashboard Page

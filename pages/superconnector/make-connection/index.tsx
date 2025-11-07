@@ -11,36 +11,37 @@ const LayoutWrapper = createAsyncComponent(
   () => import("@/components/LayoutWrapper"),
   LoaderConfigs.component
 );
-const MyConnection = createAsyncComponent(
-  () => import("@/features/SuperConnector/MyConnections"),
+const MakeConnection = createAsyncComponent(
+  () => import("@/features/SuperConnector/MakeConnection"),
   LoaderConfigs.page
 );
-
-function SuperconnectorConnectionsPage() {
+function SuperConnectorNewConnection() {
+  console.log('SuperConnectorNewConnection component rendered');
   return (
     <>
       <Head>
-        <title>My Connections- Universe Club</title>
+        <title>Make Connection- Universe Club</title>
       </Head>
-      <LayoutWrapper showNavbar={false}>
-        <MyConnection />
-      </LayoutWrapper>
+      <MakeConnection />
     </>
   );
 }
 
 // Wrap the page with ProtectedRoute and specify allowed roles
-(SuperconnectorConnectionsPage as any).getLayout = function getLayout(
+(SuperConnectorNewConnection as any).getLayout = function getLayout(
   page: ReactElement
 ) {
+  console.log('getLayout called for make-connection page');
   return (
     <ProtectedRoute
       requireProfileComplete={true}
       allowedRoles={["superconnector"]}
     >
-      {page}
+      <LayoutWrapper showIconOnlyNavbar={true}>
+        {page}
+      </LayoutWrapper>
     </ProtectedRoute>
   );
 };
 
-export default SuperconnectorConnectionsPage;
+export default SuperConnectorNewConnection;

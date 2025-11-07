@@ -2,9 +2,21 @@ import { ReactElement, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useMediaQuery, useTheme } from '@mui/material';
 import Head from "next/head";
-import { Loader, ProtectedRoute } from '@/components';
-import MyUniverse from '@/features/User/PendingConnections';
-import LayoutWrapper from "@/components/LayoutWrapper";
+import { createAsyncComponent, LoaderConfigs } from '@/components/AsyncWrapper';
+
+// Dynamic imports for better performance
+const ProtectedRoute = createAsyncComponent(
+  () => import('@/components/ProtectedRoute'),
+  LoaderConfigs.component
+);
+const MyUniverse = createAsyncComponent(
+  () => import('@/features/User/PendingConnections'),
+  LoaderConfigs.page
+);
+const LayoutWrapper = createAsyncComponent(
+  () => import("@/components/LayoutWrapper"),
+  LoaderConfigs.component
+);
 
 function MyUniverseIndex() {
   const router = useRouter();

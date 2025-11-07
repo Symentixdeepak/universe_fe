@@ -61,10 +61,9 @@ html {
   color: var(--white-main);
 }
 
-/* Custom scrollbar for webkit browsers - Only visible on hover */
+/* Custom scrollbar for webkit browsers - Always visible but subtle */
 ::-webkit-scrollbar {
-  width: 0px;
-  transition: width 0.3s ease;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -72,16 +71,12 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: transparent;
+  background: rgba(127, 127, 127, 0.2);
   border-radius: 4px;
   transition: background 0.3s ease;
 }
 
-/* Show scrollbar on hover */
-*:hover::-webkit-scrollbar {
-  width: 6px;
-}
-
+/* Highlight scrollbar on hover */
 *:hover::-webkit-scrollbar-thumb {
   background: var(--grey-main);
 }

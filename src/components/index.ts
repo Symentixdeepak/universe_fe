@@ -21,6 +21,7 @@ export { default as ProfilePopover } from './Navbar/ProfilePopover';
 export { default as CommonTabs } from './CommonTabs';
 export { default as ErrorBoundary } from './ErrorBoundary';
 export { default as ButtonGroup } from './ButtonGroup';
+export { default as AssistantChat } from './AssistantChat/AssistantChat';
 
 // Example:
 // export { Button } from './button';

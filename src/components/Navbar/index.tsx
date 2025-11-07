@@ -8,9 +8,13 @@ import { useSidebar } from "@/contexts/SideBarContext";
 
 interface NavbarProps {
   isSidebarExpanded?: boolean;
+  showIconOnlyNavbar?: boolean;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ isSidebarExpanded = true }) => {
+export const Navbar: React.FC<NavbarProps> = ({
+  isSidebarExpanded = true,
+  showIconOnlyNavbar,
+}) => {
   const theme = useTheme();
   const themeColors = useThemeColors();
   const { toggleSidebar } = useSidebar();
@@ -18,7 +22,7 @@ export const Navbar: React.FC<NavbarProps> = ({ isSidebarExpanded = true }) => {
   const [profileAnchorEl, setProfileAnchorEl] = useState<HTMLElement | null>(
     null
   );
-
+console.log({showIconOnlyNavbar});
   // Responsive breakpoints
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -90,20 +94,33 @@ export const Navbar: React.FC<NavbarProps> = ({ isSidebarExpanded = true }) => {
         </IconButton>
       ) : (
         <Box sx={{ ml: isSidebarExpanded ? 23 : 7 }}>
-          <Image
-            src="/assets/images/logos/universal_name_logo.png"
-            alt="Universal Logo"
-            width={148}
-            height={40}
-            style={{
-              objectFit: "contain",
-              filter: themeColors?.isDark ? "invert(1)" : "inherit",
-            }}
-          />
+          {!showIconOnlyNavbar ? (
+            <Image
+              src="/assets/images/logos/universal_name_logo.png"
+              alt="Universal Logo"
+              width={148}
+              height={40}
+              style={{
+                objectFit: "contain",
+                filter: themeColors?.isDark ? "invert(1)" : "inherit",
+              }}
+            />
+          ) : (
+            <Image
+              src="/assets/images/logos/universal_logo.png"
+              alt="Universal Logo"
+              width={40}
+              height={40}
+              style={{
+                objectFit: "contain",
+                filter: themeColors?.isDark ? "invert(1)" : "inherit",
+              }}
+            />
+          )}
         </Box>
       )}
       {isMobile && (
-        <Box sx={{mt:1}}>
+        <Box sx={{ mt: 1 }}>
           <Image
             src="/assets/images/logos/universal_logo.png"
             alt="Universal Logo"

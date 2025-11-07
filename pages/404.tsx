@@ -3,7 +3,13 @@ import { Box, Typography, Container } from '@mui/material';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useThemeColors } from '@/hooks';
-import { Button } from '@/components';
+import { createAsyncComponent, LoaderConfigs } from '@/components/AsyncWrapper';
+
+// Dynamic imports for better performance
+const Button = createAsyncComponent(
+  () => import('@/components/Button'),
+  LoaderConfigs.component
+);
 
 export default function Custom404() {
   const router = useRouter();

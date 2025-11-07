@@ -107,7 +107,7 @@ export const sidebarItemsSuperConnector: SidebarItem[] = [
     id: "connected_other",
     title: "Connect Others",
     iconComponent: ConnectIcon,
-    path: "/superconnector/dashboard",
+    path: "/superconnector/make-connection",
     children: childItemsSuperConnector,
   },
   {

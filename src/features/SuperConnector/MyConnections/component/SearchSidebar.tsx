@@ -234,23 +234,21 @@ const SearchSidebar: React.FC<SearchSidebarProps> = ({
       </Box>
 
       {/* Status Filter ButtonGroup - Fixed at bottom */}
-              <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-      <Box
-        sx={{
-          position: "sticky",
-          bottom: 0,
-          backgroundColor: themeColors.white.main,
-          borderTop: `1px solid ${themeColors.white.dark}`,
-       
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
         }}
       >
-
+        <Box
+          sx={{
+            position: "sticky",
+            bottom: 0,
+            backgroundColor: themeColors.white.main,
+            borderTop: `1px solid ${themeColors.white.dark}`,
+          }}
+        >
           <ButtonGroup
             options={[
               { value: "accepted", label: "Accepted" },
@@ -259,8 +257,8 @@ const SearchSidebar: React.FC<SearchSidebarProps> = ({
             value={statusFilter}
             onChange={handleStatusChange}
           />
-      </Box>
-        </div>
+        </Box>
+      </div>
     </Box>
   );
 };

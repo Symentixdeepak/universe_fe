@@ -2,9 +2,21 @@ import { ReactElement, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useMediaQuery, useTheme } from "@mui/material";
 import Head from "next/head";
-import { Loader, ProtectedRoute } from "@/components";
-import LayoutWrapper from "@/components/LayoutWrapper";
-import MyUniverse from "@/features/User/MyUniverse";
+import { createAsyncComponent, LoaderConfigs } from '@/components/AsyncWrapper';
+
+// Dynamic imports for better performance
+const ProtectedRoute = createAsyncComponent(
+  () => import("@/components/ProtectedRoute"),
+  LoaderConfigs.component
+);
+const LayoutWrapper = createAsyncComponent(
+  () => import("@/components/LayoutWrapper"),
+  LoaderConfigs.component
+);
+const MyUniverse = createAsyncComponent(
+  () => import("@/features/User/MyUniverse"),
+  LoaderConfigs.page
+);
 
 function MyUniverseIndex() {
   return (

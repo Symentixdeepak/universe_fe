@@ -5,7 +5,13 @@ import { Box, Typography, CircularProgress, Container } from "@mui/material";
 import { useAuth } from "@/contexts/AuthContext";
 import { useThemeColors } from "@/hooks";
 import { toastService } from "@/lib/toast";
-import { Loader } from "@/components";
+import { createAsyncComponent, LoaderConfigs } from '@/components/AsyncWrapper';
+
+// Dynamic imports for better performance
+const Loader = createAsyncComponent(
+  () => import("@/components/Loader"),
+  LoaderConfigs.inline
+);
 
 export default function LinkedInRedirect() {
   const router = useRouter();

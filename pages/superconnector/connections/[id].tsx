@@ -2,9 +2,21 @@ import { ReactElement } from "react";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import Head from "next/head";
-import { ProtectedRoute } from "@/components";
-import LayoutWrapper from "@/components/LayoutWrapper";
-import MyConnection from "@/features/SuperConnector/MyConnections";
+import { createAsyncComponent, LoaderConfigs } from '@/components/AsyncWrapper';
+
+// Dynamic imports for better performance
+const ProtectedRoute = createAsyncComponent(
+  () => import("@/components/ProtectedRoute"),
+  LoaderConfigs.component
+);
+const LayoutWrapper = createAsyncComponent(
+  () => import("@/components/LayoutWrapper"),
+  LoaderConfigs.component
+);
+const MyConnection = createAsyncComponent(
+  () => import("@/features/SuperConnector/MyConnections"),
+  LoaderConfigs.page
+);
 
 interface MyUniversePageProps {
   userId: string;
@@ -15,7 +27,7 @@ function SuperconnectorConnectionsPage({ userId }: MyUniversePageProps) {
 
   // Handle loading state
   if (router.isFallback) {
-    return <div>Loading...</div>;
+    return <div></div>;
   }
 
   return (

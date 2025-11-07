@@ -1,10 +1,24 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { Box } from "@mui/material";
-import SignUpStep1 from '@/features/Register/components/SignUpStep1';
+import { createAsyncComponent, LoaderConfigs } from '@/components/AsyncWrapper';
+
+// Dynamic imports for better performance
+const SignUpStep1 = createAsyncComponent(
+  () => import('@/features/Register/components/SignUpStep1'),
+  LoaderConfigs.component
+);
+const Header = createAsyncComponent(
+  () => import('@/features/Register/components/Header'),
+  LoaderConfigs.component
+);
+const AuthRedirect = createAsyncComponent(
+  () => import('@/components/AuthRedirect'),
+  LoaderConfigs.component
+);
+
+// Import SignUpProvider directly as it's a context provider
 import { SignUpProvider } from '@/features/Register/context/SignUpContext';
-import Header from '@/features/Register/components/Header';
-import { AuthRedirect } from '@/components';
 
 export default function Login() {
   const router = useRouter();

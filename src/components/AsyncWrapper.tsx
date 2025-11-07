@@ -20,7 +20,6 @@ export function withAsyncLoader<P extends object>(
     <Suspense 
       fallback={
         <Loader 
-          message="Loading..."
           {...loaderProps}
         />
       }
@@ -41,9 +40,6 @@ const AsyncWrapper: React.FC<AsyncWrapperProps> = ({
 }) => {
   const defaultLoaderProps: Partial<LoaderProps> = {
     size: 40,
-    message: 'Loading...',
-    fullScreen: false,
-    overlay: false,
     ...loaderProps,
   };
 
@@ -70,7 +66,6 @@ export function createAsyncComponent<P extends object>(
   return dynamic(importFn, {
     loading: () => (
       <Loader 
-        message="Loading component..."
         {...loaderProps}
       />
     ),
@@ -81,38 +76,23 @@ export function createAsyncComponent<P extends object>(
 // Common loader configurations
 export const LoaderConfigs = {
   page: {
-    size: 50,
-    message: 'Loading page...',
-    fullScreen: true,
-    overlay: true,
+    size: 22,
   } as Partial<LoaderProps>,
   
   component: {
-    size: 30,
-    message: 'Loading...',
-    fullScreen: false,
-    overlay: false,
+    size: 22,
   } as Partial<LoaderProps>,
   
   api: {
-    size: 24,
-    message: 'Processing...',
-    fullScreen: false,
-    overlay: true,
+    size: 22,
   } as Partial<LoaderProps>,
   
   modal: {
-    size: 40,
-    message: 'Loading...',
-    fullScreen: false,
-    overlay: true,
+    size: 22,
   } as Partial<LoaderProps>,
   
   inline: {
-    size: 20,
-    message: undefined,
-    fullScreen: false,
-    overlay: false,
+    size: 22,
   } as Partial<LoaderProps>,
 };
 
