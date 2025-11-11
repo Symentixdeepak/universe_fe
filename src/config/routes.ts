@@ -19,7 +19,7 @@ export const ROUTE_CONFIG: RouteConfig[] = [
     allowedRoles: ["user"],
   },
   {
-    path: "/user/dashboard",
+    path: "/user/connections",
     allowedRoles: ["user"],
   },
   {
@@ -36,7 +36,7 @@ export const ROUTE_CONFIG: RouteConfig[] = [
     allowedRoles: ["superconnector"],
   },
   {
-    path: "/superconnector/dashboard",
+    path: "/superconnector/make-connection",
     allowedRoles: ["superconnector"],
   },
 
@@ -54,8 +54,8 @@ export const ROUTE_CONFIG: RouteConfig[] = [
 
 // Role-based default redirect paths
 export const ROLE_REDIRECT_PATHS: Record<UserRole, string> = {
-  user: "/user/dashboard",
-  superconnector: "/superconnector/dashboard",
+  user: "/user/connections",
+  superconnector: "/superconnector/make-connection",
 };
 
 export const PROFILE_INCOMPLETE_REDIRECT = "/interests";

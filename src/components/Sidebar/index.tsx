@@ -26,7 +26,6 @@ import {
   SIDEBAR_WIDTH_COLLAPSED,
   SIDEBAR_WIDTH_EXPANDED,
   SidebarItem,
-  sidebarItems,
   sidebarItemsSuperConnector,
   sidebarItemsUser,
 } from "./SideBarItems";
@@ -120,25 +119,63 @@ export const Sidebar: React.FC<SidebarProps> = ({
       setClickedItem(null);
     }, 150);
 
+    // Handle sidebar open/close based on flags
+    if (item.closeSidebarOnClick && isExpanded) {
+      // If sidebar is open and closeSidebarOnClick is true, close it
+      closeSidebar();
+      return; // Don't proceed with other actions
+    } else if (item.openSidebarOnClick) {
+      // Open sidebar if openSidebarOnClick is true
+      openSidebar();
+    }
+
     if (item.id === "search") {
       // Open sidebar when search is clicked
-      openSidebar();
       return;
     }
 
     if (item.children && item.children.length > 0) {
-      // Open sidebar and toggle expand/collapse for items with children
-      openSidebar();
-      setExpandedItems((prev) =>
-        prev.includes(item.id)
-          ? prev.filter((id) => id !== item.id)
-          : [...prev, item.id]
-      );
+      if (item.isLink) {
+        // If isLink is true, navigate to the parent path and expand children
+        router.push(item.path, undefined, { shallow: true });
+        // Also expand the children to show them
+        if (!isExpanded) {
+          openSidebar();
+        }
+        setExpandedItems((prev) =>
+          prev.includes(item.id) ? prev : [...prev, item.id]
+        );
+        // Don't close sidebar when item has children and isLink is true
+      } else {
+        // If isLink is false, only toggle expand/collapse (no navigation)
+        setExpandedItems((prev) =>
+          prev.includes(item.id)
+            ? prev.filter((id) => id !== item.id)
+            : [...prev, item.id]
+        );
+      }
     } else {
-      // Navigate to path for items without children and close sidebar
-      router.push(item.path, undefined, { shallow: true });
-      closeSidebar();
+      // For items without children, check isLink flag
+      if (item.isLink !== false) {
+        // Navigate to path only if isLink is not explicitly false
+        router.push(item.path, undefined, { shallow: true });
+        closeSidebar();
+      }
+      // If isLink is false, do nothing (just open sidebar if flag is set)
     }
+  };
+
+  const handleExpandToggle = (
+    e: React.MouseEvent,
+    itemId: string
+  ) => {
+    e.stopPropagation(); // Prevent parent click
+    openSidebar();
+    setExpandedItems((prev) =>
+      prev.includes(itemId)
+        ? prev.filter((id) => id !== itemId)
+        : [...prev, itemId]
+    );
   };
 
   const handleChildClick = (childItem: ChildItem) => {
@@ -381,6 +418,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     <>
                       {expanded ? (
                         <KeyboardArrowDownIcon
+                          onClick={(e) =>
+                            item.isLink ? handleExpandToggle(e, item.id) : undefined
+                          }
                           sx={{
                             position: "absolute",
                             right: 40,
@@ -388,10 +428,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             mt: 0.5,
                             color: arrowColor,
                             transition: "color 300ms ease",
+                            cursor: item.isLink ? "pointer" : "default",
                           }}
                         />
                       ) : (
                         <ArrowForwardIosIcon
+                          onClick={(e) =>
+                            item.isLink ? handleExpandToggle(e, item.id) : undefined
+                          }
                           sx={{
                             position: "absolute",
                             right: 40,
@@ -399,6 +443,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             mt: 0.5,
                             color: arrowColor,
                             transition: "color 300ms ease",
+                            cursor: item.isLink ? "pointer" : "default",
                           }}
                         />
                       )}
@@ -541,6 +586,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       <>
                         {expanded ? (
                           <KeyboardArrowDownIcon
+                            onClick={(e) =>
+                              item.isLink ? handleExpandToggle(e, item.id) : undefined
+                            }
                             sx={{
                               position: "absolute",
                               right: 40,
@@ -548,10 +596,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
                               mt: 0.5,
                               color: arrowColor,
                               transition: "color 300ms ease",
+                              cursor: item.isLink ? "pointer" : "default",
                             }}
                           />
                         ) : (
                           <ArrowForwardIosIcon
+                            onClick={(e) =>
+                              item.isLink ? handleExpandToggle(e, item.id) : undefined
+                            }
                             sx={{
                               position: "absolute",
                               right: 40,
@@ -559,6 +611,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                               mt: 0.5,
                               color: arrowColor,
                               transition: "color 300ms ease",
+                              cursor: item.isLink ? "pointer" : "default",
                             }}
                           />
                         )}

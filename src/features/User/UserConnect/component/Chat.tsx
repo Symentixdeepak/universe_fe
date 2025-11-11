@@ -81,7 +81,7 @@ export const Chat = ({ setShowChat }) => {
     // Handle declining the connection
     setShowConnectionFound(false);
     setShowChat(false);
-    router.push("/user/dashboard");
+    router.push("/user/connections");
   };
 
   if (showConnectionFound) {

@@ -13,12 +13,18 @@ import { useThemeColors } from "@/hooks";
 import { SvgIcon, IconName } from "@/components";
 import Image from "next/image";
 import { useAuth } from "@/contexts/AuthContext";
-import { ProfileIcon, SettingNavIcon, NotificationNavIcon, SignoutIcon } from "./Icons";
+import {
+  ProfileIcon,
+  SettingNavIcon,
+  NotificationNavIcon,
+  SignoutIcon,
+} from "./Icons";
+import { useUser } from "@/contexts";
 
 interface ProfileMenuItem {
   id: string;
   label: string;
-  icon: 'profile' | 'setting_nav' | 'notification_nav' | 'signout';
+  icon: "profile" | "setting_nav" | "notification_nav" | "signout";
   color?: string;
   onClick?: () => void;
 }
@@ -37,8 +43,8 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
   anchorEl,
   onClose,
   isMobile,
-  userName = "Aelia Kos",
-  userAvatar = "/charactor.png",
+  userAvatar,
+  userName,
 }) => {
   const themeColors = useThemeColors();
   const { logout } = useAuth();
@@ -49,9 +55,9 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
     const isHovered = hoveredItem === itemId;
     const isActive = activeItem === itemId;
     const isSignout = itemId === "sign-out";
-    
+
     let iconColor = themeColors.text.primary;
-    
+
     if (isSignout) {
       iconColor = "#BE0000";
     } else if (isActive) {
@@ -67,13 +73,13 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
     };
 
     switch (iconName) {
-      case 'profile':
+      case "profile":
         return <ProfileIcon {...iconProps} />;
-      case 'setting_nav':
+      case "setting_nav":
         return <SettingNavIcon {...iconProps} />;
-      case 'notification_nav':
+      case "notification_nav":
         return <NotificationNavIcon {...iconProps} />;
-      case 'signout':
+      case "signout":
         return <SignoutIcon {...iconProps} />;
       default:
         return null;
@@ -163,21 +169,30 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
           <Typography
             variant="bodyRegular"
             sx={{
+              textTransform: "capitalize",
               color: themeColors.pantone.main,
             }}
           >
             {userName}
           </Typography>
-          <Image
-            src="/charactor.png"
-            alt="User Avatar"
-            width={40}
-            height={40}
-            style={{
-              marginRight: -10,
-              objectFit: "cover",
-            }}
-          />
+          {userAvatar ? (
+            <Image
+              src="/charactor.png"
+              alt="User Avatar"
+              width={40}
+              height={40}
+              style={{
+                marginRight: -10,
+                objectFit: "cover",
+              }}
+            />
+          ) : (
+            <Avatar
+              src="/assets/images/avatars/default_avatar.png"
+              alt="Default Avatar"
+              sx={{ width: 40, height: 40, marginRight: -1 }}
+            />
+          )}
         </Box>
 
         {/* Menu Items */}

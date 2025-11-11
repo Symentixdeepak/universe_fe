@@ -20,6 +20,9 @@ export interface SidebarItem {
   }>;
   path: string;
   children?: ChildItem[];
+  isLink?: boolean; // If true, parent is clickable to navigate while children are expandable
+  openSidebarOnClick?: boolean; // If true, clicking opens/expands the sidebar
+  closeSidebarOnClick?: boolean; // If true, clicking closes the sidebar when it's open
 }
 
 export interface ChildItem {
@@ -32,15 +35,15 @@ export const SIDEBAR_WIDTH_EXPANDED = 185;
 export const SIDEBAR_WIDTH_COLLAPSED = 60;
 
 export const childItems: ChildItem[] = [
-  { id: 1, title: "Sub Item 1", path: "/user/dashboard/sub1" },
-  { id: 2, title: "Sub Item 2", path: "/user/dashboard/sub2" },
-  { id: 3, title: "Sub Item 3", path: "/user/dashboard/sub3" },
+  { id: 1, title: "Sub Item 1", path: "/user/connections/sub1" },
+  { id: 2, title: "Sub Item 2", path: "/user/connections/sub2" },
+  { id: 3, title: "Sub Item 3", path: "/user/connections/sub3" },
 ];
 
 export const childItemsSuperConnector: ChildItem[] = [
-  { id: 1, title: "Sub Item 1", path: "/superconnector/dashboard/sub1" },
-  { id: 2, title: "Sub Item 2", path: "/superconnector/dashboard/sub2" },
-  { id: 3, title: "Sub Item 3", path: "/superconnector/dashboard/sub3" },
+  { id: 1, title: "Sub Item 1", path: "/superconnector/make-connection/sub1" },
+  { id: 2, title: "Sub Item 2", path: "/superconnector/make-connection/sub2" },
+  { id: 3, title: "Sub Item 3", path: "/superconnector/make-connection/sub3" },
 ];
 
 
@@ -50,12 +53,16 @@ export const sidebarItemsUser: SidebarItem[] = [
     title: "Your Dashboard",
     iconComponent: DashboardIcon,
     path: "/user/dashboard",
+    isLink: false,
+    openSidebarOnClick: true, 
+    closeSidebarOnClick: true, 
   },
   {
     id: "search",
     title: "Search",
     iconComponent: SearchIcon,
     path: "/search",
+    openSidebarOnClick: true, 
   },
   {
     id: "connected",
@@ -63,6 +70,8 @@ export const sidebarItemsUser: SidebarItem[] = [
     iconComponent: ZoomSearchIcon,
     path: "/user/connections",
     children: childItems,
+    isLink: true, 
+    openSidebarOnClick: true, 
   },
   {
     id: "myuniverse",
@@ -96,12 +105,16 @@ export const sidebarItemsSuperConnector: SidebarItem[] = [
     title: "Your Dashboard",
     iconComponent: DashboardIcon,
     path: "/superconnector/dashboard",
+    isLink: false,
+    openSidebarOnClick: true, 
+    closeSidebarOnClick: true, 
   },
   {
     id: "search",
     title: "Search",
     iconComponent: SearchIcon,
     path: "/search",
+    openSidebarOnClick: true, 
   },
   {
     id: "connected_other",
@@ -109,6 +122,8 @@ export const sidebarItemsSuperConnector: SidebarItem[] = [
     iconComponent: ConnectIcon,
     path: "/superconnector/make-connection",
     children: childItemsSuperConnector,
+    isLink: true,
+    openSidebarOnClick: true, 
   },
   {
     id: "connection_made",
@@ -120,8 +135,10 @@ export const sidebarItemsSuperConnector: SidebarItem[] = [
     id: "connected",
     title: "Get Connected",
     iconComponent: ZoomSearchIcon,
-    path: "/superconnector/connections",
+    path: "/superconnector/myconnections",
     children: childItemsSuperConnector,
+    isLink: true, 
+    openSidebarOnClick: true, 
   },
   {
     id: "myuniverse",

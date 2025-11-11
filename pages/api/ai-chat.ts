@@ -21,8 +21,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const GEMINI_API_KEY = 'AIzaSyA_PGkOIMk03mPr3DOEIemHbx9d37C0TPA';
 
   try {
-    // Call Google Gemini API
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`;
+    // Call Google Gemini API - using the correct v1beta endpoint
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
     
     const payload = {
       contents: [

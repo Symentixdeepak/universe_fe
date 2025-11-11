@@ -48,7 +48,7 @@ export const APP_CONSTANTS = {
     HOME: '/',
     LOGIN: '/auth/login',
     REGISTER: '/auth/register',
-    DASHBOARD: '/user/dashboard',
+    DASHBOARD: '/user/connections',
     PROFILE: '/profile',
   },
 } as const;

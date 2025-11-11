@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { Box, IconButton, useTheme, useMediaQuery } from "@mui/material";
+import {
+  Box,
+  IconButton,
+  useTheme,
+  useMediaQuery,
+  Avatar,
+} from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import Image from "next/image";
 import { useThemeColors } from "@/hooks";
 import { ProfilePopover } from "@/components";
 import { useSidebar } from "@/contexts/SideBarContext";
+import { useUser } from "@/contexts";
 
 interface NavbarProps {
   isSidebarExpanded?: boolean;
@@ -16,13 +23,13 @@ export const Navbar: React.FC<NavbarProps> = ({
   showIconOnlyNavbar,
 }) => {
   const theme = useTheme();
+  const { user } = useUser();
   const themeColors = useThemeColors();
   const { toggleSidebar } = useSidebar();
   const [isScrolled, setIsScrolled] = useState(false);
   const [profileAnchorEl, setProfileAnchorEl] = useState<HTMLElement | null>(
     null
   );
-console.log({showIconOnlyNavbar});
   // Responsive breakpoints
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -152,17 +159,25 @@ console.log({showIconOnlyNavbar});
           },
         }}
       >
-        <Image
-          src="/charactor.png"
-          alt="User Avatar"
-          width={isMobile ? 34 : 40}
-          height={isMobile ? 34 : 40}
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-          }}
-        />
+        {user?.avatarUrl ? (
+          <Image
+            src="/charactor.png"
+            alt="User Avatar"
+            width={isMobile ? 34 : 40}
+            height={isMobile ? 34 : 40}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+            }}
+          />
+        ) : (
+          <Avatar
+            src="/assets/images/avatars/default_avatar.png"
+            alt="Default Avatar"
+            sx={{ width: isMobile ? 34 : 40, height: isMobile ? 34 : 40 }}
+          />
+        )}
       </IconButton>
 
       {/* Profile Popover */}
@@ -171,8 +186,8 @@ console.log({showIconOnlyNavbar});
         isMobile={isMobile}
         anchorEl={profileAnchorEl}
         onClose={handleProfileClose}
-        userName="Aelia Kos"
-        userAvatar="/charactor.png"
+        userName={user?.fullName || "User Name"}
+        userAvatar={user?.avatarUrl || null}
       />
     </Box>
   );

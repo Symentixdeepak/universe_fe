@@ -7,6 +7,7 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
+import { useRouter } from "next/router";
 import { 
   refreshUserToken, 
   shouldRefreshToken, 
@@ -15,6 +16,7 @@ import {
   handleLinkedInCallback,
   UserRole
 } from "@/lib/authApi";
+import { useLogoutMutation } from "@/hooks/useQuery";
 
 interface User {
   id: string;
@@ -69,6 +71,7 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+  const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [tokens, setTokens] = useState<TokenData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -145,6 +148,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.log("User removed from localStorage"); // Debug log
     }
   }, []);
+
+  // Initialize logout mutation hook
+  const { mutate: performLogout } = useLogoutMutation(tokens, saveTokens, saveUser);
 
   // Refresh tokens
   const refreshTokens = useCallback(async (): Promise<boolean> => {
@@ -356,16 +362,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const logout = () => {
-    saveTokens(null);
-    saveUser(null);
-    sessionStorage.removeItem("questionnaire-data");
-
-    window.location.href = "/auth/login";
+    // Call the React Query mutation hook
+    // Only clears data and redirects on API success
+    performLogout();
   };
 
   const value: AuthContextType = {
-    user:{...user,role:"user" as UserRole},
-    // user,
+    user: user ? {...user, role: user.role || "user" as UserRole} : null,
     tokens,
     isLoading,
     isAuthenticated,

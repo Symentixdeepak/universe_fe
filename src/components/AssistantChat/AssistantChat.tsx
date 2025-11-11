@@ -7,16 +7,21 @@ import {
   useTheme,
 } from "@mui/material";
 import ArrowCircleRightOutlinedIcon from "@mui/icons-material/ArrowCircleRightOutlined";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import CheckIcon from "@mui/icons-material/Check";
 import { TextField, SvgIcon, Chip } from "../index";
 import { useThemeColors } from "../../hooks/useThemeColors";
+import {
+  AssistantChatProvider,
+  useAssistantChat,
+} from "../../contexts/AssistantChatContext";
 
 interface ChatMessage {
   id: string;
   parentMessageId: string;
   role: "HUMAN" | "AI";
   message: string;
-  isStreaming?: boolean;
-  displayedMessage?: string;
 }
 
 interface AssistantChatProps {
@@ -24,7 +29,7 @@ interface AssistantChatProps {
   onViewProfile?: () => void;
 }
 
-const AssistantChat: React.FC<AssistantChatProps> = ({
+const AssistantChatContent: React.FC<AssistantChatProps> = ({
   onConnectDrMaya,
   onViewProfile,
 }) => {
@@ -32,83 +37,78 @@ const AssistantChat: React.FC<AssistantChatProps> = ({
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const chatEndRef = useRef<HTMLDivElement>(null);
-
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: "1",
-      parentMessageId: "1",
-      role: "AI",
-      message:
-        "Great choice — Canada has a growing community of innovators shaping the future of technology. Based on your interests, I've identified several potential connections who align with your goals:\n\n• Amelia R. - CTO at a Toronto-based AI startup, passionate about ethical AI and global collaboration.\n• David M. - Senior Product Manager in Vancouver, with experience in health tech and international collaboration.\n• Sofia L. - Researcher in Montreal specializing in human-centered design and emerging technologies.\n\nEach of them values meaningful professional relationships and is open to sharing insights within the tech community. I can introduce you to Amelia first, since her interests in AI and innovation closely match your profile. Would you like me to start there?",
-    },
-  ]);
   const [inputValue, setInputValue] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [typingMessageId, setTypingMessageId] = useState<string | null>(null);
+  const [displayedText, setDisplayedText] = useState<{
+    [messageId: string]: string;
+  }>({});
+  const [pendingCarouselUpdate, setPendingCarouselUpdate] = useState<{
+    parentId: string;
+    messageId: string;
+  } | null>(null);
+  const [retryingParentId, setRetryingParentId] = useState<string | null>(null);
+  const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
 
-  // Typewriter effect for streaming messages
+  const {
+    messages,
+    setMessages,
+    conversationId,
+    setConversationId,
+    loading,
+    setLoading,
+    getResponsesByParentId,
+    currentResponseIndex,
+    setCurrentResponseIndex,
+    navigateResponse,
+  } = useAssistantChat();
+
+  // Handle carousel navigation after retry
   useEffect(() => {
-    const streamingMessage = messages.find((m) => m.isStreaming);
-    if (!streamingMessage) return;
+    if (pendingCarouselUpdate) {
+      const { parentId, messageId } = pendingCarouselUpdate;
 
-    const targetText = streamingMessage.message;
-    const currentText = streamingMessage.displayedMessage || "";
+      // Find the index of the new message
+      const allResponses = getResponsesByParentId(parentId);
+      const newIndex = allResponses.findIndex((m) => m.id === messageId);
 
-    if (currentText.length < targetText.length) {
-      const timeout = setTimeout(() => {
-        setMessages((prev) =>
-          prev.map((m) =>
-            m.id === streamingMessage.id
-              ? {
-                  ...m,
-                  displayedMessage: targetText.slice(0, currentText.length + 1),
-                }
-              : m
-          )
-        );
-
-        // Auto-scroll during streaming (less frequent to avoid performance issues)
-        if (chatEndRef.current && currentText.length % 10 === 0) {
-          // Scroll every 10 characters
-          chatEndRef.current.scrollIntoView({
-            behavior: "smooth",
-            block: "center", // Use center instead of end to avoid overlap
-          });
-        }
-      }, Math.random() * 20 + 20); // Random speed between 20-40ms for more natural typing
-
-      return () => clearTimeout(timeout);
-    } else {
-      // Streaming complete
-      setMessages((prev) =>
-        prev.map((m) =>
-          m.id === streamingMessage.id
-            ? { ...m, isStreaming: false, displayedMessage: undefined }
-            : m
-        )
+      console.log(
+        "Setting carousel index - AllResponses:",
+        allResponses.length,
+        "NewIndex:",
+        newIndex
       );
+
+      if (newIndex !== -1) {
+        setCurrentResponseIndex((prev) => ({
+          ...prev,
+          [parentId]: newIndex,
+        }));
+      }
+
+      setPendingCarouselUpdate(null);
     }
-  }, [messages]);
+  }, [
+    pendingCarouselUpdate,
+    messages,
+    getResponsesByParentId,
+    setCurrentResponseIndex,
+  ]);
 
-  // Auto scroll to bottom when new messages are added (not during streaming)
+  // Auto scroll to bottom when new messages are added
   useEffect(() => {
-    const hasStreamingMessage = messages.some((m) => m.isStreaming);
-
-    // Only auto-scroll when not streaming (to avoid competing with streaming scroll)
-    if (!hasStreamingMessage && chatEndRef.current) {
+    if (chatEndRef.current) {
       setTimeout(() => {
         chatEndRef.current?.scrollIntoView({
           behavior: "smooth",
-          block: "center", // Use center to avoid overlap with fixed input
+          block: "center",
         });
       }, 100);
     }
-  }, [messages.length]); // Only trigger when message count changes, not during streaming updates
+  }, [messages.length]);
 
   // Initial scroll on component mount
   useEffect(() => {
     if (chatEndRef.current) {
-      // Immediate scroll on first render to ensure proper positioning
       chatEndRef.current.scrollIntoView({
         behavior: "auto",
         block: "center",
@@ -118,16 +118,61 @@ const AssistantChat: React.FC<AssistantChatProps> = ({
 
   const generateId = () => crypto.randomUUID();
 
+  // Typewriter effect function
+  const startTypewriterEffect = (messageId: string, fullText: string) => {
+    console.log(
+      "Starting typewriter for message:",
+      messageId,
+      "Text:",
+      fullText
+    );
+    setTypingMessageId(messageId);
+    setDisplayedText((prev) => ({ ...prev, [messageId]: "" }));
+
+    let charIndex = 0;
+    const typewriterInterval = setInterval(() => {
+      if (charIndex < fullText.length) {
+        setDisplayedText((prev) => ({
+          ...prev,
+          [messageId]: fullText.substring(0, charIndex + 1),
+        }));
+        charIndex++;
+
+        // Auto scroll during typing
+        if (charIndex % 10 === 0) {
+          setTimeout(() => {
+            chatEndRef.current?.scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+          }, 50);
+        }
+      } else {
+        clearInterval(typewriterInterval);
+        setTypingMessageId(null);
+        console.log("Typewriter complete for:", messageId);
+      }
+    }, 30);
+  };
+
   const sendMessage = async (messageText?: string, parentId?: string) => {
     const trimmed = (messageText || inputValue).trim();
     if (!trimmed) return;
 
     const userMsgId = generateId();
-    const lastMessage = messages[messages.length - 1];
+
+    // If parentId is not provided, find the last HUMAN message's ID
+    let finalParentId = parentId;
+    if (!finalParentId) {
+      const lastHumanMessage = [...messages]
+        .reverse()
+        .find((m) => m.role === "HUMAN");
+      finalParentId = lastHumanMessage?.id || userMsgId;
+    }
 
     const userMsg: ChatMessage = {
       id: userMsgId,
-      parentMessageId: parentId || lastMessage?.id || userMsgId,
+      parentMessageId: finalParentId,
       role: "HUMAN",
       message: trimmed,
     };
@@ -166,22 +211,23 @@ const AssistantChat: React.FC<AssistantChatProps> = ({
         parentMessageId: userMsgId,
         role: "AI",
         message: data?.reply ?? "Sorry, no reply from assistant.",
-        isStreaming: true,
-        displayedMessage: "",
       };
 
       setMessages((prev) => [...prev, aiMessage]);
+
+      // Start typewriter effect
+      startTypewriterEffect(aiMsgId, aiMessage.message);
 
       // Scroll to new AI message immediately when it starts
       setTimeout(() => {
         if (chatEndRef.current) {
           chatEndRef.current.scrollIntoView({
             behavior: "smooth",
-            block: "center", // Use center to provide proper spacing
+            block: "center",
           });
         }
       }, 50);
-    } catch (err) {
+    } catch (err: any) {
       const errorMsgId = generateId();
       const errorMessage: ChatMessage = {
         id: errorMsgId,
@@ -196,14 +242,17 @@ const AssistantChat: React.FC<AssistantChatProps> = ({
   };
 
   const handleSendMessage = () => {
-    if (!inputValue.trim()) return;
+    if (!inputValue.trim() || loading || typingMessageId) return;
     sendMessage();
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      handleSendMessage();
+      // Don't send if loading or typing
+      if (!loading && !typingMessageId) {
+        handleSendMessage();
+      }
     }
   };
 
@@ -211,19 +260,81 @@ const AssistantChat: React.FC<AssistantChatProps> = ({
     const message = messages.find((m) => m.id === messageId);
     if (message) {
       navigator.clipboard.writeText(message.message);
+      
+      // Show checkmark for 3 seconds
+      setCopiedMessageId(messageId);
+      setTimeout(() => {
+        setCopiedMessageId(null);
+      }, 3000);
     }
   };
 
-  const handleRetry = (messageId: string) => {
-    const message = messages.find((m) => m.id === messageId);
-    if (message && message.role === "AI") {
-      const parentMessage = messages.find(
-        (m) => m.id === message.parentMessageId
-      );
-      if (parentMessage && parentMessage.role === "HUMAN") {
-        setMessages((prev) => prev.filter((m) => m.id !== messageId));
-        sendMessage(parentMessage.message, parentMessage.parentMessageId);
-      }
+  const handleRetry = async (parentMessageId: string) => {
+    // Find the parent HUMAN message to regenerate response
+    const parentMessage = messages.find(
+      (m) => m.id === parentMessageId && m.role === "HUMAN"
+    );
+
+    if (!parentMessage) return;
+
+    // Set retrying state to show "Thinking..." at current response position
+    setRetryingParentId(parentMessage.id);
+    setLoading(true);
+
+    try {
+      const response = await fetch("/api/ai-chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: parentMessage.message,
+          conversationId: conversationId,
+          parentMessageId: parentMessage.id,
+        }),
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch AI response");
+
+      const data = await response.json();
+
+      // Create new AI response with same parent ID (for carousel)
+      const newAiMessage: ChatMessage = {
+        id: Date.now().toString(),
+        parentMessageId: parentMessage.id,
+        role: "AI",
+        message: data?.reply ?? "Sorry, no reply from assistant.",
+      };
+
+      // Add the new message
+      setMessages((prev) => [...prev, newAiMessage]);
+
+      // Schedule carousel update after message is added
+      setPendingCarouselUpdate({
+        parentId: parentMessage.id,
+        messageId: newAiMessage.id,
+      });
+
+      // Start typewriter effect
+      startTypewriterEffect(newAiMessage.id, newAiMessage.message);
+
+      // Scroll to the new message
+      setTimeout(() => {
+        chatEndRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      }, 50);
+    } catch (error) {
+      console.error("Error regenerating response:", error);
+      const errorMessage: ChatMessage = {
+        id: Date.now().toString(),
+        parentMessageId: parentMessage.id,
+        role: "AI",
+        message: "Sorry, I encountered an error. Please try again.",
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setLoading(false);
+      setRetryingParentId(null);
     }
   };
 
@@ -231,6 +342,7 @@ const AssistantChat: React.FC<AssistantChatProps> = ({
     console.log("Menu clicked for message:", messageId);
   };
 
+  console.log({ isLoading: loading });
   return (
     <Box
       sx={{
@@ -251,95 +363,196 @@ const AssistantChat: React.FC<AssistantChatProps> = ({
           display: "flex",
           flexDirection: "column",
           gap: 6,
-          //   mb: 4, // Add margin bottom to ensure last message isn't too close to fixed input
         }}
       >
-        {messages.map((message) => (
-          <Box
-            key={message.id}
-            sx={{
-              width: "100%",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: message.role === "HUMAN" ? "flex-end" : "flex-start",
-            }}
-          >
+        {(() => {
+          const displayedMessages: any[] = [];
+          const processedParents = new Set<string>();
+
+          messages.forEach((message) => {
+            if (message.role === "HUMAN") {
+              displayedMessages.push(message);
+            } else if (
+              message.role === "AI" &&
+              !processedParents.has(message.parentMessageId)
+            ) {
+              // For AI messages, only show the current response in carousel
+              const responses = getResponsesByParentId(message.parentMessageId);
+              if (responses.length > 0) {
+                const currentIndex =
+                  currentResponseIndex[message.parentMessageId] || 0;
+                const currentResponse = responses[currentIndex];
+                if (currentResponse) {
+                  displayedMessages.push({
+                    ...currentResponse,
+                    _totalResponses: responses.length,
+                    _currentIndex: currentIndex,
+                  });
+                  processedParents.add(message.parentMessageId);
+                }
+              }
+            }
+          });
+
+          return displayedMessages.map((message) => (
             <Box
+              key={message.id}
               sx={{
-                bgcolor:
-                  message.role === "HUMAN"
-                    ? {
-                        xs: themeColors.pantone.main,
-                        md: themeColors.white.dark,
-                      }
-                    : themeColors.background.primary,
-                p: message.role === "HUMAN" ? "14px 20px" : 0,
-                borderBottomLeftRadius: message.role === "HUMAN" ? "20px" : 0,
-                borderTopRightRadius: message.role === "HUMAN" ? "20px" : 0,
-                borderTopLeftRadius: message.role === "HUMAN" ? "20px" : 0,
-                maxWidth: message.role === "HUMAN" ? "320px" : "90%",
-                boxShadow:
-                  message.role === "HUMAN"
-                    ? "0px 1px 3px rgba(0,0,0,0.1)"
-                    : "none",
+                width: "100%",
+                display: "flex",
+                flexDirection: "column",
+                alignItems:
+                  message.role === "HUMAN" ? "flex-end" : "flex-start",
               }}
             >
-              <Typography
-                variant="bodyLight"
+              <Box
                 sx={{
-                  color: {
-                    xs:
-                      message.role === "HUMAN"
-                        ? themeColors.white.main
-                        : themeColors.text.primary,
-                    md: themeColors.text.primary,
-                  },
-                  whiteSpace: "pre-wrap",
+                  bgcolor:
+                    message.role === "HUMAN"
+                      ? {
+                          xs: themeColors.pantone.main,
+                          md: themeColors.white.dark,
+                        }
+                      : themeColors.background.primary,
+                  p: message.role === "HUMAN" ? "14px 20px" : 0,
+                  borderBottomLeftRadius: message.role === "HUMAN" ? "20px" : 0,
+                  borderTopRightRadius: message.role === "HUMAN" ? "20px" : 0,
+                  borderTopLeftRadius: message.role === "HUMAN" ? "20px" : 0,
+                  maxWidth: message.role === "HUMAN" ? "320px" : "90%",
+                  boxShadow:
+                    message.role === "HUMAN"
+                      ? "0px 1px 3px rgba(0,0,0,0.1)"
+                      : "none",
                 }}
               >
-                {message.isStreaming ? (
-                  <>
-                    {message.displayedMessage || ""}
-                    <Box
-                      component="span"
-                      sx={{
-                        display: "inline-block",
-                        width: "2px",
-                        height: "1.2em",
-                        backgroundColor: themeColors.text.primary,
-                        marginLeft: "1px",
-                        animation: "blink 1s infinite",
-                        "@keyframes blink": {
-                          "0%, 50%": { opacity: 1 },
-                          "51%, 100%": { opacity: 0 },
-                        },
-                      }}
-                    />
-                  </>
-                ) : (
-                  message.message
-                )}
-              </Typography>
-            </Box>
-
-            {message.role === "AI" && !message.isStreaming && (
-              <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
-                <IconButton size="small" onClick={() => handleCopy(message.id)}>
-                  <SvgIcon name="chat_copy" width={20} height={20} />
-                </IconButton>
-                <IconButton
-                  size="small"
-                  onClick={() => handleRetry(message.id)}
+                <Typography
+                  variant="bodyLight"
+                  sx={{
+                    color: {
+                      xs:
+                        message.role === "HUMAN"
+                          ? themeColors.white.main
+                          : themeColors.text.primary,
+                      md: themeColors.text.primary,
+                    },
+                    whiteSpace: "pre-wrap",
+                  }}
                 >
-                  <SvgIcon name="chat_retry" width={20} height={20} />
-                </IconButton>
-                <IconButton size="small" onClick={() => handleMenu(message.id)}>
-                  <SvgIcon name="chat_dot" width={20} height={20} />
-                </IconButton>
+                  {typingMessageId === message.id ? (
+                    <>
+                      {displayedText[message.id] || ""}
+                      <Box
+                        component="span"
+                        sx={{
+                          display: "inline-block",
+                          width: "2px",
+                          height: "1.2em",
+                          backgroundColor: themeColors.text.primary,
+                          marginLeft: "1px",
+                          animation: "blink 1s infinite",
+                          "@keyframes blink": {
+                            "0%, 50%": { opacity: 1 },
+                            "51%, 100%": { opacity: 0 },
+                          },
+                        }}
+                      />
+                    </>
+                  ) : retryingParentId === message.parentMessageId &&
+                    message.role === "AI" ? (
+                    // Show "Thinking..." when retrying this response
+                    <></>
+                  ) : (
+                    (() => {
+                      const text = displayedText[message.id] || message.message;
+                      if (message.role === "AI") {
+                        console.log(
+                          "Rendering AI message:",
+                          message.id,
+                          "TypingId:",
+                          typingMessageId,
+                          "DisplayedText:",
+                          displayedText[message.id],
+                          "FullText:",
+                          message.message
+                        );
+                      }
+                      return text;
+                    })()
+                  )}
+                </Typography>
               </Box>
-            )}
-          </Box>
-        ))}
+              <div style={{ display: "flex" }}>
+                {/* Carousel Navigation for AI messages with multiple responses */}
+                {message.role === "AI" &&
+                  typingMessageId !== message.id &&
+                  retryingParentId !== message.parentMessageId &&
+                  message._totalResponses > 1 && (
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 0,
+                        mt: 1,
+                      }}
+                    >
+                      <IconButton
+                        size="small"
+                        onClick={() =>
+                          navigateResponse(message.parentMessageId, "prev")
+                        }
+                      >
+                        <ChevronLeftIcon sx={{ fontSize: 20 }} />
+                      </IconButton>
+                      <Typography
+                        variant="caption"
+                        sx={{ color: themeColors.grey.main }}
+                      >
+                        {message._currentIndex + 1}/{message._totalResponses}
+                      </Typography>
+                      <IconButton
+                        size="small"
+                        onClick={() =>
+                          navigateResponse(message.parentMessageId, "next")
+                        }
+                      >
+                        <ChevronRightIcon sx={{ fontSize: 20 }} />
+                      </IconButton>
+                    </Box>
+                  )}
+
+                {/* Action Buttons for AI messages */}
+                {message.role === "AI" &&
+                  typingMessageId !== message.id &&
+                  retryingParentId !== message.parentMessageId && (
+                    <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
+                      <IconButton
+                        size="small"
+                        onClick={() => handleCopy(message.id)}
+                      >
+                        {copiedMessageId === message.id ? (
+                          <CheckIcon sx={{ fontSize: 18}} />
+                        ) : (
+                          <SvgIcon name="chat_copy" width={18} height={18} />
+                        )}
+                      </IconButton>
+                      <IconButton
+                        size="small"
+                        onClick={() => handleRetry(message.parentMessageId)}
+                      >
+                        <SvgIcon name="chat_retry" width={18} height={18} />
+                      </IconButton>
+                      <IconButton
+                        size="small"
+                        onClick={() => handleMenu(message.id)}
+                      >
+                        <SvgIcon name="chat_dot" width={18} height={18} />
+                      </IconButton>
+                    </Box>
+                  )}
+              </div>
+            </Box>
+          ));
+        })()}
 
         {/* Typing indicator while waiting for response */}
         {loading && (
@@ -438,26 +651,31 @@ const AssistantChat: React.FC<AssistantChatProps> = ({
                 <Box
                   component="div"
                   sx={{
-                    cursor: "pointer",
+                    cursor: loading || typingMessageId ? 'not-allowed' : 'pointer',
                     display: "flex",
                     alignItems: "center",
                     color: themeColors.pantone.main,
+                    opacity: loading || typingMessageId ? 0.5 : 1,
                   }}
                   onClick={handleSendMessage}
                 >
                   <ArrowCircleRightOutlinedIcon
-                    sx={{ fontSize: 24, color: themeColors.pantone.main }}
+                    sx={{ 
+                      fontSize: 24, 
+                      color: themeColors.pantone.main,
+                      opacity: loading || typingMessageId ? 0.5 : 1,
+                    }}
                   />
                 </Box>
               ),
             }}
-              sx={{ 
-          "& .MuiOutlinedInput-root": {
-            height: "auto",
-            p:{xs:"5px 18px", md:"10px 40px"}
-
-          },
-        }} size="small"
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                height: "auto",
+                p: { xs: "5px 18px", md: "8px 30px" },
+              },
+            }}
+            size="small"
           />
           <Typography
             variant="captionLight"
@@ -474,6 +692,15 @@ const AssistantChat: React.FC<AssistantChatProps> = ({
         </Box>
       </Box>
     </Box>
+  );
+};
+
+// Wrapper component with Context Provider
+const AssistantChat: React.FC<AssistantChatProps> = (props) => {
+  return (
+    <AssistantChatProvider>
+      <AssistantChatContent {...props} />
+    </AssistantChatProvider>
   );
 };
 

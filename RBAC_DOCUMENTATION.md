@@ -46,12 +46,12 @@ Defines which routes are accessible by which roles:
 export const ROUTE_CONFIG: RouteConfig[] = [
   // User routes
   { path: "/user", allowedRoles: ["user"] },
-  { path: "/user/dashboard", allowedRoles: ["user"] },
+  { path: "/user/connections", allowedRoles: ["user"] },
   { path: "/user/my-universe", allowedRoles: ["user"] },
   
   // Superconnector routes
   { path: "/superconnector", allowedRoles: ["superconnector"] },
-  { path: "/superconnector/dashboard", allowedRoles: ["superconnector"] },
+  { path: "/superconnector/make-connection", allowedRoles: ["superconnector"] },
   
   // Common routes
   { path: "/interests", allowedRoles: ["user", "superconnector"] },
@@ -118,11 +118,11 @@ function MyComponent() {
 
 ```
 /user/*                    - User-only routes
-  /user/dashboard          - User dashboard
+  /user/connections          - User dashboard
   /user/my-universe        - User universe page
   
 /superconnector/*          - Superconnector-only routes
-  /superconnector/dashboard - Superconnector dashboard
+  /superconnector/make-connection - Superconnector dashboard
   
 /interests                 - Common route (both roles)
 /auth/*                    - Public routes (login, register)
@@ -135,7 +135,7 @@ function MyComponent() {
 Add the `getLayout` function to your page component:
 
 ```tsx
-// pages/user/dashboard.tsx
+// pages/user/connections.tsx
 import { ReactElement } from "react";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
@@ -183,7 +183,7 @@ import { useUserRole } from "@/hooks";
 function MyComponent() {
   const { role } = useUserRole();
   
-  const canAccessUsers = canAccessRoute("/user/dashboard", role);
+  const canAccessUsers = canAccessRoute("/user/connections", role);
   
   if (canAccessUsers) {
     // Show user-specific content
@@ -288,14 +288,14 @@ export default function Navigation() {
     <nav>
       {isUser && (
         <>
-          <Link href="/user/dashboard">Dashboard</Link>
+          <Link href="/user/connections">Dashboard</Link>
           <Link href="/user/my-universe">My Universe</Link>
         </>
       )}
       
       {isSuperconnector && (
         <>
-          <Link href="/superconnector/dashboard">Dashboard</Link>
+          <Link href="/superconnector/make-connection">Dashboard</Link>
           <Link href="/superconnector/connections">Connections</Link>
         </>
       )}

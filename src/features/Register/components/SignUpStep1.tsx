@@ -60,7 +60,7 @@ const  SignUpStep1: React.FC<SignUpStep1Props> = ({ onNext, onBack }) => {
     if (result.success) {
       toastService.success("Login successful!");
       // Redirect to dashboard after successful login
-      router.push("/user/dashboard");
+      router.push("/user/connections");
     } else {
       toastService.error(result.error || "Login failed");
     }

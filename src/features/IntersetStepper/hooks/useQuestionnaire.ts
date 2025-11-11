@@ -65,7 +65,7 @@ export const useSubmitQuestionnaire = () => {
       }
       
       // Redirect to dashboard
-      router.push('/user/dashboard');
+      router.push('/user/connections');
     },
     onError: (error: any) => {
       console.error('Failed to submit questionnaire:', error);
