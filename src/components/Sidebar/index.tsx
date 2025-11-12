@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   List,
@@ -16,6 +16,7 @@ import { useThemeColors } from "@/hooks";
 import { styled } from "@mui/material/styles";
 import { useRouter } from "next/router";
 import { useSidebar } from "@/contexts/SideBarContext";
+import { NotificationDrawer } from "@/features/Notifications";
 
 // Icons
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
@@ -87,6 +88,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [clickedItem, setClickedItem] = useState<string | null>(null);
+  const [notificationDrawerOpen, setNotificationDrawerOpen] = useState(false);
 
   // Responsive breakpoints
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -95,6 +97,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
       ? sidebarItemsSuperConnector
       : sidebarItemsUser;
   const elementToShow = user?.role === "superconnector" ? 4 : 5;
+
+  // Auto-expand items with children when sidebar opens
+  useEffect(() => {
+    if (isExpanded) {
+      // Find all items that have children and should auto-expand
+      const itemsToExpand = sidebarItems
+        .filter(item => item.children && item.children.length > 0)
+        .map(item => item.id);
+      
+      setExpandedItems(itemsToExpand);
+    }
+  }, [isExpanded, sidebarItems]);
 
   const isPathActive = (itemPath: string) => {
     const currentPath = router.asPath;
@@ -119,6 +133,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
       setClickedItem(null);
     }, 150);
 
+    // Handle drawer opening for notifications
+    if (item.openDrawer) {
+      // Toggle drawer - close if already open, open if closed
+      setNotificationDrawerOpen((prev) => !prev);
+      return;
+    }
+
     // Handle sidebar open/close based on flags
     if (item.closeSidebarOnClick && isExpanded) {
       // If sidebar is open and closeSidebarOnClick is true, close it
@@ -137,15 +158,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
     if (item.children && item.children.length > 0) {
       if (item.isLink) {
         // If isLink is true, navigate to the parent path and expand children
-        router.push(item.path, undefined, { shallow: true });
-        // Also expand the children to show them
+        // Keep sidebar open and expand children
         if (!isExpanded) {
           openSidebar();
         }
+        // Expand the children first
         setExpandedItems((prev) =>
           prev.includes(item.id) ? prev : [...prev, item.id]
         );
-        // Don't close sidebar when item has children and isLink is true
+        // Navigate to the page - sidebar will remain open
+        router.push(item.path);
+        // Don't close sidebar - it stays open to show children
       } else {
         // If isLink is false, only toggle expand/collapse (no navigation)
         setExpandedItems((prev) =>
@@ -671,7 +694,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {sidebarItems
             .slice(user?.role === "superconnector" ? 7 : 5)
             .map((item) => {
-              const isActive = isPathActive(item.path);
+              // Check if notification drawer is open for this item
+              const isActive = item.openDrawer 
+                ? notificationDrawerOpen 
+                : isPathActive(item.path);
               const IconComponent = item.iconComponent;
               const isHovered = hoveredItem === item.id;
               const isClicked = clickedItem === item.id;
@@ -726,6 +752,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
             })}
         </List>
       </StyledSidebar>
+
+      {/* Notification Drawer */}
+      <NotificationDrawer
+        open={notificationDrawerOpen}
+        onClose={() => setNotificationDrawerOpen(false)}
+      />
     </>
   );
 };

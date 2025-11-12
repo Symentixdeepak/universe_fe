@@ -159,49 +159,120 @@ const RightContent: React.FC<RightContentProps> = ({
                 mb: 2,
               }}
             />
-            <Box
-              sx={{ display: "flex", alignItems: "center", gap: 1.2, ml: 4 }}
-            >
+            <Box sx={{ flex: 1 }}>
+              {/* Name and Connected Status */}
               <Box
                 sx={{
-                  height: 8,
-                  width: 8,
-                  borderRadius: 50,
-                  background: "#31C12C",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "flex-start",
+                  mb: 0.8,
                 }}
-              />
-              <Typography
-                variant="bodyBold"
-                sx={{ color: themeColors.text.primary }}
               >
-                {userInfo.name}
-              </Typography>
-            </Box>
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 1.2,
-                mt: 0.5,
-                ml: 4,
-              }}
-            >
+                <Typography
+                  sx={{
+                    color: themeColors.text.primary,
+                    typography: { xs: "h4Bold", md: "h3Bold" },
+                    fontSize: { xs: "20px", md: "28px" },
+                  }}
+                >
+                  {"Dr. Maya K."}
+                </Typography>
+              </Box>
+              {/* Status */}
               <Box
                 sx={{
-                  height: 8,
-                  width: 8,
-                  borderRadius: 50,
-                  background: themeColors.pantone.light,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1.2,
+                  mt: 0.5,
+                  mb: 0.8,
                 }}
-              />
-              <Typography
-                variant="subtitleLight"
-                sx={{ color: themeColors.pantone.light }}
               >
-                {userInfo.status === "online"
-                  ? "Available"
-                  : "Last seen recently"}
-              </Typography>
+                <Box
+                  sx={{
+                    height: 8,
+                    width: 8,
+                    borderRadius: 50,
+                    background: themeColors.pantone.light,
+                  }}
+                />
+                <Typography
+                  variant="subtitleLight"
+                  sx={{ color: themeColors.pantone.light }}
+                >
+                  {userInfo.status === "online"
+                    ? "Available"
+                    : "Last seen recently"}
+                </Typography>
+              </Box>
+              {/* Location */}
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 0.5,
+                  mb: 0.8,
+                }}
+              >
+                <SvgIcon name="location" width={13} height={13} />
+                <Typography
+                  sx={{
+                    color: themeColors.text.secondary,
+                    typography: { xs: "captionLight", md: "subtitleLight" },
+                  }}
+                >
+                  {"New York, USA"}
+                </Typography>
+              </Box>
+
+              {/* Description */}
+              <Box sx={{ display: "flex", flexDirection: "column" }}>
+                <Typography
+                  sx={{
+                    color: themeColors.text.primary,
+                    typography: { xs: "subtitleRegular", md: "bodyRegular" },
+                    mb: 0.8,
+                    maxWidth: "230px",
+                    lineHeight: 1.4,
+
+                    // Multi-line ellipsis for xs/sm
+                    display: "-webkit-box",
+                    WebkitBoxOrient: "vertical",
+                    overflow: "hidden",
+
+                    [theme.breakpoints.down("md")]: {
+                      WebkitLineClamp: 3, // show max 3 lines then ...
+                    },
+                  }}
+                >
+                  {
+                    "Building AI solutions that make healthcare smarter and more human."
+                  }
+                </Typography>
+
+                {/* Connected Via */}
+                <Typography
+                  sx={{
+                    mb: { xs: 0, md: 3 },
+                    color: themeColors.text.secondary,
+                    typography: { xs: "captionLight", md: "subtitleLight" },
+                  }}
+                >
+                  Connected via{" "}
+                  <Typography
+                    component={"span"}
+                    sx={{
+                      color: themeColors.pantone.main,
+                      typography: { xs: "captionBold", md: "subtitleBold" },
+                    }}
+                  >
+                    {"Aella Kos"}
+                  </Typography>
+                </Typography>
+              </Box>
+
+              {/* Action Buttons */}
             </Box>
           </Box>
           {/*top right icons */}
@@ -225,8 +296,8 @@ const RightContent: React.FC<RightContentProps> = ({
 
         {isMobile ? (
           <>
-            <MutualConnection  isMobile={true}/>
-            <SharedMedia isMobile={true}/>
+            <MutualConnection isMobile={true} />
+            <SharedMedia isMobile={true} />
           </>
         ) : (
           <>

@@ -12,6 +12,7 @@ export { default as Radio } from './Radio';
 export { default as AuthRedirect } from './AuthRedirect';
 export { default as ClientOnly } from './ClientOnly';
 export { default as Loader } from './Loader';
+export { default as FullPageLoader } from './FullPageLoader';
 export { default as ProgressBar } from './ProgressBar';
 export { default as ProtectedRoute } from './ProtectedRoute';
 export { default as AsyncWrapper, withAsyncLoader, createAsyncComponent, LoaderConfigs } from './AsyncWrapper';

@@ -17,6 +17,7 @@ import {
   UserRole
 } from "@/lib/authApi";
 import { useLogoutMutation } from "@/hooks/useQuery";
+import { FullPageLoader } from "@/components";
 
 interface User {
   id: string;
@@ -40,6 +41,7 @@ interface AuthContextType {
   user: User | null;
   tokens: TokenData | null;
   isLoading: boolean;
+  isLoggingOut: boolean; // Add logout loading state
   isAuthenticated: boolean;
   login: (
     email: string,
@@ -150,7 +152,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   // Initialize logout mutation hook
-  const { mutate: performLogout } = useLogoutMutation(tokens, saveTokens, saveUser);
+  const { mutate: performLogout, isPending: isLoggingOut } = useLogoutMutation(tokens, saveTokens, saveUser);
 
   // Refresh tokens
   const refreshTokens = useCallback(async (): Promise<boolean> => {
@@ -371,6 +373,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     user: user ? {...user, role: user.role || "user" as UserRole} : null,
     tokens,
     isLoading,
+    isLoggingOut,
     isAuthenticated,
     login,
     loginWithLinkedIn,
@@ -381,5 +384,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     refreshTokens,
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+      {/* Full page loader during logout */}
+      <FullPageLoader open={isLoggingOut} message="Logging out..." />
+    </AuthContext.Provider>
+  );
 };

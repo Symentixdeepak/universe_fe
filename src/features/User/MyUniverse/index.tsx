@@ -14,6 +14,7 @@ import { useThemeColors } from "@/hooks";
 import { useRouter } from "next/router";
 import { SearchSidebar, MiddleContent, RightContent } from "./components";
 import { Loader } from "@/components";
+import ShowProfile from "./components/ShowProfile";
 
 interface MyUniverseProps {
   selectedUserId?: string;
@@ -24,6 +25,7 @@ const MyUniverse: React.FC<MyUniverseProps> = ({ selectedUserId }) => {
   const router = useRouter();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isProfileView = router.query.view_profile === "true" ? true : false;
 
   const [selectedConnectionId, setSelectedConnectionId] = useState<string>(
     selectedUserId || ""
@@ -31,19 +33,19 @@ const MyUniverse: React.FC<MyUniverseProps> = ({ selectedUserId }) => {
 
   // Track if we should show profile on mobile
   const [showMobileProfile, setShowMobileProfile] = useState(false);
-  
+
   // Track loading state
   const [isLoading, setIsLoading] = useState(false);
 
   // Simple effect to handle route changes
   useEffect(() => {
-    const showProfile = router.query.show_profile === 'true';
-    
+    const showProfile = router.query.show_profile === "true";
+
     if (selectedUserId) {
       setSelectedConnectionId(selectedUserId);
       setIsLoading(false); // Content is ready
     }
-    
+
     if (isMobile && showProfile && selectedUserId) {
       setShowMobileProfile(true);
     } else {
@@ -70,7 +72,7 @@ const MyUniverse: React.FC<MyUniverseProps> = ({ selectedUserId }) => {
     if (isMobile) {
       setShowMobileProfile(false);
       // Remove the show_profile query parameter
-      const currentPath = router.asPath.split('?')[0];
+      const currentPath = router.asPath.split("?")[0];
       router.push(currentPath, undefined, { shallow: true });
     }
   };
@@ -78,168 +80,178 @@ const MyUniverse: React.FC<MyUniverseProps> = ({ selectedUserId }) => {
   // Simple logic: show content if we have a selectedUserId
   const showContent = !!selectedUserId;
   const showMobileContent = isMobile && !!selectedUserId && !showMobileProfile;
+  
+  // Show profile view on mobile
+  const showMobileProfileView = isMobile && isProfileView && !!selectedUserId;
 
   return (
     <Box
       sx={{
         display: "flex",
-        height: "100%",
-        bgcolor: themeColors.white.dark,
-        overflow: "hidden",
+        height: "100vh", // Full viewport height
+        bgcolor: isProfileView ? themeColors.white.main :themeColors.white.dark,
+        overflow: "hidden", // Prevent main container from scrolling
         width: "100%",
       }}
     >
-      {/* Left Sidebar - Show when no content selected or on desktop */}
-      {(!isMobile || (!showContent && !showMobileProfile)) && (
-        <Box
-          sx={{
-            width: { xs: "100%", md: "28%" },
-            height: "100%",
-            overflow: "hidden",
-            flexShrink: 0,
-          }}
-        >
-          <SearchSidebar
-            selectedConnectionId={selectedConnectionId}
-            onConnectionSelect={handleConnectionSelect}
-          />
-        </Box>
-      )}
-
-      {/* Desktop: Show placeholder when no selection */}
-      {!isMobile && !selectedConnectionId && (
-        <Box
-          sx={{
-            m: "auto",
-          }}
-        >
-          <Typography
-            variant="bodyLight"
-            sx={{ color: themeColors.text.secondary }}
+      <>
+        {/* Left Sidebar - Show when no content selected or on desktop */}
+        {(!isMobile || (!showContent && !showMobileProfile)) && (
+          <Box
+            sx={{
+              width: { xs: "100%", md: "28%" },
+              height: "100vh", // Full viewport height
+              overflow: "auto", // Allow sidebar to scroll independently
+              flexShrink: 0,
+            }}
           >
-            Select a chat to start messaging
-          </Typography>
-        </Box>
-      )}
+            <SearchSidebar
+              selectedConnectionId={selectedConnectionId}
+              onConnectionSelect={handleConnectionSelect}
+            />
+          </Box>
+        )}
 
-      {/* Middle Content - Show when user selected and not showing profile */}
-      {showMobileContent && (
-        <Box
-          sx={{
-            width: { xs: "100%", md: "44%" },
-            height: "100%",
-            overflow: "hidden",
-            flexShrink: 0,
-          }}
-        >
-          {isLoading ? (
+        {/* Desktop: Show placeholder when no selection */}
+        {!isMobile && !selectedConnectionId && (
+          <Box
+            sx={{
+              m: "auto",
+            }}
+          >
+            <Typography
+              variant="bodyLight"
+              sx={{ color: themeColors.text.secondary }}
+            >
+              Select a chat to start messaging
+            </Typography>
+          </Box>
+        )}
+
+        {/* Middle Content - Show when user selected and not showing profile */}
+        {(showMobileContent || showMobileProfileView) && (
+          <Box
+            sx={{
+              width: { xs: "100%", md: "44%" },
+              height: "100vh", // Full viewport height
+              overflow: "auto", // Allow middle content to scroll independently
+              flexShrink: 0,
+            }}
+          >
+            {isLoading ? (
+              <Box
+                sx={{
+                  height: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Loader />
+              </Box>
+            ) : isProfileView ? (
+              <ShowProfile />
+            ) : (
+              <MiddleContent
+                selectedConnectionId={selectedConnectionId}
+                selectedConnection={
+                  selectedConnectionId
+                    ? {
+                        id: selectedConnectionId,
+                        name: "Dr. Maya K.",
+                        avatar: "/dr_maya.png",
+                        status: "online",
+                      }
+                    : undefined
+                }
+                onBackClick={handleBackToSidebar}
+              />
+            )}
+          </Box>
+        )}
+
+        {/* Desktop Middle Content */}
+        {!isMobile && showContent && (
+          <Box
+            sx={{
+              width: isProfileView ? "72%" : "44%",
+              height: "100vh", // Full viewport height
+              overflow: "auto", // Allow desktop middle content to scroll independently
+              flexShrink: 0,
+            }}
+          >
+            {isLoading ? (
+              <Box
+                sx={{
+                  height: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Loader />
+              </Box>
+            ) : isProfileView ? (
+              <ShowProfile />
+            ) : (
+              <MiddleContent
+                selectedConnectionId={selectedConnectionId}
+                selectedConnection={
+                  selectedConnectionId
+                    ? {
+                        id: selectedConnectionId,
+                        name: "Dr. Maya K.",
+                        avatar: "/dr_maya.png",
+                        status: "online",
+                      }
+                    : undefined
+                }
+                onBackClick={handleBackToSidebar}
+              />
+            )}
+          </Box>
+        )}
+
+        {/* Right Content - Desktop or Mobile Profile */}
+        {((!isMobile && showContent) || (isMobile && showMobileProfile)) &&
+          !isProfileView && (
             <Box
               sx={{
-                height: "100%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+                width: { xs: "100%", md: "28%" },
+                height: "100vh", // Full viewport height
+                overflow: "auto", // Allow right content to scroll independently
+                flexShrink: 0,
               }}
             >
-              <Loader />
+              <RightContent
+                selectedConnectionId={selectedConnectionId}
+                onBackClick={isMobile ? handleBackFromProfile : undefined}
+                userInfo={
+                  selectedConnectionId
+                    ? {
+                        id: selectedConnectionId,
+                        name: "Dr. Maya K.",
+                        avatar: "/dr_maya.png",
+                        status: "online",
+                        mutualConnections: 12,
+                        connectedVia: "UniVerse",
+                        location: "San Francisco, CA",
+                        bio:
+                          "Passionate about connecting people and building meaningful relationships in the digital age.",
+                        interests: [
+                          "Technology",
+                          "Healthcare",
+                          "Innovation",
+                          "Research",
+                          "Networking",
+                        ],
+                      }
+                    : undefined
+                }
+              />
             </Box>
-          ) : (
-            <MiddleContent
-              selectedConnectionId={selectedConnectionId}
-              selectedConnection={
-                selectedConnectionId
-                  ? {
-                      id: selectedConnectionId,
-                      name: "Dr. Maya K.",
-                      avatar: "/dr_maya.png",
-                      status: "online",
-                    }
-                  : undefined
-              }
-              onBackClick={handleBackToSidebar}
-            />
           )}
-        </Box>
-      )}
-
-      {/* Desktop Middle Content */}
-      {!isMobile && showContent && (
-        <Box
-          sx={{
-            width: "44%",
-            height: "100%",
-            overflow: "hidden",
-            flexShrink: 0,
-          }}
-        >
-          {isLoading ? (
-            <Box
-              sx={{
-                height: "100%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Loader />
-            </Box>
-          ) : (
-            <MiddleContent
-              selectedConnectionId={selectedConnectionId}
-              selectedConnection={
-                selectedConnectionId
-                  ? {
-                      id: selectedConnectionId,
-                      name: "Dr. Maya K.",
-                      avatar: "/dr_maya.png",
-                      status: "online",
-                    }
-                  : undefined
-              }
-              onBackClick={handleBackToSidebar}
-            />
-          )}
-        </Box>
-      )}
-
-      {/* Right Content - Desktop or Mobile Profile */}
-      {((!isMobile && showContent) || (isMobile && showMobileProfile)) && (
-        <Box
-          sx={{
-            width: { xs: "100%", md: "28%" },
-            height: "100%",
-            overflow: "hidden",
-            flexShrink: 0,
-          }}
-        >
-          <RightContent
-            selectedConnectionId={selectedConnectionId}
-            onBackClick={isMobile ? handleBackFromProfile : undefined}
-            userInfo={
-              selectedConnectionId
-                ? {
-                    id: selectedConnectionId,
-                    name: "Dr. Maya K.",
-                    avatar: "/dr_maya.png",
-                    status: "online",
-                    mutualConnections: 12,
-                    connectedVia: "UniVerse",
-                    location: "San Francisco, CA",
-                    bio:
-                      "Passionate about connecting people and building meaningful relationships in the digital age.",
-                    interests: [
-                      "Technology",
-                      "Healthcare",
-                      "Innovation",
-                      "Research",
-                      "Networking",
-                    ],
-                  }
-                : undefined
-            }
-          />
-        </Box>
-      )}
+      </>
     </Box>
   );
 };

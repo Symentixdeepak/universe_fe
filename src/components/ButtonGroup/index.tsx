@@ -97,7 +97,7 @@ const ButtonGroup: React.FC<ButtonGroupProps> = ({
               backgroundColor: isSelected
                 ? themeColors.pantone.main
                 : "transparent",
-              height: { xs: 37, md: 41 },
+              height: { xs: 37, md: 37 },
               color: isSelected
                 ? themeColors.white.main
                 : themeColors.text.primary,

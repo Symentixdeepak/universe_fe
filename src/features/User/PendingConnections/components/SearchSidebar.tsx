@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { TextField, SvgIcon } from "@/components";
+import { TextField, SvgIcon, ButtonGroup } from "@/components";
 import { useThemeColors } from "@/hooks";
 import { useRouter } from "next/router";
 import Image from "next/image";
@@ -59,32 +59,57 @@ const SearchSidebar: React.FC<SearchSidebarProps> = ({
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [searchValue, setSearchValue] = useState("");
 
-  const handleConnectionClick = (connectionId: string) => {
-    // Call the parent callback if provided
-    onConnectionSelect?.(connectionId);
-    
-    // Navigate on both mobile and desktop
-    if (isMobile) {
-      // Use shallow routing on mobile for smoother UX
-      router.push(`/user/pending_connections/${connectionId}`, undefined, { shallow: true });
+  const statusFilter = (router.query.pending === "true"
+    ? "pending"
+    : "accepted") as string;
+
+  const handleStatusChange = (value: string) => {
+    const currentPath = "/user/pending_connections";
+
+    const { id, ...queryWithoutId } = router.query;
+
+    if (value === "pending") {
+      queryWithoutId.pending = "true";
     } else {
-      router.push(`/user/pending_connections/${connectionId}`);
+      delete queryWithoutId.pending;
+    }
+
+    router.push(
+      {
+        pathname: currentPath,
+        query: queryWithoutId,
+      },
+      undefined,
+      { shallow: true }
+    );
+  };
+
+  const handleConnectionClick = (connectionId: string) => {
+    onConnectionSelect?.(connectionId);
+
+    const query = router.query;
+
+    const pathname = `/user/pending_connections/${connectionId}`;
+
+    if (isMobile) {
+      router.push({ pathname, query }, undefined, { shallow: true });
+    } else {
+      router.push({ pathname, query });
     }
   };
 
   return (
     <Box
       sx={{
-        width: {xs:"100%", md:"370px"},
-        height: "100vh",
+        width: "100%",
+        height: "100%",
         display: "flex",
         flexDirection: "column",
-        padding: "20px",
         background: themeColors.white.main,
       }}
     >
-      {/* Search Header */}
-      <Box>
+      {/* Search Header - Fixed at top */}
+      <Box sx={{ padding: "20px 20px 0 20px", flexShrink: 0 }}>
         <TextField
           fullWidth
           placeholder="Search"
@@ -93,19 +118,21 @@ const SearchSidebar: React.FC<SearchSidebarProps> = ({
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <SvgIcon
-                  name="search_nav"
-                  width={20}
-                  height={20}
-                />
+                <SvgIcon name="search_nav" width={20} height={20} />
               </InputAdornment>
             ),
           }}
         />
       </Box>
 
-      {/* Connections List */}
-      <Box sx={{ flex: 1, overflow: "auto" }}>
+      {/* Connections List - Scrollable middle content */}
+      <Box 
+        sx={{ 
+          flex: 1, 
+          overflow: "auto",
+          padding: "0 20px",
+        }}
+      >
         <List sx={{ mt: 1 }}>
           {connections.map((connection) => {
             const isSelected = selectedConnectionId === connection.id;
@@ -113,7 +140,7 @@ const SearchSidebar: React.FC<SearchSidebarProps> = ({
               <ListItem
                 key={connection.id}
                 sx={{
-                  padding: {xs : "4px 2px 4px 2px", md:"4px 16px 4px 16px",},
+                  padding: { xs: "4px 2px 4px 2px", md: "4px 16px 4px 16px" },
                   cursor: "pointer",
                   mb: 0.5,
                   borderRadius: "15px",
@@ -138,8 +165,6 @@ const SearchSidebar: React.FC<SearchSidebarProps> = ({
                       variant="bodyRegular"
                       sx={{
                         color: themeColors.text.primary,
-
-                        //   mb: 0.5,
                       }}
                     >
                       {connection.name}
@@ -175,33 +200,50 @@ const SearchSidebar: React.FC<SearchSidebarProps> = ({
                   }
                   sx={{ ml: 1 }}
                 />
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    flexDirection: "column",
-                    gap: 0.6,
-                  }}
-                >
-                  <IconButton>
-                    <SvgIcon
-                      name="cross"
-                      width={20}
-                      height={20}
-                    />
-                  </IconButton>
-                  <IconButton>
-                    <SvgIcon
-                      name="clock_reminder"
-                      width={20}
-                      height={20}
-                    />
-                  </IconButton>
-                </Box>
+                {statusFilter === "accepted" && (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      flexDirection: "column",
+                      gap: 0.6,
+                    }}
+                  >
+                    <IconButton>
+                      <SvgIcon name="cross" width={20} height={20} />
+                    </IconButton>
+                    <IconButton>
+                      <SvgIcon name="clock_reminder" width={20} height={20} />
+                    </IconButton>
+                  </Box>
+                )}
               </ListItem>
             );
           })}
         </List>
+      </Box>
+
+      {/* Status Filter ButtonGroup - Fixed at bottom */}
+      <Box
+        sx={{
+          padding: "10px 20px 20px 20px",
+          backgroundColor: themeColors.white.main,
+          borderTop: `1px solid ${themeColors.white.dark}`,
+          flexShrink: 0,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          mb: { xs: 6, md: 0 },
+        }}
+      >
+        <ButtonGroup
+          options={[
+            { value: "accepted", label: "Requested" },
+            { value: "pending", label: "Pending" },
+          ]}
+          value={statusFilter}
+          onChange={handleStatusChange}
+        />
       </Box>
     </Box>
   );

@@ -13,26 +13,26 @@ const SharedMedia = ({ isMobile = false }) => {
     "/assets/images/sample/sample-media-4.png",
   ];
   return (
-    <Box mt={isMobile ? 5 : 0}>
+    <Box mt={isMobile ? 5 : -3}>
       <Typography variant="bodyBold" sx={{ color: themeColors.text.primary }}>
         Shared Media{" "}
       </Typography>
 
       <Box
         sx={{
-          display: "flex",
+          display: "flex",  
           rowGap: 0,
           columnGap: 0.8,
           flexWrap: { xs: "nowrap", md: "wrap" },
-          mt: 2,
+          mt: -0.5,
           overflowX: { xs: "auto", md: "visible" },
         }}
       >
         {sampleimages.map((image, index) => (
           <Box key={index} sx={{ mt: 2 }}>
             <Image
-              height={85}
-              width={85}
+              height={80}
+              width={80}
               style={{ borderRadius: "10px" }}
               src={image}
               alt={`Sample Image ${index + 1}`}

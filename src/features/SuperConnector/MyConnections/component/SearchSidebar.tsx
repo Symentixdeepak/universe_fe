@@ -14,12 +14,9 @@ import {
   Badge,
   AvatarGroup,
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { TextField, SvgIcon, ButtonGroup } from "@/components";
 import { useThemeColors } from "@/hooks";
 import { useRouter } from "next/router";
-import Image from "next/image";
 
 interface Connection {
   id: string;

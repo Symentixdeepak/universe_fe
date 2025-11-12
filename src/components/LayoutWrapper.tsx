@@ -2,7 +2,7 @@ import React from "react";
 import { Box, useTheme, useMediaQuery } from "@mui/material";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
-import { SidebarProvider, useSidebar } from "@/contexts/SideBarContext";
+import { useSidebar } from "@/contexts/SideBarContext";
 import { ErrorBoundary } from "@/components";
 
 interface LayoutWrapperProps {
@@ -17,13 +17,13 @@ const SIDEBAR_WIDTH_COLLAPSED = 60;
 const NAVBAR_HEIGHT_DESKTOP = 62;
 const NAVBAR_HEIGHT_MOBILE = 56;
 
-const LayoutContent: React.FC<LayoutWrapperProps> = ({
+export const LayoutWrapper: React.FC<LayoutWrapperProps> = ({
   children,
   showSidebar = true,
   showNavbar = true,
   showIconOnlyNavbar = false,
 }) => {
-  console.log('LayoutContent received:', { showSidebar, showNavbar, showIconOnlyNavbar });
+  console.log('LayoutWrapper received:', { showSidebar, showNavbar, showIconOnlyNavbar });
   const { isSidebarExpanded, toggleSidebar } = useSidebar();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -107,15 +107,6 @@ const LayoutContent: React.FC<LayoutWrapperProps> = ({
         </Box>
       </Box>
     </Box>
-  );
-};
-
-export const LayoutWrapper: React.FC<LayoutWrapperProps> = (props) => {
-  console.log('LayoutWrapper received props:', props);
-  return (
-    <SidebarProvider>
-      <LayoutContent {...props} />
-    </SidebarProvider>
   );
 };
 

@@ -23,6 +23,7 @@ export interface SidebarItem {
   isLink?: boolean; // If true, parent is clickable to navigate while children are expandable
   openSidebarOnClick?: boolean; // If true, clicking opens/expands the sidebar
   closeSidebarOnClick?: boolean; // If true, clicking closes the sidebar when it's open
+  openDrawer?: boolean; // If true, opens a drawer instead of navigating
 }
 
 export interface ChildItem {
@@ -90,6 +91,7 @@ export const sidebarItemsUser: SidebarItem[] = [
     title: "Notifications",
     iconComponent: NotificationIcon,
     path: "/notifications",
+    openDrawer: true, // Open drawer instead of navigating
   },
   {
     id: "settings",
@@ -157,6 +159,7 @@ export const sidebarItemsSuperConnector: SidebarItem[] = [
     title: "Notifications",
     iconComponent: NotificationIcon,
     path: "/notifications",
+    openDrawer: true, // Open drawer instead of navigating
   },
   {
     id: "settings",

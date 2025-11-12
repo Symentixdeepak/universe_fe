@@ -5,6 +5,7 @@ import { useThemeColors } from "@/hooks";
 import { Button, SvgIcon } from "@/components";
 import { colorProfiles } from "@/styles/theme";
 import Image from "next/image";
+import { useRouter } from "next/router";
 
 interface ProfileHeaderProps {
   name: string;
@@ -13,6 +14,7 @@ interface ProfileHeaderProps {
   connectedVia: string;
   avatar: string;
   connectedSince: string;
+  isFromPendingConnections?: boolean;
 }
 
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({
@@ -22,9 +24,25 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   connectedVia = "Aella Kos",
   avatar = "/dr_maya.png",
   connectedSince = "22/10/2025",
+  isFromPendingConnections = false,
 }) => {
   const themeColors = useThemeColors();
   const theme = useTheme();
+  const router = useRouter();
+  const isMobile = useTheme().breakpoints.down("md");
+
+  const handleChatView = () => {
+    const { view_profile, show_profile, ...restQuery } = router.query;
+
+    router.push(
+      {
+        pathname: router.pathname,
+        query: restQuery,
+      },
+      undefined,
+      { shallow: true }
+    );
+  };
 
   return (
     <Box
@@ -140,7 +158,6 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                 display: { xs: "block", md: "none" },
               }}
             >
-              
               Since {connectedSince}
             </Typography>
           </Box>
@@ -160,14 +177,45 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
           sx={{
             display: "flex",
             gap: { xs: 1, md: 2 },
-            maxWidth: "400px",
+            maxWidth: isFromPendingConnections ? "450px" : "400px",
             width: "100%",
           }}
         >
-          <Button sx={{maxWidth:200}} variant="outlined" fullWidth>
-            Message
-          </Button>
-{/* 
+          {isFromPendingConnections ? (
+            <>
+              <Button
+                // onClick={handleChatView}
+                sx={{ maxWidth: 230 }}
+                small={isMobile ? true : false}
+                disabled
+                variant="outlined"
+                fullWidth
+              >
+                Cancel Connection
+              </Button>{" "}
+              <Button
+                // onClick={handleChatView}
+                sx={{ maxWidth: {xs:130,md:170} }}
+                variant="contained"
+                small={isMobile ? true : false}
+                theme="pantone"
+                fullWidth
+              >
+                Remind
+              </Button>
+            </>
+          ) : (
+            <Button
+              onClick={handleChatView}
+              sx={{ maxWidth: 200 }}
+              variant="outlined"
+              small={isMobile ? true : false}
+              fullWidth
+            >
+              Message
+            </Button>
+          )}
+          {/* 
           <Button
             sx={{
               borderRadius: "25px",

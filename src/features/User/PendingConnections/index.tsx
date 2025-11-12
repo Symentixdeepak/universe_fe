@@ -15,6 +15,7 @@ import {
   ProfileDetails,
   ProfileAboutFooter,
 } from "./components";
+import PendingConnection from "./components/PendingConnection";
 
 interface MyUniverseProps {
   selectedUserId?: string;
@@ -72,58 +73,84 @@ const MyUniverse: React.FC<MyUniverseProps> = ({ selectedUserId }) => {
     <Box
       sx={{
         display: isMobile ? "block" : "flex",
-        minHeight: "100vh",
+        height: "100vh", // Full viewport height
         bgcolor: selectedConnectionId
           ? themeColors.white.main
           : themeColors.white.dark,
+        overflow: "hidden", // Prevent main container scroll
       }}
     >
       {/* Left Sidebar - Show when no connection selected on mobile or always on desktop */}
       {(!isMobile || !showMobileContent) && (
-        <SearchSidebar
-          selectedConnectionId={selectedConnectionId}
-          onConnectionSelect={handleConnectionSelect}
-        />
-      )}
-
-      {/* Main Content - Show on desktop or when connection selected on mobile */}
-      {(!isMobile || showMobileContent) && selectedConnectionId && (
         <Box
           sx={{
-            flex: 1,
-            display: "flex",
-            flexDirection: "column",
-            padding: isMobile ? "25px" : "40px",
-            width: isMobile ? "100%" : "auto",
+            width: { xs: "100%", md: "370px" },
+            height: "100vh",
+            overflow: "auto", // Sidebar scrolls independently
+            flexShrink: 0,
           }}
         >
-             {/* Profile Header */}
-          <ProfileHeader
-            name="Dr. Maya K."
-            location="San Francisco, CA"
-            description="Building AI solutions that make healthcare smarter and more human."
-            connectedVia="Aelia Kos"
-            avatar="/dr_maya.png"
-            connectedSince="Dec 2024"
+          <SearchSidebar
+            selectedConnectionId={selectedConnectionId}
+            onConnectionSelect={handleConnectionSelect}
           />
-
-          {/* Profile Details */}
-          <ProfileDetails />
-
-          {/* Profile About Footer */}
-          <ProfileAboutFooter />
         </Box>
       )}
 
-      {!isMobile && !selectedConnectionId && (
-        <Box sx={{m:'auto'}}>
-          <Typography
-            variant="bodyLight"
-            sx={{ color: themeColors.text.primary }}
-          >
-            Select a connection to view their profile.
-          </Typography>
-        </Box>
+      {router.query.pending ? (
+        <PendingConnection />
+      ) : (
+        <>
+          {/* Main Content - Show on desktop or when connection selected on mobile */}
+          {(!isMobile || showMobileContent) && selectedConnectionId && (
+            <Box
+              sx={{
+                flex: 1,
+                display: "flex",
+                flexDirection: "column",
+                padding: isMobile ? "25px" : "40px",
+                width: isMobile ? "100%" : "auto",
+                height: "100vh", // Full viewport height
+                overflow: "auto", // Main content scrolls independently
+              }}
+            >
+              {/* Profile Header */}
+              <ProfileHeader
+                name="Dr. Maya K."
+                location="San Francisco, CA"
+                description="Building AI solutions that make healthcare smarter and more human."
+                connectedVia="Aelia Kos"
+                avatar="/dr_maya.png"
+                connectedSince="Dec 2024"
+                isFromPendingConnections={true}
+              />
+
+              {/* Profile Details */}
+              <ProfileDetails />
+
+              {/* Profile About Footer */}
+              <ProfileAboutFooter />
+            </Box>
+          )}
+
+          {!isMobile && !selectedConnectionId && (
+            <Box
+              sx={{
+                flex: 1,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Typography
+                variant="bodyLight"
+                sx={{ color: themeColors.text.primary }}
+              >
+                Select a connection to view their profile.
+              </Typography>
+            </Box>
+          )}
+        </>
       )}
     </Box>
   );

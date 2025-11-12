@@ -38,7 +38,7 @@ export const UserConnectHome = () => {
   };
   const handleAcceptConnection = () => {
     // Handle accepting the connection
-    router.push("/user/pending_connections/1");
+    router.push("/user/my-universe/1?view_profile=true");
   };
 
   const handleDeclineConnection = () => {
