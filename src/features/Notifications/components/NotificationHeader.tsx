@@ -1,6 +1,6 @@
 import React from "react";
-import { Box, Typography, TextField, InputAdornment } from "@mui/material";
-import { SvgIcon } from "@/components";
+import { Box, Typography, InputAdornment } from "@mui/material";
+import { SvgIcon, TextField } from "@/components";
 import { useThemeColors } from "@/hooks";
 
 interface NotificationHeaderProps {
@@ -17,22 +17,9 @@ export const NotificationHeader: React.FC<NotificationHeaderProps> = ({
   return (
     <Box
       sx={{
-        padding: "20px 16px",
-        borderBottom: `1px solid ${themeColors.grey.light}`,
         borderTopRightRadius: "20px",
       }}
     >
-      <Typography
-        variant="h6"
-        sx={{
-          color: themeColors.text.primary,
-          fontWeight: 600,
-          mb: 2,
-        }}
-      >
-        Notifications
-      </Typography>
-      
       <TextField
         fullWidth
         placeholder="Search"

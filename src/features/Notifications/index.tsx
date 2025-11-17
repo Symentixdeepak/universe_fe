@@ -6,12 +6,13 @@ import {
   NotificationHeader,
   NotificationItem,
   NotificationFooter,
+  PassiveConnectionsPanel,
 } from "./components";
 
 // Import sidebar width constants
 const SIDEBAR_WIDTH_EXPANDED = 185;
 const SIDEBAR_WIDTH_COLLAPSED = 60;
-const DRAWER_WIDTH = 400;
+const DRAWER_WIDTH = 372;
 
 interface Notification {
   id: string;
@@ -20,6 +21,7 @@ interface Notification {
   subtitle: string;
   time: string;
   isUnread?: boolean;
+  info?: string;
 }
 
 interface NotificationDrawerProps {
@@ -33,6 +35,7 @@ const MOCK_NOTIFICATIONS: Notification[] = [
     avatar: "/dr_maya.png",
     title: "Ross Geller",
     subtitle: "Hey, did you see my monkey?",
+    info: "New Connection",
     time: "3 hours ago",
     isUnread: true,
   },
@@ -40,50 +43,64 @@ const MOCK_NOTIFICATIONS: Notification[] = [
     id: "2",
     avatar: "/dr_maya.png",
     title: "Ross Geller Accepted!",
-    subtitle: "New Connection",
+    subtitle: "",
     time: "6 hours ago",
+    info: "New Connection",
+
     isUnread: true,
   },
   {
     id: "3",
     avatar: "/dr_maya.png",
     title: "The UniVerse turns 3!",
-    subtitle: "New Article",
+    info: "New Connection",
+
+    subtitle: "",
     time: "3 days ago",
   },
   {
     id: "4",
     avatar: "/dr_maya.png",
     title: "Universe Notification",
-    subtitle: "New Something",
+    info: "New Connection",
+
+    subtitle: "",
     time: "4 days ago",
   },
   {
     id: "5",
     avatar: "/dr_maya.png",
     title: "Bruce wishes to Connect!",
-    subtitle: "New Connection",
+    info: "New Connection",
+
+    subtitle: "",
     time: "7 days ago",
   },
   {
     id: "6",
     avatar: "/dr_maya.png",
     title: "Chandler Bing",
-    subtitle: "I'm not good at the advise...",
+    subtitle: "",
+    info: "New Connection",
+
     time: "9 days ago",
   },
   {
     id: "7",
     avatar: "/dr_maya.png",
     title: "Universe Notification",
-    subtitle: "New Something",
+    info: "New Connection",
+
+    subtitle: "",
     time: "12 days ago",
   },
   {
     id: "8",
     avatar: "/dr_maya.png",
     title: "Universe Notification",
-    subtitle: "New Something",
+    info: "New Connection",
+
+    subtitle: "",
     time: "2 weeks ago",
     isUnread: true,
   },
@@ -91,8 +108,10 @@ const MOCK_NOTIFICATIONS: Notification[] = [
     id: "9",
     avatar: "/dr_maya.png",
     title: "Universe Notification",
-    subtitle: "New Something",
+    subtitle: "",
     time: "2 weeks ago",
+    info: "New Connection",
+
     isUnread: true,
   },
 ];
@@ -106,6 +125,7 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [searchValue, setSearchValue] = useState("");
+  const [passivePanelOpen, setPassivePanelOpen] = useState(false);
 
   // Calculate margin based on sidebar state
   const drawerMarginLeft = isMobile
@@ -122,6 +142,26 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
     console.log("Notification clicked:", id);
   };
 
+  const handlePassiveConnectionsClick = () => {
+    setPassivePanelOpen(!passivePanelOpen);
+  };
+
+  const handlePassivePanelClose = () => {
+    setPassivePanelOpen(false);
+  };
+
+  const handleCloseAll = () => {
+    setPassivePanelOpen(false);
+    onClose();
+  };
+
+  // Close passive panel when notification drawer closes
+  React.useEffect(() => {
+    if (!open) {
+      setPassivePanelOpen(false);
+    }
+  }, [open]);
+
   const filteredNotifications = MOCK_NOTIFICATIONS.filter(
     (notification) =>
       notification.title.toLowerCase().includes(searchValue.toLowerCase()) ||
@@ -132,7 +172,7 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
     <>
       {/* Backdrop only on right content area */}
       <Box
-        onClick={onClose}
+        onClick={handleCloseAll}
         sx={{
           position: "fixed",
           top: 0,
@@ -152,14 +192,15 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
         sx={{
           position: "fixed",
           top: "8px",
-          bottom: "8px",
+          bottom: "0px",
           left: `${drawerMarginLeft}px`,
-          width: { xs: `calc(100% - ${drawerMarginLeft}px)`, sm: `${DRAWER_WIDTH}px` },
+          width: {
+            xs: `calc(100% - ${drawerMarginLeft}px)`,
+            sm: `${DRAWER_WIDTH}px`,
+          },
           backgroundColor: themeColors.white.main,
-          borderTopRightRadius: "20px !important",
-          borderBottomRightRadius: "20px !important",
-          borderTopLeftRadius: "0 !important",
-          borderBottomLeftRadius: "0 !important",
+                borderTopRightRadius: "20px",
+        borderBottomRightRadius: "20px",
           zIndex: 1300,
           transform: open ? "translateX(0)" : "translateX(-100%)",
           opacity: open ? 1 : 0,
@@ -168,7 +209,7 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
           display: "flex",
           flexDirection: "column",
           overflow: "hidden",
-          p:2
+          p: 2,
         }}
       >
         {/* Header */}
@@ -183,6 +224,7 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
             flex: 1,
             overflow: "auto",
             backgroundColor: themeColors.white.main,
+            mt: 2.5,
           }}
         >
           {filteredNotifications.map((notification) => (
@@ -195,11 +237,22 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
         </Box>
 
         {/* Footer */}
-        <NotificationFooter
-          totalConnections={2}
+        <NotificationFooter 
+          totalConnections={2} 
           onClearAll={handleClearAll}
+          passivePanelOpen={passivePanelOpen}
+          onPassiveConnectionsClick={handlePassiveConnectionsClick}
         />
       </Box>
+
+      {/* Passive Connections Panel */}
+      <PassiveConnectionsPanel
+        open={passivePanelOpen}
+        onClose={handlePassivePanelClose}
+        totalConnections={2}
+        drawerMarginLeft={drawerMarginLeft}
+        notificationDrawerWidth={DRAWER_WIDTH}
+      />
     </>
   );
 };

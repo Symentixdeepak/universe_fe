@@ -9,9 +9,10 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import Image from "next/image";
 import { useThemeColors } from "@/hooks";
-import { ProfilePopover } from "@/components";
+import { Button, ProfilePopover } from "@/components";
 import { useSidebar } from "@/contexts/SideBarContext";
 import { useUser } from "@/contexts";
+import { useRouter } from "next/router";
 
 interface NavbarProps {
   isSidebarExpanded?: boolean;
@@ -23,6 +24,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   showIconOnlyNavbar,
 }) => {
   const theme = useTheme();
+  const router = useRouter();
   const { user } = useUser();
   const themeColors = useThemeColors();
   const { toggleSidebar } = useSidebar();
@@ -30,10 +32,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [profileAnchorEl, setProfileAnchorEl] = useState<HTMLElement | null>(
     null
   );
-  // Responsive breakpoints
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isImportPage = router.pathname.split("/")[2] === "import_contacts";
 
-  // Handle profile popover
   const handleProfileClick = (event: React.MouseEvent<HTMLElement>) => {
     setProfileAnchorEl(event.currentTarget);
   };
@@ -44,7 +45,6 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const isProfileOpen = Boolean(profileAnchorEl);
 
-  // Track scroll position to add shadow effect
   useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.scrollY;
@@ -140,45 +140,49 @@ export const Navbar: React.FC<NavbarProps> = ({
           />
         </Box>
       )}
-
-      {/* Right side - User Avatar */}
-      <IconButton
-        onClick={handleProfileClick}
-        sx={{
-          padding: 0,
-          width: { xs: 34, md: 40 }, // Mobile: 34px, Desktop: 40px
-          height: { xs: 34, md: 40 }, // Mobile: 34px, Desktop: 40px
-          borderRadius: "50%",
-          overflow: "hidden",
-          transition: "transform 0.2s ease-in-out",
-          "&:hover": {
-            transform: "scale(1.05)",
-          },
-          "&:active": {
-            transform: "scale(0.95)",
-          },
-        }}
-      >
-        {user?.avatarUrl ? (
-          <Image
-            src="/charactor.png"
-            alt="User Avatar"
-            width={isMobile ? 34 : 40}
-            height={isMobile ? 34 : 40}
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-            }}
-          />
-        ) : (
-          <Avatar
-            src="/assets/images/avatars/default_avatar.png"
-            alt="Default Avatar"
-            sx={{ width: isMobile ? 34 : 40, height: isMobile ? 34 : 40 }}
-          />
-        )}
-      </IconButton>
+      <Box sx={{ display:isImportPage ? "flex" :"inline", alignItems: "center", gap: 2 }}>
+        {isImportPage &&
+        <Button small={isMobile ? true : false} variant="outlined" sx={{width:110}}>Invite</Button>
+        }
+        {/* Right side - User Avatar */}
+        <IconButton
+          onClick={handleProfileClick}
+          sx={{
+            padding: 0,
+            width: { xs: 34, md: 40 }, // Mobile: 34px, Desktop: 40px
+            height: { xs: 34, md: 40 }, // Mobile: 34px, Desktop: 40px
+            borderRadius: "50%",
+            overflow: "hidden",
+            transition: "transform 0.2s ease-in-out",
+            "&:hover": {
+              transform: "scale(1.05)",
+            },
+            "&:active": {
+              transform: "scale(0.95)",
+            },
+          }}
+        >
+          {user?.avatarUrl ? (
+            <Image
+              src="/charactor.png"
+              alt="User Avatar"
+              width={isMobile ? 34 : 40}
+              height={isMobile ? 34 : 40}
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+              }}
+            />
+          ) : (
+            <Avatar
+              src="/assets/images/avatars/default_avatar.png"
+              alt="Default Avatar"
+              sx={{ width: isMobile ? 34 : 40, height: isMobile ? 34 : 40 }}
+            />
+          )}
+        </IconButton>
+      </Box>
 
       {/* Profile Popover */}
       <ProfilePopover

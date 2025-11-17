@@ -16,7 +16,6 @@ import { useThemeColors } from "@/hooks";
 import { styled } from "@mui/material/styles";
 import { useRouter } from "next/router";
 import { useSidebar } from "@/contexts/SideBarContext";
-import { NotificationDrawer } from "@/features/Notifications";
 
 // Icons
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
@@ -31,6 +30,12 @@ import {
   sidebarItemsUser,
 } from "./SideBarItems";
 import { useAuth } from "@/contexts/AuthContext";
+import { createAsyncComponent, LoaderConfigs } from "../AsyncWrapper";
+
+const NotificationDrawer = createAsyncComponent(
+  () => import("@/features/Notifications"),
+  LoaderConfigs.component
+);
 
 interface SidebarProps {
   isExpanded?: boolean;
@@ -96,7 +101,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     user?.role === "superconnector"
       ? sidebarItemsSuperConnector
       : sidebarItemsUser;
-  const elementToShow = user?.role === "superconnector" ? 4 : 5;
+  const elementToShow = user?.role === "superconnector" ? 5 : 5;
 
   // Auto-expand items with children when sidebar opens
   useEffect(() => {
@@ -535,7 +540,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 }}
               />
             </div>
-            {sidebarItems.slice(4, 7).map((item) => {
+            {sidebarItems.slice(5, 8).map((item) => {
               const isActive = isPathActive(item.path);
               const expanded = isItemExpanded(item.id);
               const IconComponent = item.iconComponent;
@@ -692,7 +697,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         <List sx={{ mt: "auto", mb: 2 }}>
           {sidebarItems
-            .slice(user?.role === "superconnector" ? 7 : 5)
+            .slice(user?.role === "superconnector" ? 8 : 5)
             .map((item) => {
               // Check if notification drawer is open for this item
               const isActive = item.openDrawer 

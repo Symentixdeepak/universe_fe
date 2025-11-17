@@ -370,7 +370,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const value: AuthContextType = {
-    user: user ? {...user, role: user.role || "user" as UserRole} : null,
+    user: user ? {...user, role: user.role|| "user" as UserRole} : null,
     tokens,
     isLoading,
     isLoggingOut,

@@ -1,0 +1,43 @@
+import { ReactElement, useEffect } from "react";
+import { useRouter } from "next/router";
+import { useMediaQuery, useTheme } from "@mui/material";
+import Head from "next/head";
+import { createAsyncComponent, LoaderConfigs } from '@/components/AsyncWrapper';
+
+// Dynamic imports for better performance
+const ProtectedRoute = createAsyncComponent(
+  () => import("@/components/ProtectedRoute"),
+  LoaderConfigs.component
+);
+const LayoutWrapper = createAsyncComponent(
+  () => import("@/components/LayoutWrapper"),
+  LoaderConfigs.component
+);
+const DailyConn = createAsyncComponent(
+  () => import("@/features/User/DailyConnection"),
+  LoaderConfigs.page
+);
+
+function DailyConnection() {
+  return (
+    <>
+      <Head>
+        <title>My Universe - Universe Club</title>
+      </Head>
+      <LayoutWrapper showNavbar={false}>
+        <DailyConn />
+      </LayoutWrapper>
+    </>
+  );
+}
+
+// Wrap the page with ProtectedRoute and specify allowed roles
+(DailyConnection as any).getLayout = function getLayout(page: ReactElement) {
+  return (
+    <ProtectedRoute requireProfileComplete={true} allowedRoles={["user"]}>
+      {page}
+    </ProtectedRoute>
+  );
+};
+
+export default DailyConnection;

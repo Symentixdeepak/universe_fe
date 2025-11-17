@@ -9,6 +9,8 @@ export { default as Button } from './Button';
 export { default as Link } from './Link';
 export { default as ArrowBack } from './ArrowBack';
 export { default as Radio } from './Radio';
+export { default as SelectInput } from './SelectInput';
+export { default as Modal } from './Modal';
 export { default as AuthRedirect } from './AuthRedirect';
 export { default as ClientOnly } from './ClientOnly';
 export { default as Loader } from './Loader';

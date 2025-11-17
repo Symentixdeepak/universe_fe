@@ -5,45 +5,53 @@ import { useThemeColors } from "@/hooks";
 interface NotificationFooterProps {
   totalConnections: number;
   onClearAll?: () => void;
+  onPassiveConnectionsClick?: () => void;
+  passivePanelOpen: boolean;
 }
 
 export const NotificationFooter: React.FC<NotificationFooterProps> = ({
   totalConnections,
   onClearAll,
+  passivePanelOpen,
+  onPassiveConnectionsClick,
 }) => {
   const themeColors = useThemeColors();
 
   return (
     <Box
       sx={{
-        padding: "16px",
-        borderTop: `1px solid ${themeColors.grey.light}`,
         display: "flex",
         flexDirection: "column",
         gap: 2,
-        borderBottomRightRadius: "20px",
+        mt: 2,
       }}
     >
-      <Button
-        fullWidth
-        onClick={onClearAll}
-        sx={{
-          color: themeColors.text.secondary,
-          textTransform: "none",
-          "&:hover": {
-            backgroundColor: themeColors.white.dark,
-          },
-        }}
-      >
-        Clear Notifications
-      </Button>
-      
       <Typography
-        variant="captionLight"
+        variant="bodyLight"
         sx={{
-          color: themeColors.text.secondary,
+          color: themeColors.grey.main,
           textAlign: "center",
+          cursor: "pointer",
+          textDecoration: "underline",
+          mb: 2,
         }}
+        onClick={onClearAll}
+      >
+        {" "}
+        Clear Notifications
+      </Typography>
+
+      <Typography
+        variant="bodyRegular"
+        sx={{
+          color: passivePanelOpen
+            ? themeColors.pantone.main
+            : themeColors.grey.main,
+          textAlign: "center",
+          cursor: "pointer",
+          textDecoration: "underline",
+        }}
+        onClick={onPassiveConnectionsClick}
       >
         Your Passive Daily Connections ({totalConnections}/7)
       </Typography>

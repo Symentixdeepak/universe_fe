@@ -9,6 +9,7 @@ import {
   ConnectIcon,
   ConnectionMadeIcon,
 } from "./SidebarIcons";
+import ImportIcon from "./SidebarIcons/ImportIcon";
 
 export interface SidebarItem {
   id: string;
@@ -126,6 +127,12 @@ export const sidebarItemsSuperConnector: SidebarItem[] = [
     children: childItemsSuperConnector,
     isLink: true,
     openSidebarOnClick: true, 
+  },
+    {
+    id: "import_contact",
+    title: "Import Contacts",
+    iconComponent: ImportIcon,
+    path: "/superconnector/import_contacts/import",
   },
   {
     id: "connection_made",
